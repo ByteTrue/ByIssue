@@ -176,10 +176,12 @@ your-project/
     │   └── {NNN}-o|x-{name}/   # Explore: index.md and path articles
     ├── notes/                  # Reusable knowledge
     │   └── {NNN}-{name}.md
+    ├── decisions/              # Decision records
+    │   └── {NNN}-{name}.md
     └── tools/                  # Stable tools for proven workflows
 ```
 
-- `NNN` increments independently within the issues, epics, notes, and talks trees. Items under `done/` count too.
+- `NNN` increments independently within the issues, epics, notes, decisions, and talks trees. Items under `done/` count too.
 - Closing changes only `-o-` to `-x-`; the number and name remain unchanged.
 - A closed Issue or Epic moves to its `done/` subdirectory only when the user explicitly requests organization; it remains searchable.
 - A Talk is not written before the user confirms it. Vision target content, Epic closing, and dangerous operations also retain explicit human authorization.

@@ -176,10 +176,12 @@ your-project/
     │   └── {NNN}-o|x-{name}/   # Explore：含 index.md 与路径文章
     ├── notes/                  # 可复用知识
     │   └── {NNN}-{name}.md
+    ├── decisions/              # 拍板记录
+    │   └── {NNN}-{name}.md
     └── tools/                  # 已跑通并稳定的流程工具
 ```
 
-- `NNN` 在 issues、epics、notes、talks 各自的树内独立递增，`done/` 中的项目也参与编号计算。
+- `NNN` 在 issues、epics、notes、decisions、talks 各自的树内独立递增，`done/` 中的项目也参与编号计算。
 - 关闭时只把路径中的 `-o-` 改为 `-x-`；名称和编号不变。
 - 用户主动要求整理时，已关闭的 Issue 或 Epic 才会移入各自的 `done/`；它们仍参与检索。
 - Talk 在用户确认前不落盘；Vision 的目标内容、Epic 关闭和危险操作也都保留人为授权。

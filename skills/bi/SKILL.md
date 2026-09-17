@@ -103,6 +103,8 @@ byissue/
 │   │   └── issues/                 只属于该 Epic 的 issues 树
 │   └── done/                       用户主动整理后的已关闭 Epic
 ├── issues/                         不属于单个 Epic 的独立 issues 树
+├── decisions/                      拍板记录；本树独立编号
+│   └── NNN-{主题}.md               1–5 句：选了什么、为什么
 ├── notes/                          可复用知识；本树独立编号
 │   └── NNN-{主题}.md
 ├── talks/                          尚未落定的讨论；本树独立编号
@@ -140,6 +142,7 @@ issues/
 | **Fast Fix (`ff`)** | 这个小改做了什么、改了哪里、怎样验证、是否影响制度记忆 |
 | **Explore Issue** | 一个复杂、可停止、可复用的现状调查得出了什么；简单理解只做现状说明，不建事项 |
 | **Talk** | 一个尚未落定的议题如何被提出、纠正和收束，以及建议从哪里继续 |
+| **Decision** | 某个取舍当时拍了什么板、为什么；被取代时指向新决策 |
 | **Note** | 哪些知识、证据、步骤与坑点在未来仍值得复用 |
 | **Tool** | 哪段已跑通的流程已经稳定到可以重复执行，同时仍需守住哪些危险边界 |
 
@@ -158,7 +161,7 @@ Issue 编号不是全局身份。引用 Epic Issue 时，必须给完整路径�
 | Epic | `byissue/epics/{NNN}-o\|x-{名}/spec.md`；每个 Epic 只有一份权威 spec |
 | 已整理事项 | 对应 issues 树的 `done/` 下保留同名文件或目录 |
 | 已整理 Epic | `byissue/epics/done/` 下保留同名目录 |
-| Talk / Note | `{NNN}-{名}.md`，不使用 `o`、`x` 或 `ff` |
+| Talk / Note / Decision | `{NNN}-{名}.md`，不使用 `o`、`x` 或 `ff` |
 
 **归属由路径决定：**
 
@@ -182,6 +185,7 @@ Talk 写入 `byissue/talks/`；Note 写入 `byissue/notes/`，同主题更新原
 | Vision 实现程度与链接 | Epic 关闭时，按已经发生的事实更新 |
 | Project Spec | 独立 Issue / Explore Issue 关闭毕业；Epic 关闭合并；快改使现有真相失效；或处于规格维护姿态 |
 | Epic Spec | 处于规格维护姿态；或 Epic 下的 Issue 关闭回写 |
+| Decision | 拍板且满足三条件（难以逆转、离开当时语境会奇怪、真实取舍）时；讨论中经用户确认可即时立，关闭毕业时也可立 |
 | Issue / Explore Issue / `ff` | 受管理推进时按归属写入对应 issues 树；快改完成后写入并关闭 `ff` |
 
 出现冲突时，按 `用户最新确认 > 证据与代码 > 疑似过期的 spec` 判断。Epic 与 Vision 不一致时，先说明这是收窄实现还是修改目标，不要静默绕过。
@@ -207,6 +211,7 @@ Talk 写入 `byissue/talks/`；Note 写入 `byissue/notes/`，同主题更新原
 - 独立 Issue → Project Spec。
 - Epic 内 Issue → Epic Spec。
 - Epic 关闭 → 将稳定结论的**具体内容**合并进 Project Spec，并检查 Vision；只链接 Epic 不算毕业回写。
+- 长期决策 → `byissue/decisions/`（三条件：难以逆转、离开当时语境会奇怪、真实取舍）。
 - `ff` 默认不做大段毕业；若现有真相失效，则同步 spec 或明确标记漂移。
 
 详细规则见 [close](references/close.md)。
