@@ -86,6 +86,7 @@ def required_skill_files(root: Path) -> list[Path]:
             "explore-index.md",
             "ff-issue.md",
             "issue.md",
+            "decision.md",
             "notes.md",
             "project-spec-index.md",
             "spec-section-index.md",

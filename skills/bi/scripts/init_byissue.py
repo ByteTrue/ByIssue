@@ -15,6 +15,7 @@ DIRS = [
     "byissue/issues",
     "byissue/epics",
     "byissue/notes",
+    "byissue/decisions",
     "byissue/tools",
 ]
 

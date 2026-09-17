@@ -4,7 +4,7 @@
 
 **关闭 ≠ 完成。** 完成指实现与验证已达成目标；关闭须用户授权收尾（“关闭 / 收尾 / 做完并沉淀”等）。Git 契约见下与 `SKILL.md`。
 
-**关闭 ≠ 整理进 `done/`。** 关闭只做 `o`→`x` 与毕业回写；把已完成项挪到其所属 issues 树的 `done/`，或把 Epic 挪到 `epics/done/`，仅在用户主动要求整理时进行（见 `SKILL.md`「完成 · 关闭 · done」）。
+**关闭即终态，文件留在原树原位。** 状态由文件名（`x`/`d`）表达，检索靠递归扫描，因此没有也不需要单独的整理区。
 
 ## 背景
 
@@ -45,11 +45,14 @@
 
 ### 关闭 issue
 
-路径规则：只把目标 Issue 文件名或目录名中的 **`-o-` 改为 `-x-`**，保留 `NNN`、可选的 `ff`、名称与所属 issues 树不变。例如 `012-o-fix-login.md` → `012-x-fix-login.md`；Epic 内 `issues/015-o-ff-toolbar.md` → `issues/015-x-ff-toolbar.md`；Explore 目录 `issues/003-o-auth-flow/` → `issues/003-x-auth-flow/`。不要因关闭子 Issue 改 Epic 目录状态。
+路径规则：把目标 Issue 文件名或目录名中的 **`-o-` 改为 `-x-`（交付关闭）或 `-d-`（放弃关闭）**，保留 `NNN`、可选的 `ff`、名称与所属 issues 树不变。例如 `012-o-fix-login.md` → `012-x-fix-login.md`；放弃：`012-o-fix-login.md` → `012-d-fix-login.md`；Epic 内 `issues/015-o-ff-toolbar.md` → `issues/015-x-ff-toolbar.md`；Explore 目录 `issues/003-o-auth-flow/` → `issues/003-x-auth-flow/`。不要因关闭子 Issue 改 Epic 目录状态。
+
+`-d-` 在正文记一句放弃原因，跳过毕业回写；检索时路径即可区分做过的与决定不做的。放弃后又想做的，新建新 issue，不复用编号。
 
 - **普通 issue**：检查目标、范围、质量目标、执行记录与验证；有界简化则检查上限/触发/方向。缺记录或证据 → 回 Design/Do。
 - **ff issue**：检查四答是否齐全（做了什么 / 改了哪些 / 验证 / 对 `byissue/` 的影响）。真相失效须已同步 spec 或明确标漂移；不要求完整质量清单与实现设计。同会话快改已直接落 `x-ff` 的，无需再关一次。
 - **Explore issue**：不要求业务代码执行记录。须能讲清触发—过程—结果，相关责任/数据/状态有证据，未知显式标出；有具体变化时影响已分层。未达“足够行动” → 继续探索，不进 Do。
+- **dropped issue**：路径 `-d-`；确认放弃原因已记录；质量证据与毕业回写均跳过。
 
 按物理归属回写，路径是权威来源：
 
@@ -58,7 +61,7 @@
 - `type: explore`：独立 Explore 经用户认可后，稳定现状机制说明 → `byissue/spec/` 并更新 `index.md`；Epic 内 Explore 先回写所属 epic spec；影响分析留 `related_issue`；证据与已排除理解留 Explore issue
 - Epic 的 `issues/` 下：结果、验证、仍有效约束、推进变化与毕业候选 → 该 epic `spec.md`
 
-坑点 → notes；启动短规则 → `AGENTS.md` / `CLAUDE.md`；稳定工具 → tools。
+长期决策 → `byissue/decisions/`（满足三条件时立碑，被取代时不改写旧文，指向新决策）；坑点 → notes；启动短规则 → `AGENTS.md` / `CLAUDE.md`；稳定工具 → tools。
 
 ### 关闭 epic
 
@@ -85,7 +88,7 @@
 关闭 issue：
 
 - 常规 issue 写清关闭结论：判断、验证摘要（含质量证据）、回写位置、遗留事项；ff 以「对 `byissue/` 的影响」为准，可无长关闭结论
-- `status: closed`；路径 `-o-` → `-x-`（序号与名称不变）
+- `status: closed`；路径 `-o-` → `-x-` 或 `-d-`（序号与名称不变）
 
 关闭 Explore issue：另更新 spec 阅读路径，并在 Explore 入口记录迁入结果。
 

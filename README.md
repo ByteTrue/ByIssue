@@ -129,7 +129,7 @@ Design 不会把未读懂的部分写成确定结论；Do 遇到小偏差会回�
 | 跨模块、多批推进、规格在边界内持续演化 | Epic Spec；清楚切片可在 Epic 内直接推进，也可按需开 Issue |
 | 现状链路复杂、证据冲突或理解值得复用 | Explore Issue |
 
-管理不是仪式：用户明确不要留痕时可以不建 `ff`；用户明确要跟踪时也不因“看起来很小”而绕开 Issue。完成实现不等于关闭；关闭需要用户授权，也不等于移动到 `done/`。
+管理不是仪式：用户明确不要留痕时可以不建 `ff`；用户明确要跟踪时也不因“看起来很小”而绕开 Issue。完成实现不等于关闭；关闭需要用户授权；关闭后文件留在原树原位，状态由文件名表达。
 
 ### 把可复用的认识毕业到正确层级
 
@@ -168,20 +168,21 @@ your-project/
     ├── spec/                   # 当前稳定理解
     │   └── index.md
     ├── epics/                  # 有界大变化
-    │   └── {NNN}-o|x-{name}/
+    │   └── {NNN}-o|x|d-{name}/
     │       └── spec.md
     ├── issues/                 # 可关闭行动、ff 与 Explore
-    │   ├── {NNN}-o|x-{name}.md
-    │   ├── {NNN}-o|x-ff-{name}.md
-    │   └── {NNN}-o|x-{name}/   # Explore：含 index.md 与路径文章
+    │   ├── {NNN}-o|x|d-{name}.md
+    │   ├── {NNN}-o|x|d-ff-{name}.md
+    │   └── {NNN}-o|x|d-{name}/   # Explore：含 index.md 与路径文章
     ├── notes/                  # 可复用知识
+    │   └── {NNN}-{name}.md
+    ├── decisions/              # 拍板记录
     │   └── {NNN}-{name}.md
     └── tools/                  # 已跑通并稳定的流程工具
 ```
 
-- `NNN` 在 issues、epics、notes、talks 各自的树内独立递增，`done/` 中的项目也参与编号计算。
-- 关闭时只把路径中的 `-o-` 改为 `-x-`；名称和编号不变。
-- 用户主动要求整理时，已关闭的 Issue 或 Epic 才会移入各自的 `done/`；它们仍参与检索。
+- `NNN` 在 issues、epics、notes、decisions、talks 各自的树内独立递增。
+- 关闭时把路径中的 `-o-` 改为 `-x-`（交付）或 `-d-`（放弃）；名称和编号不变，文件留在原树原位。
 - Talk 在用户确认前不落盘；Vision 的目标内容、Epic 关闭和危险操作也都保留人为授权。
 
 ## 人始终掌握状态迁移
