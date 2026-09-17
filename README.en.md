@@ -129,7 +129,7 @@ Design does not write unread areas as settled conclusions. Do writes back small 
 | Cross-module or multi-batch change with an evolving bounded specification | Epic Spec; clear slices may advance directly inside it or use Issues when useful |
 | Complex current path, conflicting evidence, or understanding worth reusing | Explore Issue |
 
-Management is not ceremony. A user can explicitly request no trace and omit `ff`; a user can also request tracking for work that looks small. Completing implementation is not closing work; closing requires user authorization, and it is not the same as moving something to `done/`.
+Management is not ceremony. A user can explicitly request no trace and omit `ff`; a user can also request tracking for work that looks small. Completing implementation is not closing work; closing requires user authorization. Closed files stay in place; their state lives in the filename.
 
 ### Graduate reusable understanding to the right layer
 
@@ -181,9 +181,8 @@ your-project/
     └── tools/                  # Stable tools for proven workflows
 ```
 
-- `NNN` increments independently within the issues, epics, notes, decisions, and talks trees. Items under `done/` count too.
-- Closing changes only `-o-` to `-x-`; the number and name remain unchanged.
-- A closed Issue or Epic moves to its `done/` subdirectory only when the user explicitly requests organization; it remains searchable.
+- `NNN` increments independently within the issues, epics, notes, decisions, and talks trees.
+- Closing changes `-o-` to `-x-` (delivered) or `-d-` (dropped); the number and name remain unchanged, and the file stays in its tree.
 - A Talk is not written before the user confirms it. Vision target content, Epic closing, and dangerous operations also retain explicit human authorization.
 
 ## People retain control of state transitions
