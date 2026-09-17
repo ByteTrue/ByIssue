@@ -168,7 +168,7 @@ Issue 编号不是全局身份。引用 Epic Issue 时，必须给完整路径�
 - `ff`、bug、feature、chore、refactor 与 Explore Issue 都遵守同一归属规则。
 - Issue 的归属由物理路径表达，不使用 `epic` frontmatter。归属改变时移动原事项并更新明确引用，不复制第二份。
 
-关闭 Issue 时，将目标路径中的 `-o-` 改为 `-x-`，序号与名称不变，并把 `status` 改为 `closed`。关闭 Epic 时只改 Epic 目录名，内部 Issue 随目录保留。
+关闭 Issue 时，将目标路径中的 `-o-` 改为 `-x-`，序号与名称不变，把 `status` 改为 `closed`，并写 `resolution: done | dropped` 记录结果语义（默认 `done`）。关闭 Epic 时只改 Epic 目录名，内部 Issue 随目录保留。
 
 常规 Issue 使用 `templates/entities/issue.md`，`type` 只能是 `feature|bug|chore|refactor`。`ff` 只回答四件事：做了什么、改了哪些、怎样验证、对 `byissue/` 有什么影响；不要写成迷你 Design，也不要保留空槽位。
 

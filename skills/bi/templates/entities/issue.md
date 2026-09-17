@@ -10,6 +10,7 @@ created: YYYY-MM-DD
 type: feature | bug | chore | refactor
 写法：按读者此刻要解决的问题组织，不要套固定章节名凑满。
 未发生的信息整段省略；简单改动保持短。
+关闭时：status: closed，并写 resolution: done | dropped（默认 done）。
 -->
 
 # [标题]

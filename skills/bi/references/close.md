@@ -47,9 +47,12 @@
 
 路径规则：只把目标 Issue 文件名或目录名中的 **`-o-` 改为 `-x-`**，保留 `NNN`、可选的 `ff`、名称与所属 issues 树不变。例如 `012-o-fix-login.md` → `012-x-fix-login.md`；Epic 内 `issues/015-o-ff-toolbar.md` → `issues/015-x-ff-toolbar.md`；Explore 目录 `issues/003-o-auth-flow/` → `issues/003-x-auth-flow/`。不要因关闭子 Issue 改 Epic 目录状态。
 
+结果语义随关闭写入 frontmatter：`resolution: done`（交付关闭，默认）或 `resolution: dropped`（放弃关闭）。dropped 在正文记一句放弃原因，跳过毕业回写；检索时据此区分做过的与决定不做的。
+
 - **普通 issue**：检查目标、范围、质量目标、执行记录与验证；有界简化则检查上限/触发/方向。缺记录或证据 → 回 Design/Do。
 - **ff issue**：检查四答是否齐全（做了什么 / 改了哪些 / 验证 / 对 `byissue/` 的影响）。真相失效须已同步 spec 或明确标漂移；不要求完整质量清单与实现设计。同会话快改已直接落 `x-ff` 的，无需再关一次。
 - **Explore issue**：不要求业务代码执行记录。须能讲清触发—过程—结果，相关责任/数据/状态有证据，未知显式标出；有具体变化时影响已分层。未达“足够行动” → 继续探索，不进 Do。
+- **dropped issue**：确认放弃原因已记录；质量证据与毕业回写均跳过。
 
 按物理归属回写，路径是权威来源：
 
@@ -85,7 +88,7 @@
 关闭 issue：
 
 - 常规 issue 写清关闭结论：判断、验证摘要（含质量证据）、回写位置、遗留事项；ff 以「对 `byissue/` 的影响」为准，可无长关闭结论
-- `status: closed`；路径 `-o-` → `-x-`（序号与名称不变）
+- `status: closed` + `resolution: done | dropped`；路径 `-o-` → `-x-`（序号与名称不变）
 
 关闭 Explore issue：另更新 spec 阅读路径，并在 Explore 入口记录迁入结果。
 
