@@ -1,8 +1,8 @@
 <div align="center">
 
-# CodeStable
+# ByIssue
 
-![CodeStable: from complex workflow orchestration to a clear software evolution path](./asset/CodeStableCover-v6.png)
+![ByIssue: from complex workflow orchestration to a clear software evolution path](./asset/ByIssueCover-v2.png)
 
 **English** · [中文](./README.md)
 
@@ -18,7 +18,7 @@
 
 ---
 
-CodeStable is a **controlled software-evolution framework** for AI-assisted development. It does not make people choose Talk, Design, or Do for an agent, and it does not force every request through a Spec–Plan–Task pipeline. Instead, it helps people and agents continually judge:
+ByIssue is a **controlled software-evolution framework** for AI-assisted development. It does not make people choose Talk, Design, or Do for an agent, and it does not force every request through a Spec–Plan–Task pipeline. Instead, it helps people and agents continually judge:
 
 - what the project knows now and what it is trying to become;
 - how much management this change deserves;
@@ -26,20 +26,26 @@ CodeStable is a **controlled software-evolution framework** for AI-assisted deve
 - when a new fact means continue, write back, or explicitly change course; and
 - which conclusions are stable enough to become context for the next round of work.
 
-Those judgments and their evidence live in a project-readable `codestable/` workspace, so a long-lived project does not depend on the memory of one conversation or one agent.
+Those judgments and their evidence live in a project-readable `byissue/` workspace, so a long-lived project does not depend on the memory of one conversation or one agent.
 
 ## Install
 
 Install with the Skills CLI:
 
 ```bash
-npx skills add codestable/CodeStable-Lite
+npx skills add ByteTrue/ByIssue
 ```
 
 Installation is project-local by default. Add `-g` to make it available across projects:
 
 ```bash
-npx skills add codestable/CodeStable-Lite -g
+npx skills add ByteTrue/ByIssue -g
+```
+
+Update an existing installation to the latest version:
+
+```bash
+npx skills update bi
 ```
 
 For local development, verify discovery from the repository root:
@@ -51,18 +57,18 @@ npx skills add . --list
 Onboard a project through the single entry:
 
 ```bash
-/cs onboard CodeStable in this project
+/bi onboard ByIssue in this project
 ```
 
 Use that same entry afterwards:
 
 ```bash
-/cs
+/bi
 ```
 
-You can say “let's clarify this change,” “how does this path work?”, “make a quick fix,” “design the implementation,” “work on this issue,” or “close and capture the result.” `cs` selects the understanding and action that the present intent needs; you do not have to memorize a catalog of commands.
+You can say “let's clarify this change,” “how does this path work?”, “make a quick fix,” “design the implementation,” “work on this issue,” or “close and capture the result.” `bi` selects the understanding and action that the present intent needs; you do not have to memorize a catalog of commands.
 
-The repository distributes one Skill at `skills/cs/`. Shared contracts live in `SKILL.md`; scenario-specific rules load progressively from `references/`; templates and initialization scripts stay in the same package. The released version lives in `VERSION`, with release notes in `CHANGELOG.md`.
+The repository distributes one Skill at `skills/bi/`. Shared contracts live in `SKILL.md`; scenario-specific rules load progressively from `references/`; templates and initialization scripts stay in the same package. The released version lives in `VERSION`, with release notes in `CHANGELOG.md`.
 
 ## It solves more than “how can agents take more steps?”
 
@@ -74,13 +80,13 @@ An AI that can write code does not automatically know a long-lived project's cur
 - implementation disproves its design but continues along the old plan; or
 - completed work never returns its useful learning to where the next round will read it.
 
-CodeStable centers the software's state, understanding, and changes—not agent orchestration. It can work with any agent, model, or collaboration style; its job is to make the project those executors face understandable and able to evolve.
+ByIssue centers the software's state, understanding, and changes—not agent orchestration. It can work with any agent, model, or collaboration style; its job is to make the project those executors face understandable and able to evolve.
 
 ## A system of judgment, not a fixed pipeline
 
 ### Identify the posture, then load only the context it needs
 
-Within one conversation, a user may be discussing, understanding current behavior, designing, making a quick change, advancing managed work, or closing it out. `cs` identifies the primary posture first, then reads the smallest set of rules and project material for that posture. Material already read and unchanged is reused instead of being pushed into context again.
+Within one conversation, a user may be discussing, understanding current behavior, designing, making a quick change, advancing managed work, or closing it out. `bi` identifies the primary posture first, then reads the smallest set of rules and project material for that posture. Material already read and unchanged is reused instead of being pushed into context again.
 
 Users therefore do not need to choose a sub-skill, and the system does not load workflows that have not happened. For an agent, the right context matters more than a larger context.
 
@@ -142,19 +148,19 @@ The next round therefore reads usable current understanding rather than guessing
 
 ## Quality, implementation economy, and UI
 
-CodeStable uses the nine product-quality characteristics of [ISO/IEC 25010:2023](https://www.iso.org/standard/78176.html) as a shared vocabulary, not as a certification checklist. Only objectives that change design or acceptance are selected; once selected, Design must address them, Do must provide proportionate evidence, and Close can confirm them only on that evidence.
+ByIssue uses the nine product-quality characteristics of [ISO/IEC 25010:2023](https://www.iso.org/standard/78176.html) as a shared vocabulary, not as a certification checklist. Only objectives that change design or acceptance are selected; once selected, Design must address them, Do must provide proportionate evidence, and Close can confirm them only on that evidence.
 
 Implementation follows a **minimum sufficient change**: understand the real trigger-to-result path, prefer reuse at the correct responsibility boundary or removing and narrowing unnecessary work, and add new code last. A small diff placed beside the symptom is not economical if it belongs elsewhere.
 
 When spatial relationships, information hierarchy, or multi-state interaction change what a UI requirement means, Vision or the relevant Spec uses versionable ASCII wireframes, Mermaid, or another suitable diagram. Screenshots and high-fidelity designs can be evidence; they cannot be the only specification.
 
-## The `codestable/` workspace
+## The `byissue/` workspace
 
 After onboarding, the project root contains the following workspace. It is the institutional memory that people and agents search and maintain together:
 
 ```text
 your-project/
-└── codestable/
+└── byissue/
     ├── talks/                  # Confirmed discussion synthesis
     │   └── {NNN}-{name}.md
     ├── vision/                 # Target application world
@@ -177,17 +183,18 @@ your-project/
 - Closing changes only `-o-` to `-x-`; the number and name remain unchanged.
 - A closed Issue or Epic moves to its `done/` subdirectory only when the user explicitly requests organization; it remains searchable.
 - A Talk is not written before the user confirms it. Vision target content, Epic closing, and dangerous operations also retain explicit human authorization.
-- A legacy `.cs/` workspace is never silently copied. After confirming migration, run `python skills/cs/scripts/init_codestable.py --migrate-legacy`; if both `.cs/` and `codestable/` exist, reconcile them manually first.
 
 ## People retain control of state transitions
 
-CodeStable does not replace engineering judgment with documents, and it does not treat human intervention as failure. Agents can search, implement, verify, and write back. People retain control of goals, consequential trade-offs, material costs, compatibility policy, closing, publishing, and dangerous operations.
+ByIssue does not replace engineering judgment with documents, and it does not treat human intervention as failure. Agents can search, implement, verify, and write back. People retain control of goals, consequential trade-offs, material costs, compatibility policy, closing, publishing, and dangerous operations.
 
 The aim is not to make AI run more steps automatically. It is to keep software understandable, verifiable, controllable, and evolvable as it encounters new facts.
 
 ## Origin
 
-CodeStable grew out of real development on [MA](https://github.com/liuzhengdongfortest/MA). Early vibe coding carried many features. When the same problem recurred and historical trade-offs could not be recalled reliably, the failure was not only model capability: the project lacked a way to preserve current understanding, control change, and capture new learning.
+ByIssue originates from [CodeStable](https://github.com/codestable/CodeStable-Lite); CodeStable grew out of real development on [MA](https://github.com/liuzhengdongfortest/MA). Early vibe coding carried many features. When the same problem recurred and historical trade-offs could not be recalled reliably, the failure was not only model capability: the project lacked a way to preserve current understanding, control change, and capture new learning.
+
+It borrows practices from specifications, design, exploration, and Issues, but does not measure success by producing more artifacts. First judge how much management the change needs; then choose the smallest action and record that are sufficient. With the upstream dormant, ByIssue continues as an independent project without carrying legacy compatibility or migration logic.
 
 It borrows practices from specifications, design, exploration, and Issues, but does not measure success by producing more artifacts. First judge how much management the change needs; then choose the smallest action and record that are sufficient.
 
@@ -203,10 +210,10 @@ Issues and feedback from real development and refactoring work are welcome.
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/chart?repos=codestable/CodeStable-Lite&type=date&legend=top-left)](https://www.star-history.com/?repos=codestable%2FCodeStable-Lite&type=date&legend=top-left)
+[![Star History Chart](https://api.star-history.com/chart?repos=ByteTrue/ByIssue&type=date&legend=top-left)](https://www.star-history.com/?repos=ByteTrue%2FByIssue&type=date&legend=top-left)
 
 <div align="center">
 
-MIT License · by [@liuzhengdong](https://github.com/liuzhengdongfortest)
+MIT License · based on CodeStable by [@liuzhengdong](https://github.com/liuzhengdongfortest) · fork maintained by [@ByteTrue](https://github.com/ByteTrue)
 
 </div>

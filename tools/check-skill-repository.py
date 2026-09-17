@@ -49,11 +49,11 @@ def check_version(root: Path, findings: list[Finding]) -> None:
 
 
 def required_skill_files(root: Path) -> list[Path]:
-    skill = root / "skills/cs"
+    skill = root / "skills/bi"
     files = [
         skill / "SKILL.md",
         skill / "agents/openai.yaml",
-        skill / "scripts/init_codestable.py",
+        skill / "scripts/init_byissue.py",
     ]
     files.extend(
         skill / "references" / filename
@@ -105,8 +105,8 @@ def check_skill_layout(root: Path, findings: list[Finding]) -> None:
         return
 
     skill_dirs = sorted(path.name for path in skills.iterdir() if path.is_dir())
-    if skill_dirs != ["cs"]:
-        findings.append(Finding("skills", f"must contain exactly the cs skill, found {skill_dirs!r}"))
+    if skill_dirs != ["bi"]:
+        findings.append(Finding("skills", f"must contain exactly the bi skill, found {skill_dirs!r}"))
 
     for path in required_skill_files(root):
         if not path.is_file():
@@ -114,17 +114,9 @@ def check_skill_layout(root: Path, findings: list[Finding]) -> None:
         elif is_git_ignored(root, path):
             findings.append(Finding(rel(path, root), "required skill file is git-ignored"))
 
-    obsolete_facts_template = root / "skills/cs/templates/entities/facts.md"
-    if obsolete_facts_template.exists():
-        findings.append(Finding(rel(obsolete_facts_template, root), "obsolete facts entity must not exist"))
-
-    for obsolete in ["plugins", ".agents/plugins", ".claude-plugin"]:
-        if (root / obsolete).exists():
-            findings.append(Finding(obsolete, "obsolete plugin wrapper must not exist"))
-
 
 def check_quality_contract(root: Path, findings: list[Finding]) -> None:
-    skill = root / "skills/cs"
+    skill = root / "skills/bi"
     quality = skill / "references/quality.md"
     if quality.is_file():
         text = quality.read_text(encoding="utf-8")
@@ -151,12 +143,12 @@ def check_quality_contract(root: Path, findings: list[Finding]) -> None:
     templates = skill / "templates/entities"
     for filename in ["issue.md"]:
         path = templates / filename
-        if path.is_file() and "## 质量目标\n" not in path.read_text(encoding="utf-8"):
+        if path.is_file() and "质量承诺" not in path.read_text(encoding="utf-8"):
             findings.append(Finding(rel(path, root), "missing quality objective contract"))
 
 
 def check_economy_contract(root: Path, findings: list[Finding]) -> None:
-    skill = root / "skills/cs"
+    skill = root / "skills/bi"
     economy = skill / "references/economy.md"
     if economy.is_file():
         text = economy.read_text(encoding="utf-8")
@@ -173,12 +165,12 @@ def check_economy_contract(root: Path, findings: list[Finding]) -> None:
         path = templates / filename
         if path.is_file():
             text = path.read_text(encoding="utf-8")
-            if "有界简化上限/触发/方向" not in text:
+            if "有界简化" not in text:
                 findings.append(Finding(rel(path, root), "missing bounded simplification contract"))
 
 
 def check_ui_spec_contract(root: Path, findings: list[Finding]) -> None:
-    skill = root / "skills/cs"
+    skill = root / "skills/bi"
     ui_spec = skill / "references/ui-spec.md"
     if ui_spec.is_file():
         text = ui_spec.read_text(encoding="utf-8")
@@ -192,11 +184,9 @@ def check_ui_spec_contract(root: Path, findings: list[Finding]) -> None:
 
     templates = skill / "templates/entities"
     required_markers = {
-        "project-spec-index.md": "## 界面与交互（按需）",
-        "spec-section-index.md": "## 界面与交互（按需）",
-        "epic-spec.md": "## 界面与交互变化（按需）",
-        "talk.md": "## UI 对齐草图（按需）",
-        "issue.md": "## UI 变化 / 实际与预期（按需）",
+        "project-spec-index.md": "## 界面、架构与语言（按需）",
+        "epic-spec.md": "UI 若影响理解",
+        "talk.md": "UI 草图",
     }
     for filename, marker in required_markers.items():
         path = templates / filename
@@ -206,21 +196,14 @@ def check_ui_spec_contract(root: Path, findings: list[Finding]) -> None:
 
 def check_readmes(root: Path, findings: list[Finding]) -> None:
     required = [
-        "npx skills add codestable/CodeStable-Lite",
+        "npx skills add ByteTrue/ByIssue",
         "npx skills add . --list",
-        "npx skills update cs",
+        "npx skills update bi",
     ]
     required_markers = {
-        "README.md": ["ISO/IEC 25010:2023", "## 实现如何保持经济性", "## UI 规格如何使用图"],
-        "README.en.md": ["ISO/IEC 25010:2023", "## How implementation stays economical", "## How UI specs use visuals"],
+        "README.md": ["ISO/IEC 25010:2023", "## 质量、实现经济性与 UI"],
+        "README.en.md": ["ISO/IEC 25010:2023", "## Quality, implementation economy, and UI"],
     }
-    obsolete = [
-        "codex plugin",
-        "/plugin ",
-        "plugins/codestable-lite",
-        ".claude-plugin",
-        "marketplace",
-    ]
     for filename in ["README.md", "README.en.md"]:
         path = root / filename
         if not path.is_file():
@@ -233,9 +216,6 @@ def check_readmes(root: Path, findings: list[Finding]) -> None:
         for marker in required_markers[filename]:
             if marker not in text:
                 findings.append(Finding(filename, f"missing documented contract: {marker}"))
-        for marker in obsolete:
-            if marker in text:
-                findings.append(Finding(filename, f"obsolete plugin documentation remains: {marker}"))
 
 
 def check_repo(root: Path) -> list[Finding]:
@@ -253,7 +233,7 @@ def check_repo(root: Path) -> list[Finding]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate the CodeStable single-skill repository.")
+    parser = argparse.ArgumentParser(description="Validate the ByIssue single-skill repository.")
     parser.add_argument("--root", default=".", help="Repository root to validate.")
     parser.add_argument("--json", action="store_true", help="Print machine-readable findings.")
     args = parser.parse_args()
