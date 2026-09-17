@@ -168,12 +168,12 @@ your-project/
     ├── spec/                   # Current stable understanding
     │   └── index.md
     ├── epics/                  # Bounded larger changes
-    │   └── {NNN}-o|x-{name}/
+    │   └── {NNN}-o|x|d-{name}/
     │       └── spec.md
     ├── issues/                 # Closeable work, ff, and Explore
-    │   ├── {NNN}-o|x-{name}.md
-    │   ├── {NNN}-o|x-ff-{name}.md
-    │   └── {NNN}-o|x-{name}/   # Explore: index.md and path articles
+    │   ├── {NNN}-o|x|d-{name}.md
+    │   ├── {NNN}-o|x|d-ff-{name}.md
+    │   └── {NNN}-o|x|d-{name}/   # Explore: index.md and path articles
     ├── notes/                  # Reusable knowledge
     │   └── {NNN}-{name}.md
     ├── decisions/              # Decision records

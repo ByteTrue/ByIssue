@@ -1,7 +1,5 @@
 # Talk：讨论与初步规划
 
-<!-- 提问编排改编自 mattpocock/skills 的 grilling（MIT） -->
-
 洞察真实诉求（用户开口常是方案或表面诉求），收束成可判断的初步安排。聊完后用户认知应更清楚；出口是快改、独立 issue、Explore issue、epic、Vision，或继续澄清。
 
 姿态与管理强度见 `SKILL.md`。质量候选规则见 [quality](quality.md)；UI 草图见 [ui-spec](ui-spec.md)。

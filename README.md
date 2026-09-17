@@ -168,12 +168,12 @@ your-project/
     ├── spec/                   # 当前稳定理解
     │   └── index.md
     ├── epics/                  # 有界大变化
-    │   └── {NNN}-o|x-{name}/
+    │   └── {NNN}-o|x|d-{name}/
     │       └── spec.md
     ├── issues/                 # 可关闭行动、ff 与 Explore
-    │   ├── {NNN}-o|x-{name}.md
-    │   ├── {NNN}-o|x-ff-{name}.md
-    │   └── {NNN}-o|x-{name}/   # Explore：含 index.md 与路径文章
+    │   ├── {NNN}-o|x|d-{name}.md
+    │   ├── {NNN}-o|x|d-ff-{name}.md
+    │   └── {NNN}-o|x|d-{name}/   # Explore：含 index.md 与路径文章
     ├── notes/                  # 可复用知识
     │   └── {NNN}-{name}.md
     ├── decisions/              # 拍板记录

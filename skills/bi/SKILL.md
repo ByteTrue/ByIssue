@@ -117,15 +117,15 @@ byissue/
 
 ```text
 issues/
-├── NNN-o|x-{事项}.md               常规 Issue
-├── NNN-o|x-ff-{事项}.md            快改记录
-├── NNN-o|x-{探索名}/               Explore Issue
+├── NNN-o|x|d-{事项}.md             常规 Issue（o=开、x=交付关闭、d=放弃关闭）
+├── NNN-o|x|d-ff-{事项}.md          快改记录
+├── NNN-o|x|d-{探索名}/             Explore Issue
 │   ├── index.md                    认知地图、边界、结论与毕业位置
 │   └── *.md                        按「触发→结果」组织的路径文章
 └── done/                           可选整理区；仍参与检索和编号
 ```
 
-图中的 `o|x` 表示取 `o`（open）或 `x`（closed），不是路径中的字面字符。路径表达唯一归属：只属于一个 Epic 的事项进入该 Epic 的 `issues/`，其余留在根 `issues/`。常规 Issue 与 `ff` 是单文件；只有需要独立调查工作区的 Explore Issue 使用目录。Epic 的 `issues/` 在首个所属事项创建时再建立。
+图中的 `o|x|d` 表示取 `o`（open）、`x`（交付关闭）或 `d`（放弃关闭），不是路径中的字面字符。路径表达唯一归属：只属于一个 Epic 的事项进入该 Epic 的 `issues/`，其余留在根 `issues/`。常规 Issue 与 `ff` 是单文件；只有需要独立调查工作区的 Explore Issue 使用目录。Epic 的 `issues/` 在首个所属事项创建时再建立。
 
 `done/` 只是用户主动整理后的存放位置，不是新的生命周期状态。关闭不会自动移动事项；`done/` 中的内容仍参与检索和编号。
 
@@ -156,7 +156,7 @@ Issue 编号不是全局身份。引用 Epic Issue 时，必须给完整路径�
 |---|---|
 | 独立 Issue | `byissue/issues/{NNN}-o\|x-{名}.md` |
 | Epic Issue | `byissue/epics/{EEE}-o\|x-{epic}/issues/{NNN}-o\|x-{名}.md` |
-| 快改 | 所属 issues 树下 `{NNN}-o\|x-ff-{名}.md`；`type: ff`；模板 `ff-issue.md` |
+| 快改 | 所属 issues 树下 `{NNN}-o|x|d-ff-{名}.md`；`type: ff`；模板 `ff-issue.md` |
 | Explore Issue | 所属 issues 树下 `{NNN}-o\|x-{名}/index.md` |
 | Epic | `byissue/epics/{NNN}-o\|x-{名}/spec.md`；每个 Epic 只有一份权威 spec |
 | 已整理事项 | 对应 issues 树的 `done/` 下保留同名文件或目录 |
@@ -171,7 +171,7 @@ Issue 编号不是全局身份。引用 Epic Issue 时，必须给完整路径�
 - `ff`、bug、feature、chore、refactor 与 Explore Issue 都遵守同一归属规则。
 - Issue 的归属由物理路径表达，不使用 `epic` frontmatter。归属改变时移动原事项并更新明确引用，不复制第二份。
 
-关闭 Issue 时，将目标路径中的 `-o-` 改为 `-x-`，序号与名称不变，把 `status` 改为 `closed`，并写 `resolution: done | dropped` 记录结果语义（默认 `done`）。关闭 Epic 时只改 Epic 目录名，内部 Issue 随目录保留。
+关闭 Issue 时，将目标路径中的 `-o-` 改为 `-x-`（交付关闭）或 `-d-`（放弃关闭），序号与名称不变，并把 `status` 改为 `closed`。关闭 Epic 时只改 Epic 目录名，内部 Issue 随目录保留。
 
 常规 Issue 使用 `templates/entities/issue.md`，`type` 只能是 `feature|bug|chore|refactor`。`ff` 只回答四件事：做了什么、改了哪些、怎样验证、对 `byissue/` 有什么影响；不要写成迷你 Design，也不要保留空槽位。
 
