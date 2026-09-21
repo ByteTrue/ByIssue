@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.0
+
+- Fixed stage-one routing. Routing has two stages — the host opens the skill by text-matching the frontmatter `description`, and only then does the posture table apply — and only the second was ever guarded. Three postures (设计 / 记知识 / 学流程) had no trigger coverage in the description at all, so they were unreachable in a fresh project. The description now covers all thirteen, the inert conditional trigger ("or when the project already has byissue/") is gone because the host never looks at the filesystem, and the release check now asserts that every posture has at least one trigger in the description.
+- The no-trace exception has a single owner in `SKILL.md`, with the load-bearing clause stated positively: **it does not change the posture**. "Do this issue, but leave no trace" stays managed implementation and simply skips the `ff`. Five restatements across fast/do/complain became links — that duplication was mis-routing real requests.
+- Closing an issue must now fix inbound references before renaming: `grep` for the old path, update what it finds, and report "N references updated" or "none" in the wrap-up. Path-encoded state and the full-name reference rule pull against each other, so every close was silently breaking references.
+- References to issues must use the full filename or directory name; bare numbers are out. Numbers keep colliding by design (parallel sessions both take max+1): measured 14% collisions but only single-digit ambiguous references, so the cheap fix is the reference rule.
+- Added `tools/posture-scenarios.md` — 24 routing scenarios evaluated by subagents, not by a script, plus the harness disciplines learned the hard way. Structural checks (posture table well-formed, no trigger claimed twice, every posture covered, no dangling `byissue/` references, anchored links validated) live in `tools/check-skill-repository.py`.
+
 ## 1.3.0
 
 - Project Spec now has an admission rule: only what cannot be rebuilt from the code goes in (glossary, boundaries, excluded options, long-term constraints). Capability walkthroughs, architecture maps and data-flow prose are out — they are a second copy of the code and will drift. Graduation at close becomes filtering, not copying. Dry run on a real 311-line spec: 68% of it goes.

@@ -36,7 +36,7 @@ created: 2026-09-21
 
 ## 验证
 
-路由测试（见 `byissue/issues/004-o-posture-routing-regression-tests.md`）加一条多轮 case：Talk 中插入一次授权动作，断言下一轮仍在 Talk——不产出施工提案、不落盘。
+路由测试（见 `byissue/issues/004-x-posture-routing-regression-tests.md`）加一条多轮 case：Talk 中插入一次授权动作，断言下一轮仍在 Talk——不产出施工提案、不落盘。
 
 ## 关闭时
 
@@ -58,6 +58,6 @@ created: 2026-09-21
 
 姿态作用域定义补齐：`SKILL.md` 姿态判断第 9 条（动作级授权不翻转姿态）、授权边界第一条加作用域、`talk.md` 补「留在 Talk 的条件」。三处都写成祈使句。
 
-**验证：** 结构检查通过。行为回归 case 已挂在 `tools/posture-scenarios.md` 场景 23；该场景需要多轮设置，首次评测未覆盖，遗留记在 `byissue/issues/004-o-posture-routing-regression-tests.md`。
+**验证：** 结构检查通过。行为回归 case 已挂在 `tools/posture-scenarios.md` 场景 23；该场景需要多轮设置，首次评测未覆盖，遗留记在 `byissue/issues/004-x-posture-routing-regression-tests.md`。
 
 **毕业回写：** 「姿态是动作级的」已写进 `byissue/spec/index.md` 的统一语言。

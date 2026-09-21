@@ -2,7 +2,7 @@
 kind: issue
 title: "姿态路由回归测试：改完 SKILL.md 敢发版"
 type: chore
-status: open
+status: closed
 created: 2026-09-21
 ---
 
@@ -166,7 +166,7 @@ created: 2026-09-21
 ## 第二轮评测的附带产出（两条，都不是被要求的）
 
 - 场景 ③「加个字段就行，很简单」再次**顶回来而不是动手**：「尚未改动任何文件，等你拍板第 1、2 条」。两轮都是同样的行为——底座自带的范围克制，与是否读到 `fast.md` 无关。
-- 场景 ④ 自己写了一个**悬挂全名引用扫描器**去核对 `003` 的落实情况，结果咬出今天自己造的缺陷：关闭改名会打断所有全名引用，本仓库当场 4 条。已开 `byissue/issues/008-o-closing-renames-break-full-name-references.md`，checker 也已加守门。
+- 场景 ④ 自己写了一个**悬挂全名引用扫描器**去核对 `003` 的落实情况，结果咬出今天自己造的缺陷：关闭改名会打断所有全名引用，本仓库当场 4 条。已开 `byissue/issues/008-x-closing-renames-break-full-name-references.md`，checker 也已加守门。
 
 ## 第三条装置纪律
 
@@ -175,3 +175,15 @@ created: 2026-09-21
 ## 第四条装置纪律：resume 必须带原 cwd
 
 `subagent({resume})` 时如果当前 cwd 与原会话所属项目不同，会卡在交互式确认「Session found in different project: … Fork this session into current directory? [y/N]」，任务直接空回。评测的子会话属于临时副本目录，所以恢复时必须同时传 `cwd` 指回那个副本。
+
+## 关闭结论
+
+主交付全部就位：24 条场景表、结构体检（折进主 checker）、两轮真实行为评测、评测装置本身修好。它在第一次跑就证明了自己——四条路由缺陷全部无法靠读文件发现，并附带咬出 `byissue/issues/006-x-ff-checker-self-review-fixes.md`、`byissue/issues/008-x-closing-renames-break-full-name-references.md`、`byissue/issues/009-x-ff-tidy-tools-scripts.md` 三批缺陷。
+
+**验证：** 结构体检绿；两轮评测均跑到自然结束；四种破坏（触发词清空 / 触发词被两个姿态占用 / 必读文件缺失 / 姿态缺场景）负向测试全部如期变红。
+
+**毕业回写：** 发布链路中「动过姿态表则起 subagent 跑行为评测」已写入 `byissue/spec/index.md`；评测的四条装置纪律留在本 issue，不进 spec（它们是操作经验，不是长期契约）。
+
+**改名影响引用：** 6 处，已随本次一并更新。
+
+**遗留：** 场景 21、23 需要多轮设置（先一个授权动作，再「继续 talk」），当前单轮 `task` 跑不了。这是评测能力的缺口，不是本 issue 的实现缺口；等真的需要验证姿态稳定性时再补跑法。

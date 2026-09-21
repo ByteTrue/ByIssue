@@ -47,13 +47,13 @@ created: 2026-09-21
 
 ## 验证
 
-`python3 tools/check-skill-repository.py` 通过。真实场景断言留给 `byissue/issues/004-o-posture-routing-regression-tests.md` 的多轮 case，本次未跑 subagent。
+`python3 tools/check-skill-repository.py` 通过。真实场景断言留给 `byissue/issues/004-x-posture-routing-regression-tests.md` 的多轮 case，本次未跑 subagent。
 
 ## 关闭结论
 
 沉淀从路由表变成了强制枚举契约，形式对齐 `do.md` 已被验证有效的关闭提醒。写作层「提问必须带建议」落在 `SKILL.md`，`talk.md` 改为链接——同一契约只剩一份表述。
 
-**验证：** `python3 tools/check-skill-repository.py` 通过。行为断言依赖首次路由评测，见 `byissue/issues/004-o-posture-routing-regression-tests.md`。
+**验证：** `python3 tools/check-skill-repository.py` 通过。行为断言依赖首次路由评测，见 `byissue/issues/004-x-posture-routing-regression-tests.md`。
 
 **毕业回写：** 「提问必须带建议」已是 `SKILL.md` 的常驻契约，不另入 spec。
 

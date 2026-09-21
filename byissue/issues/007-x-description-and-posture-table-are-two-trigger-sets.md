@@ -17,7 +17,7 @@ created: 2026-09-21
 - 姿态表里的「小改一下」「别走流程」「顺手」「加个字段」**都不在 description 里**。
 - **设计 / 记知识 / 学流程三个姿态在 description 里零覆盖**：`怎么实现、先设计、实现方案`、`记一下坑、写 note`、`我带你跑一遍` 一个都没有。
 
-**证据：** 首次路由评测场景 ⑤「顺手把 tools/ 下的脚本也整理一下吧」，在一个**已经有 `byissue/`** 的仓库里，技能全程没有被打开。详见 `byissue/issues/004-o-posture-routing-regression-tests.md`。
+**证据：** 首次路由评测场景 ⑤「顺手把 tools/ 下的脚本也整理一下吧」，在一个**已经有 `byissue/`** 的仓库里，技能全程没有被打开。详见 `byissue/issues/004-x-posture-routing-regression-tests.md`。
 
 ## 第二个缺陷（同一次失败的另一半）
 
@@ -31,7 +31,7 @@ created: 2026-09-21
 
 ## 验证
 
-重跑评测场景 ①③⑤（触发）与 ④（归属），断言技能被打开且读对必读文件。注意修正评测本身的两个问题（只读工具、8 turns 上限），见 `byissue/issues/004-o-posture-routing-regression-tests.md`。
+重跑评测场景 ①③⑤（触发）与 ④（归属），断言技能被打开且读对必读文件。注意修正评测本身的两个问题（只读工具、8 turns 上限），见 `byissue/issues/004-x-posture-routing-regression-tests.md`。
 
 ## 关闭时
 
@@ -58,7 +58,7 @@ created: 2026-09-21
 
 **①⑤ 是本 issue 的直接验证**：description 原本是绑定约束，修完两条都通了。
 
-**④ 不可比是我的操作失误**：`003` 已关闭成 `-x-`，我把场景措辞改成「…的**后续收尾**，但先别留痕迹」——加了「收尾」两个字，close.md 其实变成了正确答案。**评测场景的措辞不能在两次运行之间改**，否则失去对照。已记入 `byissue/issues/004-o-posture-routing-regression-tests.md`。
+**④ 不可比是我的操作失误**：`003` 已关闭成 `-x-`，我把场景措辞改成「…的**后续收尾**，但先别留痕迹」——加了「收尾」两个字，close.md 其实变成了正确答案。**评测场景的措辞不能在两次运行之间改**，否则失去对照。已记入 `byissue/issues/004-x-posture-routing-regression-tests.md`。
 
 **③ 暴露了一个 description 修不了的类别。** 「加个字段就行，很简单」里**一个 ByIssue 词汇都没有**——它是纯需求陈述。没有任何合理的 description 能覆盖这类说法。这类的唯一可行触发机制是项目 `AGENTS.md` 里的一行启动规则（每次会话都注入），已补进 `byissue/notes/003-skill-description-matching-is-text-only.md`。
 

@@ -17,7 +17,7 @@ created: 2026-09-21
   - 同文件 — 模块 docstring 补上后来折进来的姿态表与场景表检查，并写明两件**刻意不检查**的事（契约文字、语义路由）。
   - 同文件 — `report` 从带 `# noqa: E731` 的 lambda 改成嵌套 `def`。
   - `tools/check-skill-repository.py`、`skills/bi/scripts/init_byissue.py` — 有 shebang 却没有执行位，加上。
-- **已在别处解决：** 场景表里 `005-o-` 的失效引用、以及「`tools/*.md` 里的 `byissue/` 路径无人校验」——`check_byissue_references` 已经覆盖（见 `byissue/issues/008-o-closing-renames-break-full-name-references.md`）。
+- **已在别处解决：** 场景表里 `005-o-` 的失效引用、以及「`tools/*.md` 里的 `byissue/` 路径无人校验」——`check_byissue_references` 已经覆盖（见 `byissue/issues/008-x-closing-renames-break-full-name-references.md`）。
 - **未采纳：** `byissue/issues/007-x-description-and-posture-table-are-two-trigger-sets.md` 正文里「该断言现在加会直接红」是写作当时的事实，属于已关闭事项的历史记录，不回改。review 自己也主动跳过了 `len(postures) < 5`，因为 `byissue/issues/006-x-ff-checker-self-review-fixes.md` 判过一次保留——**它记得上一轮的结论，没重开已决问题**。
 - **验证：** `python3 tools/check-skill-repository.py` 通过；锚点链接负向测试如期变红后恢复。
 - **byissue：** 已同步 `byissue/spec/index.md` 的发布链路（原表述已失效）。

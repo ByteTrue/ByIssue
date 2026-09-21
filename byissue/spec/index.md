@@ -37,7 +37,7 @@ rsync 那一步没有任何代码强制，忘了就等于没改。checker 的取
 
 ## 当前没有的东西
 
-- 行为回归测试（`byissue/issues/004-o-posture-routing-regression-tests.md`）。checker 只挡路径漂移，挡不住语义漂移。
+- 行为回归测试（`byissue/issues/004-x-posture-routing-regression-tests.md`）。checker 只挡路径漂移，挡不住语义漂移。
 - 使用信号采集。真实分布靠人工统计外部仓库，见 `byissue/notes/001-real-world-usage-stats.md`。
 - 除 Codex 外的第二宿主适配。
 

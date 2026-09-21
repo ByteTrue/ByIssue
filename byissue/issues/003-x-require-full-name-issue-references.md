@@ -34,7 +34,7 @@ created: 2026-09-21
 
 ## 验证
 
-`python3 tools/check-skill-repository.py` 通过。真实快改场景的断言并入 `byissue/issues/004-o-posture-routing-regression-tests.md`。
+`python3 tools/check-skill-repository.py` 通过。真实快改场景的断言并入 `byissue/issues/004-x-posture-routing-regression-tests.md`。
 
 ## 关闭结论
 
