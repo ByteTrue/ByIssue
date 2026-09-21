@@ -20,7 +20,7 @@ onboard 可以观察项目，但不能编项目。能从代码、README、配置
 python <bi-skill>/scripts/init_byissue.py --project .
 ```
 
-初始化后确认 `byissue/vision/index.md` 与 `byissue/spec/index.md` 存在，并确认基础实体目录已创建或保留。Vision 骨架只是空地图，不推断用户的目标应用。Onboard 不创建或修改 `AGENTS.md` / `CLAUDE.md`。
+初始化后确认 `byissue/vision/index.md` 与 `byissue/spec/index.md` 存在，并确认基础实体目录已创建或保留。Vision 骨架只是空地图，不推断用户的目标应用。
 
 项目已有的旧文档保持原样：不搬、不转换，也**不要许诺「以后逐步沉淀」**。`byissue/` 从此后的新工作里长出来，旧文档需要时自己会被引用到。
 

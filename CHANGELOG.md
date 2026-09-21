@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5.0
+
+- `bi` no longer writes to `AGENTS.md` / `CLAUDE.md` anywhere in the workflow. Knowledge capture has exactly one destination, `byissue/notes/`; the graduation route, the maketools branch and the onboard clause that pointed at agent instruction files are gone. When a rule really does deserve to fire on every startup, bi writes the note and *tells the user* — the user decides and does it.
+
+  The reason is not that such a line is harmful, it is that the user does not know about it. Those files are injected into every session, so one appended line changes how every later session in that project behaves. That should not happen as a side effect of "jot this down"; people discover the changed behaviour weeks later and cannot trace it.
+
 ## 1.4.0
 
 - Fixed stage-one routing. Routing has two stages — the host opens the skill by text-matching the frontmatter `description`, and only then does the posture table apply — and only the second was ever guarded. Three postures (设计 / 记知识 / 学流程) had no trigger coverage in the description at all, so they were unreachable in a fresh project. The description now covers all thirteen, the inert conditional trigger ("or when the project already has byissue/") is gone because the host never looks at the filesystem, and the release check now asserts that every posture has at least one trigger in the description.

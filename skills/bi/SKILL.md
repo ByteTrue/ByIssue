@@ -187,7 +187,9 @@ Issue 编号不是全局身份，同一棵树里也可能有多个事项共用�
 
 常规 Issue 使用 `templates/entities/issue.md`，`type` 只能是 `feature|bug|chore|refactor`。`ff` 只回答四件事：做了什么、改了哪些、怎样验证、对 `byissue/` 有什么影响；不要写成迷你 Design，也不要保留空槽位。
 
-Talk 写入 `byissue/talks/`；Note 写入 `byissue/notes/`，同主题更新原文件；Tool 写入 `byissue/tools/`。启动时必须自动注入的短规则，只写入 `AGENTS.md` 或 `CLAUDE.md`，不要在两处重复。
+Talk 写入 `byissue/talks/`；Note 写入 `byissue/notes/`，同主题更新原文件；Tool 写入 `byissue/tools/`。
+
+**bi 只写 `byissue/` 之内，不碰 `AGENTS.md` / `CLAUDE.md`。** 那类文件每次启动都注入，会改变该项目之后所有会话的判断，该不该改由用户决定、由用户动手；bi 最多提示一句，不代劳。
 
 ### 什么内容可以写到哪一层
 
