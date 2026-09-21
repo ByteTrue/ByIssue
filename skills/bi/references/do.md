@@ -80,7 +80,7 @@ UI：只实现已确认“目标”图的本范围；验证覆盖稳定约束主
 - **关闭候选**：关闭时应进入 project/epic spec 或 notes 的内容（**此时不毕业**，除非用户明确要求收尾）
 - **穿刺结果**（若走过）：风险表、顺序、每点结果、主路径是否通、剩余加厚
 
-现状或影响不准时更新 issue 里对应叙述，不另堆一份冲突解释。新建时先判归属：独立 Issue 写根 `byissue/issues/`，Epic Issue 写所属 Epic 的 `issues/`，各自独立编号。常规 issue 模板：`templates/entities/issue.md`（`type: feature|bug|chore|refactor`）。
+现状或影响不准时更新 issue 里对应叙述，不另堆一份冲突解释。新建时先判归属，写入根或该 Epic 的 issues 树（路径与编号见 `SKILL.md`）。常规 issue 模板：`templates/entities/issue.md`（`type: feature|bug|chore|refactor`）。
 
 **快改**：见 [fast](fast.md) 落 `ff`。无 ff 例外：不创建 issue；仅当已记录真相失效时同步 project spec；不自动改 Vision；**默认不 commit**。
 

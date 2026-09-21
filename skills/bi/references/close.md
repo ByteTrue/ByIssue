@@ -61,7 +61,7 @@
 - `type: explore`：独立 Explore 经用户认可后，稳定现状机制说明 → `byissue/spec/` 并更新 `index.md`；Epic 内 Explore 先回写所属 epic spec；影响分析留 `related_issue`；证据与已排除理解留 Explore issue
 - Epic 的 `issues/` 下：结果、验证、仍有效约束、推进变化与毕业候选 → 该 epic `spec.md`
 
-长期决策 → `byissue/decisions/`（满足三条件时立碑，被取代时不改写旧文，指向新决策）；坑点 → notes；启动短规则 → `AGENTS.md` / `CLAUDE.md`；稳定工具 → tools。
+长期决策 → `byissue/decisions/`（模板 `templates/entities/decision.md`；满足三条件时立碑，被取代时不改写旧文，指向新决策）；坑点 → notes；启动短规则 → `AGENTS.md` / `CLAUDE.md`；稳定工具 → tools。
 
 ### 关闭 epic
 

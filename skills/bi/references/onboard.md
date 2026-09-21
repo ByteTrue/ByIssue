@@ -26,15 +26,7 @@ python <bi-skill>/scripts/init_byissue.py --project .
 
 ## 产物契约
 
-脚本会创建 `byissue/vision/index.md`、`byissue/spec/index.md` 和这些目录：
-
-- `byissue/talks/`
-- `byissue/vision/`
-- `byissue/spec/`
-- `byissue/issues/`（独立 Issue）
-- `byissue/epics/`（某 Epic 首次建立所属 Issue 时再创建自己的 `issues/`）
-- `byissue/notes/`
-- `byissue/tools/`
+脚本会创建基础实体目录，以及 `byissue/vision/index.md` 和 `byissue/spec/index.md`；具体创建或保留了哪些路径以脚本输出为准，不在本文重抄一份清单。工作区地图见 `SKILL.md`。Epic 的 `issues/` 在该 Epic 首次建立所属 Issue 时再创建。
 
 `byissue/vision/index.md` 只是目标应用地图骨架，`byissue/spec/index.md` 只是当前项目真相骨架。Onboard 不替用户填写愿景或真实需求，不创建 issue、epic、note 或 tool 正文，不覆盖已有内容。已有项目缺少 Vision 时，重新运行脚本可以增量补齐，不影响原有 `byissue/` 内容。
 

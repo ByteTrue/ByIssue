@@ -46,7 +46,7 @@
 
 ## 产物契约
 
-确认前无文件。确认后：`byissue/talks/{NNN}-{名称}.md`（扁平，无日期目录；`NNN` = 该目录已有最大序号 + 1，至少三位）。
+确认前无文件。确认后：`byissue/talks/{NNN}-{名称}.md`（扁平，无日期目录；编号规则见 `SKILL.md`），模板 `templates/entities/talk.md`。
 
 **必须留下的信息（有则写、无则省略；顺序跟随讨论，不强制下列标题）：**
 
@@ -64,11 +64,10 @@
 
 用户只确认整理 talk → 只写 talk。同时确认安排时再执行出口：
 
-- **快改**（小改默认）→ [fast](fast.md)（完成后在所属 issues 树写 `NNN-x-ff-名称.md`；用户明确不要痕迹时可无 ff）
+- **快改**（小改默认）→ [fast](fast.md)（完成后落 `ff`；用户明确不要痕迹时可无）
 - 目标全景 → Vision
-- 独立 feature/bug/chore/refactor → `byissue/issues/{NNN}-o-{名称}.md` + `templates/entities/issue.md`（设 `type`）
-- 已有 Epic 的 feature/bug/chore/refactor → `byissue/epics/{epic}/issues/{NNN}-o-{名称}.md` + `templates/entities/issue.md`
-- 新 epic → `byissue/epics/{NNN}-o-{名称}/spec.md`；首个所属 Issue 创建时再建同目录 `issues/`
+- feature/bug/chore/refactor → 按归属写入根或该 Epic 的 issues 树 + `templates/entities/issue.md`（设 `type`）
+- 新 epic → 该 Epic 目录下的 `spec.md` + `templates/entities/epic-spec.md`；首个所属 Issue 创建时再建同目录 `issues/`
 - Explore issue → [explore](explore.md)（按归属写入根或 Epic 的 issues 树）
 - bug → [complain](complain.md)
 - 已有 epic 规格变化 → 谈记录决策后 [spec](spec.md)

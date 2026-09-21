@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.0
+
+- Removed the `done/` archive leftovers that survived 1.1.0 (`SKILL.md`, `docs.md`, `explore.md`), and stopped `onboard.md` from hand-copying the workspace directory list (it had already drifted — `decisions/` was missing).
+- Deleted two unreferenced documents: `asset/programming-paradigm.md` (674 lines; already distilled into `code-design.md`, and still preaching the hard line quotas that `code-design.md` and `AGENTS.md` reject) and `what-is-skills.md` (236 lines; authoring scaffolding, out of ByIssue's declared scope).
+- Rewrote `tools/check-skill-repository.py` (254 → 112 lines): dropped the hardcoded 34-file manifest, the Chinese marker greps, the per-file `git check-ignore` subprocesses and the unused `--json` flag. It now verifies that every path the skill points at exists and that every packaged file is reachable — strictly stronger than the manifest, and it no longer has to be edited whenever prose is rewritten.
+- Converged duplicated contracts onto single owners: root-cause extrapolation to `debug.md`, structural-decay judgement to `code-design.md`, path/numbering rules to `SKILL.md`. The other files keep their stance-specific increment and link.
+- Templates now carry a self-check instead of an empty slot skeleton (372 → 201 lines), matching what `docs.md` already demanded: 「模板是自检，不是槽位」.
+- Slimmed `init_byissue.py` (67 → 34 lines); same directories, same `+`/`=` reporting, same `--force` semantics.
+- Trimmed `WHY BYISSUE.md` (55 → 32 lines): dropped its stale third copy of the world model (it still said "three core entities", predating Vision and `decisions/`), kept the motivation, the evolution stance and the single-control-plane argument, and sharpened the two "no refactor pipeline / no default audit" claims so they no longer read as contradicting `type: refactor` and the user-invoked Review action.
+
 ## 1.1.0
 
 - Rewrote the fast reference as a writing-layer pilot: prohibitions restated positively, duplicated rules removed, naming details trimmed (behavior verified by subagent scenarios).

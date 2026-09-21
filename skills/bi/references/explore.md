@@ -79,7 +79,7 @@
 
 ### Explore issue
 
-路径按归属选择：独立 Explore 用 `byissue/issues/{NNN}-o-{名称}/`；只属于一个 Epic 的 Explore 用 `byissue/epics/{epic}/issues/{NNN}-o-{名称}/`。入口 `index.md`（`templates/entities/explore-index.md`），路径文章用 `explore-article.md`。关闭时只把该目录改为 `{NNN}-x-{名称}/`。`NNN` 取所属 issues 树（含 `done/`）最大序号 + 1。
+路径按归属选择：独立 Explore 用 `byissue/issues/{NNN}-o-{名称}/`；只属于一个 Epic 的 Explore 用 `byissue/epics/{epic}/issues/{NNN}-o-{名称}/`。入口 `index.md`（`templates/entities/explore-index.md`），路径文章用 `templates/entities/explore-article.md`。关闭时只把该目录改为 `{NNN}-x-{名称}/`。编号规则见 `SKILL.md`。
 
 `index.md` 是认知地图（见模板自检：问题与停止条件、一句话模型、边界、先读哪篇、结论、影响、修正、毕业位置）。路径文章按“某触发如何产生结果”组织，不按调查轮次或代码目录，也不套统一槽位标题。
 

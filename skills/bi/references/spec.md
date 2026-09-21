@@ -41,7 +41,7 @@ Spec 模式的职责不是记流水账，而是维护“当前为什么这样”
 先判断目标层级：
 
 - 项目长期真相、独立小需求沉淀、全局统一语言或架构方向 → 更新 `byissue/spec/`。
-- 大需求、跨模块变更、会分多批 issue、规格会反复变化 → 更新 `byissue/epics/{NNN}-o-{名称}/spec.md`（新建时 `NNN` = epics 目录最大序号 + 1；首个所属 Issue 创建时再建同目录 `issues/`）。
+- 大需求、跨模块变更、会分多批 issue、规格会反复变化 → 更新该 Epic 目录下的 `spec.md`（路径与编号见 `SKILL.md`；首个所属 Issue 创建时再建同目录 `issues/`）。
 - 跨越多个 Epic 的目标产品全景、候选方向或互斥实验 → 切换 Vision。
 - 没有现成 epic 但明显需要一条变更线 → 先说明为什么需要 epic；用户同意后创建 `{NNN}-o-{名称}/` 目录型 epic。
 
@@ -72,7 +72,7 @@ Spec 模式的职责不是记流水账，而是维护“当前为什么这样”
 
 project spec 默认入口是 `byissue/spec/index.md`，使用 `templates/entities/project-spec-index.md`。子层入口用 `templates/entities/spec-section-index.md`。
 
-epic 的权威入口是 `byissue/epics/{NNN}-o-{名称}/spec.md`；有所属 Issue 时增加同目录 `issues/`（关闭后 Epic 目录改为 `{NNN}-x-{名称}/`，内部整体保留）。`spec.md` 使用 `templates/entities/epic-spec.md`；所属 Issue 均写入该 `issues/` 并在本树独立编号。不要创建重复职责的 `index.md`、`plan.md` 或 `changes.md`。材料复杂时可增加按内容命名的相邻文档，但不能承载第二份状态或计划，并必须由 `spec.md` 说明为什么读、何时读。
+epic 的权威入口是该 Epic 目录下的 `spec.md`（路径形态、关闭改名与编号见 `SKILL.md`），使用 `templates/entities/epic-spec.md`；有所属 Issue 时增加同目录 `issues/`，所属 Issue 均写入该目录。不要创建重复职责的 `index.md`、`plan.md` 或 `changes.md`。材料复杂时可增加按内容命名的相邻文档，但不能承载第二份状态或计划，并必须由 `spec.md` 说明为什么读、何时读。
 
 `spec.md` 须让读者能回答模板自检中的问题（要改变什么、当前方案、架构与质量取舍、可推进/暂不推进、未确认项、关闭与合并候选等）；**信息职责**优先于固定章节名，内容少可合并，禁止空章凑模板。存在长期质量约束时写清适用条件、具体目标和取舍，不生成九项空清单。
 
