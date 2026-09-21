@@ -2,10 +2,13 @@
 """Validate the ByIssue single-skill repository before release.
 
 Checks only what can actually break a release: version bookkeeping, the skill
-package layout, and that every path the skill points at really exists (and
-that nothing in the package is unreachable). Contract wording lives in the
-markdown itself — grepping for phrases here would only create a second,
-drifting copy of it.
+package layout, every path the skill points at (and that nothing packaged is
+unreachable), the posture table plus its scenario coverage, and dangling
+references inside byissue/.
+
+Contract wording is deliberately not checked — grepping for phrases here would
+only create a second, drifting copy of it. Semantic routing is not checked
+either; that needs the subagent eval described in tools/posture-scenarios.md.
 """
 from __future__ import annotations
 
@@ -17,7 +20,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SKILL = ROOT / "skills/bi"
 
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$")
-LINK_RE = re.compile(r"\[[^\]]*\]\(([^)#]+)\)")
+LINK_RE = re.compile(r"\[[^\]]*\]\(([^)#]+)(?:#[^)]*)?\)")  # anchors allowed, path captured
 PATH_RE = re.compile(r"`((?:references|templates|scripts|agents)/[\w./-]+\.(?:md|py|yaml))`")
 
 # Reachable by the host, not by a link from inside the skill.
@@ -115,6 +118,11 @@ def check_posture_table(report):
     if len(postures) < 5:
         report("skills/bi/SKILL.md", f"posture table looks broken, parsed only {len(postures)} rows")
 
+    check_scenarios(report, postures)
+
+
+def check_scenarios(report, postures):
+    """Every posture is covered by a scenario, and scenarios name real files."""
     scenarios = ROOT / "tools/posture-scenarios.md"
     if not scenarios.is_file():
         return report("tools/posture-scenarios.md", "file is missing")
@@ -159,7 +167,9 @@ def check_byissue_references(report):
 
 def main() -> int:
     findings: list[tuple[str, str]] = []
-    report = lambda path, message: findings.append((path, message))  # noqa: E731
+
+    def report(path, message):
+        findings.append((path, message))
     check_version(report)
     check_skill_layout(report)
     check_skill_links(report)

@@ -28,9 +28,8 @@
 ## 发布链路
 
 ```text
-改 skills/bi/ → python3 tools/check-skill-repository.py
-              → 动过姿态表则 python3 tools/check-posture-routing.py
-              → rsync 同步 ~/.agents/skills/bi/
+改 skills/bi/ → python3 tools/check-skill-repository.py → rsync 同步 ~/.agents/skills/bi/
+              → 动过姿态表则起 subagent 按 tools/posture-scenarios.md 跑一轮行为评测
               → 更新 VERSION + CHANGELOG.md 同名小节 → 单个 commit → npx skills 分发
 ```
 
