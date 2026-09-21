@@ -81,8 +81,15 @@ def check_posture_table(report):
     Semantic routing (does this sentence reach the right posture?) is judged by
     a model, not here — run the subagent eval in tools/posture-scenarios.md.
     """
+    text_all = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+    # Routing has two stages: the host opens the skill by text-matching the
+    # frontmatter description, and only then does the posture table apply.
+    # A posture whose triggers appear nowhere in the description is unreachable.
+    front = text_all.split("---", 2)[1] if text_all.startswith("---") else ""
+    description = front.split("description:", 1)[-1] if "description:" in front else ""
+
     postures, owner = set(), {}
-    for line in (SKILL / "SKILL.md").read_text(encoding="utf-8").splitlines():
+    for line in text_all.splitlines():
         match = POSTURE_ROW_RE.match(line)
         if not match:
             continue
@@ -98,6 +105,12 @@ def check_posture_table(report):
             if trigger in owner:
                 report("skills/bi/SKILL.md", f"trigger {trigger!r} claimed by both {owner[trigger]!r} and {posture!r}")
             owner[trigger] = posture
+
+        if not any(trigger in description for trigger in triggers):
+            report(
+                "skills/bi/SKILL.md",
+                f"posture {posture!r} is unreachable: none of its triggers appear in the description",
+            )
 
     if len(postures) < 5:
         report("skills/bi/SKILL.md", f"posture table looks broken, parsed only {len(postures)} rows")

@@ -11,3 +11,15 @@
 **怎么办：** 触发条件只能是**用户可能说出口的词**。想表达「这个项目在用 ByIssue」，唯一有效的办法是让用户说出 `bi`／`ByIssue`，或在项目的 `AGENTS.md` 里写一行启动规则（那个是每次都会注入的）。
 
 **相关：** `byissue/issues/007-o-description-and-posture-table-are-two-trigger-sets.md`。
+
+## 补充：有一类说法 description 根本救不了
+
+2026-09-21 第二轮评测：把姿态表的高频触发词补进 description 后，「小改一下，别走流程」和「顺手把 tools/ 整理一下」都恢复了正常路由，但「**加个字段就行，很简单**」仍然迟到——因为这句话里**一个流程词汇都没有**，它是纯需求陈述。
+
+没有任何合理的 description 能覆盖这类说法（穷举需求句式等于把 description 写成词典）。对这类，唯一有效的机制是项目 `AGENTS.md` 里的一行启动规则，因为它每次会话都会被注入，不依赖匹配：
+
+```markdown
+- 本项目使用 ByIssue：动手前先读 ~/.agents/skills/bi/SKILL.md 定姿态。
+```
+
+注意这与 ByIssue 现有契约冲突：`references/onboard.md` 明写「Onboard 不创建或修改 `AGENTS.md` / `CLAUDE.md`」。要用这条机制得先改那个契约。
