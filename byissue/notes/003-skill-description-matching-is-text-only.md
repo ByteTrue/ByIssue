@@ -16,10 +16,8 @@
 
 2026-09-21 第二轮评测：把姿态表的高频触发词补进 description 后，「小改一下，别走流程」和「顺手把 tools/ 整理一下」都恢复了正常路由，但「**加个字段就行，很简单**」仍然迟到——因为这句话里**一个流程词汇都没有**，它是纯需求陈述。
 
-没有任何合理的 description 能覆盖这类说法（穷举需求句式等于把 description 写成词典）。对这类，唯一有效的机制是项目 `AGENTS.md` 里的一行启动规则，因为它每次会话都会被注入，不依赖匹配：
+没有任何合理的 description 能覆盖这类说法（穷举需求句式等于把 description 写成词典）。
 
-```markdown
-- 本项目使用 ByIssue：动手前先读 ~/.agents/skills/bi/SKILL.md 定姿态。
-```
+理论上唯一的出路是往项目 `AGENTS.md` 写一行启动规则——它每次会话都注入，不依赖匹配。**这条路已被明确否决**，见 `byissue/decisions/007-bi-does-not-write-itself-into-agents-md.md`：技能不为自己的可触发性去写用户的宿主文件。
 
-注意这与 ByIssue 现有契约冲突：`references/onboard.md` 明写「Onboard 不创建或修改 `AGENTS.md` / `CLAUDE.md`」。要用这条机制得先改那个契约。
+所以这一类说法进不来是**接受的边界**：用户得自己说一声 `bi`。不要再为它开事项。
