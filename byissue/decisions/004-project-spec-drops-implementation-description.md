@@ -16,3 +16,5 @@ Project Spec 只保留代码里重建不出来的东西：统一语言、边界�
 ## 背景
 
 讨论过程见 `byissue/talks/001-what-to-build-next-and-does-documentation-rot.md` 第 4–5 节。当天的直接证据：ByIssue 自己的文档在一天内漂了四次，全部是「文档在描述系统自己已经知道的事」。存量 spec（三个仓库约 1400 行）不批量重写，随下次 close 回写时逐节收敛。
+
+> **更正（同日）：** 上面这句关于存量的安排已被 `byissue/decisions/006-one-off-migration-never-enters-the-workflow.md` 取代——它把一次性迁移塞进了每次关闭的步骤里。本文的准入判据本身不受影响。
