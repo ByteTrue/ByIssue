@@ -22,7 +22,7 @@ python <bi-skill>/scripts/init_byissue.py --project .
 
 初始化后确认 `byissue/vision/index.md` 与 `byissue/spec/index.md` 存在，并确认基础实体目录已创建或保留。Vision 骨架只是空地图，不推断用户的目标应用。Onboard 不创建或修改 `AGENTS.md` / `CLAUDE.md`。
 
-如果项目已有旧文档，只说明之后可以通过讨论、规格维护、知识记录、流程学习或关闭模式逐步沉淀，不在 onboard 里强迁移。
+项目已有的旧文档保持原样：不搬、不转换，也**不要许诺「以后逐步沉淀」**。`byissue/` 从此后的新工作里长出来，旧文档需要时自己会被引用到。
 
 ## 产物契约
 
