@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.3.0
+
+- Project Spec now has an admission rule: only what cannot be rebuilt from the code goes in (glossary, boundaries, excluded options, long-term constraints). Capability walkthroughs, architecture maps and data-flow prose are out — they are a second copy of the code and will drift. Graduation at close becomes filtering, not copying. Dry run on a real 311-line spec: 68% of it goes.
+- Sediment is now a mandatory enumeration at close instead of a routing table: `close.md` and `fast.md` must list candidates with recommendations, and say "none" when there are none. The question must have a factual answer ("did this hit a fact from outside the repo?") rather than a judgement one.
+- New writing-layer contract in `SKILL.md`: every question to the user carries a numbered recommendation and a reason. `talk.md` now links to it instead of restating it.
+- Posture is action-scoped: a single authorized action inside a discussion no longer flips the whole session into execution mode. Added as posture rule 9, scoped the "keep going to completion" clause, and gave `talk.md` a "stay here" condition opposite its existing stop condition.
+- References to issues must give the full filename or directory name; bare numbers are out. Issue numbers keep colliding by design (parallel sessions both take max+1) — measured 14% collisions but only single-digit ambiguous references, so the cheap fix is the reference rule, not a new numbering scheme.
+- Added `tools/posture-scenarios.md` (24 routing scenarios) and folded a posture-table structural check into `tools/check-skill-repository.py`: triggers must be non-empty, no trigger claimed by two postures, every posture covered by a scenario. Semantic routing is evaluated with subagents, documented in the scenario sheet — not by a script.
+
 ## 1.2.0
 
 - Removed the `done/` archive leftovers that survived 1.1.0 (`SKILL.md`, `docs.md`, `explore.md`), and stopped `onboard.md` from hand-copying the workspace directory list (it had already drifted — `decisions/` was missing).

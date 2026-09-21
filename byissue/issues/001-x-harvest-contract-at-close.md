@@ -2,7 +2,7 @@
 kind: issue
 title: "收尾必须枚举沉淀候选并带建议询问"
 type: feature
-status: open
+status: closed
 created: 2026-09-21
 ---
 
@@ -35,3 +35,26 @@ created: 2026-09-21
 
 - 回写候选：写作层「提问必带建议」这条如果稳定，属于跨姿态长期约束。
 - 相关：`byissue/talks/001-...` 第 4、8 节。
+
+## 执行记录
+
+- `SKILL.md` 新增「提问必须带建议」一节（沟通方式之后）：逐条编号 + 推荐答案 + 一句理由；需要裁决的清单要列候选并标建议留哪些；尽量让问题有事实答案而非判断答案。这是**写作层通用契约**的唯一归属。
+- `close.md` 在「按物理归属回写」之前插入「沉淀收割（收尾必做）」：过一遍执行记录 / 验证 / 顺手发现 /「对 `byissue/` 的影响」/ Explore 证据层，**在收尾汇报中列出候选并给建议**，没有也要明说「无」。收尾汇报清单同步加入「沉淀候选清单与建议」。
+- `fast.md` 收尾段落把原来那句可选提示换成必做的沉淀收割，原料指向 `ff` 的两个现成字段。
+- `talk.md` 的「问题按依赖编排」不再自己重述「附推荐答案」，改为指向 `SKILL.md`——避免同一契约两份表述。
+
+与设计的偏差：`do.md` 未改。它的完成态不是关闭，沉淀发生在 close；而它的产物契约里「关闭候选」字段本来就是收割原料，够用。
+
+## 验证
+
+`python3 tools/check-skill-repository.py` 通过。真实场景断言留给 `byissue/issues/004-o-posture-routing-regression-tests.md` 的多轮 case，本次未跑 subagent。
+
+## 关闭结论
+
+沉淀从路由表变成了强制枚举契约，形式对齐 `do.md` 已被验证有效的关闭提醒。写作层「提问必须带建议」落在 `SKILL.md`，`talk.md` 改为链接——同一契约只剩一份表述。
+
+**验证：** `python3 tools/check-skill-repository.py` 通过。行为断言依赖首次路由评测，见 `byissue/issues/004-o-posture-routing-regression-tests.md`。
+
+**毕业回写：** 「提问必须带建议」已是 `SKILL.md` 的常驻契约，不另入 spec。
+
+**遗留：** 无。

@@ -2,7 +2,7 @@
 kind: issue
 title: "一次授权动作不该翻转整场会话的姿态"
 type: bug
-status: open
+status: closed
 created: 2026-09-21
 ---
 
@@ -41,3 +41,23 @@ created: 2026-09-21
 ## 关闭时
 
 - 相关：`byissue/talks/001-what-to-build-next-and-does-documentation-rot.md` 第 6 节。
+
+## 执行记录
+
+- `SKILL.md`「怎样判断姿态」新增第 9 条：**姿态在会话中持续，被授权的单个动作不改变它**；讨论中批准的落盘动作做完回到讨论；切换姿态要么来自用户新信号，要么明说「我切到 X 姿态」并得到同意。
+- `SKILL.md` 授权边界第一条加了作用域：「**在执行类姿态下**……持续推进到完成」，并明写它不适用于讨论——「把每一轮都收成『要我现在就…吗』，等于把 Talk 的价值丢掉」。这是根因之一：原文是通用强条，会渗进 Talk。
+- `talk.md` 在收住条件之前加「**留在 Talk 的条件（和收住条件同等重要）**」：只要用户还在提新判断、纠正或问题就继续；被授权的动作做完回到讨论；用户说「继续 talk」时即使出口草案已成形也不落盘。这补上了原来单向的引力。
+
+三处都写成祈使句而非描述句，对应 `byissue/talks/001-what-to-build-next-and-does-documentation-rot.md` 第 6 节的根因。
+
+## 验证
+
+`tools/posture-scenarios.md` 边界场景 23 就是这条的回归 case：「继续 talk（在一次被授权的落盘动作之后）」→ 期望仍在讨论姿态，断言「不提施工方案、不落盘」。结构检查通过；行为断言待首次行为评测。
+
+## 关闭结论
+
+姿态作用域定义补齐：`SKILL.md` 姿态判断第 9 条（动作级授权不翻转姿态）、授权边界第一条加作用域、`talk.md` 补「留在 Talk 的条件」。三处都写成祈使句。
+
+**验证：** 结构检查通过。行为回归 case 已挂在 `tools/posture-scenarios.md` 场景 23；该场景需要多轮设置，首次评测未覆盖，遗留记在 `byissue/issues/004-o-posture-routing-regression-tests.md`。
+
+**毕业回写：** 「姿态是动作级的」已写进 `byissue/spec/index.md` 的统一语言。

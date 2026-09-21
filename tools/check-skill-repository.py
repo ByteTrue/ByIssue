@@ -77,6 +77,45 @@ def check_skill_links(report):
             report(packaged.relative_to(ROOT).as_posix(), "packaged but nothing references it")
 
 
+POSTURE_ROW_RE = re.compile(r"^\|\s*\*\*(?P<posture>[^*]+)\*\*\s*\|(?P<rest>.*)\|\s*$")
+
+
+def check_posture_table(report):
+    """The posture table routes everything; guard it against structural damage.
+
+    Semantic routing (does this sentence reach the right posture?) is judged by
+    a model, not here — run the subagent eval in tools/posture-scenarios.md.
+    """
+    postures, owner = set(), {}
+    for line in (SKILL / "SKILL.md").read_text(encoding="utf-8").splitlines():
+        match = POSTURE_ROW_RE.match(line)
+        if not match:
+            continue
+        cells = [cell.strip() for cell in match.group("rest").split("|")]
+        if len(cells) < 4:
+            continue  # some other bolded table
+        posture = match.group("posture").strip()
+        postures.add(posture)
+        triggers = [t.strip() for t in re.split(r"[、，]", cells[0]) if t.strip()]
+        if not triggers:
+            report("skills/bi/SKILL.md", f"posture {posture!r} has no trigger phrases")
+        for trigger in triggers:
+            if trigger in owner:
+                report("skills/bi/SKILL.md", f"trigger {trigger!r} claimed by both {owner[trigger]!r} and {posture!r}")
+            owner[trigger] = posture
+
+    if len(postures) < 5:
+        report("skills/bi/SKILL.md", f"posture table looks broken, parsed only {len(postures)} rows")
+
+    scenarios = ROOT / "tools/posture-scenarios.md"
+    if not scenarios.is_file():
+        return report("tools/posture-scenarios.md", "file is missing")
+    text = scenarios.read_text(encoding="utf-8")
+    for posture in sorted(postures):
+        if f"| {posture} |" not in text:
+            report("tools/posture-scenarios.md", f"posture {posture!r} has no scenario")
+
+
 def check_readmes(report):
     for filename in ["README.md", "README.en.md"]:
         path = ROOT / filename
@@ -95,6 +134,7 @@ def main() -> int:
     check_version(report)
     check_skill_layout(report)
     check_skill_links(report)
+    check_posture_table(report)
     check_readmes(report)
     if (ROOT / "dist").exists():
         report("dist", "temporary distribution output must not be committed")
