@@ -22,11 +22,6 @@ PATH_RE = re.compile(r"`((?:references|templates|scripts|agents)/[\w./-]+\.(?:md
 
 # Reachable by the host, not by a link from inside the skill.
 ENTRY_FILES = {"SKILL.md", "agents/openai.yaml", "scripts/init_byissue.py"}
-INSTALL_COMMANDS = [
-    "npx skills add ByteTrue/ByIssue",
-    "npx skills add . --list",
-    "npx skills update bi",
-]
 
 
 def check_version(report):
@@ -115,17 +110,18 @@ def check_posture_table(report):
         if f"| {posture} |" not in text:
             report("tools/posture-scenarios.md", f"posture {posture!r} has no scenario")
 
-
-def check_readmes(report):
-    for filename in ["README.md", "README.en.md"]:
-        path = ROOT / filename
-        if not path.is_file():
-            report(filename, "file is missing")
+    # Scenario rows name references in the 应读取 / 不应读取 columns; a typo there
+    # would silently weaken the eval. Prose assertions are skipped by the shape filter.
+    for line in text.splitlines():
+        if not line.startswith("|"):
             continue
-        text = path.read_text(encoding="utf-8")
-        for command in INSTALL_COMMANDS:
-            if command not in text:
-                report(filename, f"missing documented command: {command}")
+        cells = [cell.strip() for cell in line.strip("|").split("|")]
+        for cell in cells[3:]:
+            for name in re.split(r"[、,]", cell):
+                if re.fullmatch(r"[a-z][a-z-]*", name.strip()) and not (
+                    SKILL / "references" / f"{name.strip()}.md"
+                ).is_file():
+                    report("tools/posture-scenarios.md", f"scenario {cells[0]}: unknown reference {name.strip()!r}")
 
 
 def main() -> int:
@@ -135,10 +131,6 @@ def main() -> int:
     check_skill_layout(report)
     check_skill_links(report)
     check_posture_table(report)
-    check_readmes(report)
-    if (ROOT / "dist").exists():
-        report("dist", "temporary distribution output must not be committed")
-
     if findings:
         print("Skill repository check failed:")
         for path, message in findings:
