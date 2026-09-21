@@ -171,3 +171,7 @@ created: 2026-09-21
 ## 第三条装置纪律
 
 **不要在一个正在被编辑的仓库上跑评测。** 场景 ④ 在 `/tmp/bi-eval` 里发现文件的时间戳与它自己的动作对不上，花了回合去核对「谁在并发改这个仓库」——因为我在它运行期间还在改源仓库并 rsync 部署副本。正确做法是评测期间冻结：先提交，再从某个 commit 开 `git worktree`，跑完删掉。
+
+## 第四条装置纪律：resume 必须带原 cwd
+
+`subagent({resume})` 时如果当前 cwd 与原会话所属项目不同，会卡在交互式确认「Session found in different project: … Fork this session into current directory? [y/N]」，任务直接空回。评测的子会话属于临时副本目录，所以恢复时必须同时传 `cwd` 指回那个副本。
