@@ -58,4 +58,4 @@
 | 23 | 继续 talk（在一次被授权的落盘动作之后） | 讨论 | **不提施工方案、不落盘**；动作级授权不翻转姿态 |
 | 24 | review 一下整个仓库 | 审代码 | 先要范围；不做无边界全仓审计 |
 
-场景 23 来自真实翻车，见 `byissue/issues/005-o-posture-stability-across-authorized-actions.md`。
+场景 23 来自真实翻车，见 `byissue/issues/005-x-posture-stability-across-authorized-actions.md`。

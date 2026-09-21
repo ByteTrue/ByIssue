@@ -10,7 +10,7 @@
 
 **怎么办：** 触发条件只能是**用户可能说出口的词**。想表达「这个项目在用 ByIssue」，唯一有效的办法是让用户说出 `bi`／`ByIssue`，或在项目的 `AGENTS.md` 里写一行启动规则（那个是每次都会注入的）。
 
-**相关：** `byissue/issues/007-o-description-and-posture-table-are-two-trigger-sets.md`。
+**相关：** `byissue/issues/007-x-description-and-posture-table-are-two-trigger-sets.md`。
 
 ## 补充：有一类说法 description 根本救不了
 

@@ -137,6 +137,26 @@ def check_posture_table(report):
                     report("tools/posture-scenarios.md", f"scenario {cells[0]}: unknown reference {name.strip()!r}")
 
 
+def check_byissue_references(report):
+    """Closing an issue renames it (-o- to -x-), which breaks every full-name
+    reference pointing at it. The full-name rule and path-encoded state pull
+    against each other; this check is the forcing function that keeps the
+    rename and the reference update in the same commit.
+    """
+    workspace = ROOT / "byissue"
+    if not workspace.is_dir():
+        return
+    pattern = re.compile(r"(?<![\w/-])byissue/(?:issues|epics|notes|talks|decisions)/[\w./-]+\.md")
+    for source in sorted(ROOT.rglob("*.md")):
+        if ".git" in source.parts:
+            continue
+        for number, line in enumerate(source.read_text(encoding="utf-8").splitlines(), 1):
+            for match in pattern.finditer(line):
+                target = match.group(0).rstrip(".")
+                if not (ROOT / target).exists():
+                    report(source.relative_to(ROOT).as_posix(), f"line {number}: dangling reference {target}")
+
+
 def main() -> int:
     findings: list[tuple[str, str]] = []
     report = lambda path, message: findings.append((path, message))  # noqa: E731
@@ -144,6 +164,7 @@ def main() -> int:
     check_skill_layout(report)
     check_skill_links(report)
     check_posture_table(report)
+    check_byissue_references(report)
     if findings:
         print("Skill repository check failed:")
         for path, message in findings:

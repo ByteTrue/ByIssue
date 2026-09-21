@@ -26,4 +26,4 @@
 
 **注意：** `write` 工具和 bash heredoc 里的中文都是好的，只有 `edit` 的参数通道有问题。所以「用脚本改」不是在绕开文件系统，只是换一条参数通道。
 
-**相关：** `byissue/issues/002-o-project-spec-slimming-rule.md`、`byissue/issues/001-o-harvest-contract-at-close.md` 的改动都是用绕法 1 做的。
+**相关：** `byissue/issues/002-x-project-spec-slimming-rule.md`、`byissue/issues/001-x-harvest-contract-at-close.md` 的改动都是用绕法 1 做的。
