@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.6.0
+
+- Prohibitions now have to earn their attention cost. A "don't do X" is only worth writing when X is a strong model default; forbidding something the model was never going to do both costs context and puts the thing into attention — don't think of an elephant.
+- "Don't auto-commit / auto-push / auto-close" was stated seven times, three of them in consecutive rows of one table. It is now stated once, above the table, and the rows carry only what differs. The rule counters a genuine default, so the rule stays; the restatements go.
+- "No unbounded whole-repo audit" was forbidden once in each of five files, while the actual model default is the opposite — over-focusing on the current file. Removed from all five. Kept where Review is defined, since users really do say "review the whole repo".
+- Collapsed the remaining duplicated prohibitions onto single owners: the Security/Safety distinction to `quality.md`, the no-trace exception's six restatements to its own section.
+- Quantified claims written into `byissue/` must carry a way to reproduce them — a command, a file and line, a call sequence. Induction pulled tighter than its sample is the failure mode this catches.
+
 ## 1.5.0
 
 - `bi` no longer writes to `AGENTS.md` / `CLAUDE.md` anywhere in the workflow. Knowledge capture has exactly one destination, `byissue/notes/`; the graduation route, the maketools branch and the onboard clause that pointed at agent instruction files are gone. When a rule really does deserve to fire on every startup, bi writes the note and *tells the user* — the user decides and does it.

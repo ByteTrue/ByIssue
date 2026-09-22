@@ -40,7 +40,7 @@ ByIssue 是一套理解和推进软件演化的方法。它用 Vision、Project 
 | **理解现状** | 怎么工作的、这条链路、影响范围 | [explore](references/explore.md) | [docs](references/docs.md)；服务具体变化 → [quality](references/quality.md) | 先解释现状；复杂且值得复用时才建 Explore Issue |
 | **修 bug** | 坏了、不符合预期、debug、修这个 bug | [complain](references/complain.md) | [debug](references/debug.md)、[economy](references/economy.md)、[quality](references/quality.md)；结构 → [code-design](references/code-design.md) | 简单问题默认快改并留下 `ff`；复杂问题可受管理推进 |
 | **设计** | 怎么实现、先设计、实现方案 | [design](references/design.md) | [code-design](references/code-design.md)、[economy](references/economy.md)、[quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 不写代码；高风险先安排穿刺顺序 |
-| **快交付** | 快速、快改、小改一下、直接开干、别走流程 | [fast](references/fast.md) | [economy](references/economy.md)；必要时 [quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 默认轻检索、验证并留下 `ff`；用户明确不要痕迹时才可省略 `ff` |
+| **快交付** | 快速、快改、小改一下、直接开干、别走流程 | [fast](references/fast.md) | [economy](references/economy.md)；必要时 [quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 默认轻检索、验证并留下 `ff` |
 | **受管理实现** | 做这个 issue、推进 epic、实现（有档）、穿刺/先打通 | [do](references/do.md) | [code-design](references/code-design.md)、[economy](references/economy.md)、[quality](references/quality.md)；现状不清 → [explore](references/explore.md)；UI → [ui-spec](references/ui-spec.md) | 完成不等于关闭；风险先穿刺，再加厚 |
 | **收尾** | 关闭、收尾、做完并沉淀、毕业回写 | [close](references/close.md) | [docs](references/docs.md)、[quality](references/quality.md)；有界简化 → [economy](references/economy.md) | 关闭需要用户授权；关闭后文件留在原树原位 |
 | **审代码** | review、评审、看看这 diff/PR | [code-design](references/code-design.md)（文末 Review） | [economy](references/economy.md)；相关时 → [quality](references/quality.md) | 用户点名才做；默认只审不改 |
@@ -68,7 +68,7 @@ ByIssue 是一套理解和推进软件演化的方法。它用 Vision、Project 
 | 涉及范围取舍、多轮推进、交接、显著风险或长期质量承诺 | 建立**常规 Issue**：`type: feature\|bug\|chore\|refactor` |
 | 跨模块、多批次，且规格会在边界内持续演化 | 建立 **Epic**；边界足够清楚的切片可直接在 Epic 内推进 |
 | 技术、集成或迁移风险需要先证明可行 | 先做**穿刺**，见 [do](references/do.md)，再加厚实现 |
-| 用户明确要求管理或明确不要建档 | 服从用户选择 |
+| 用户明确要求更重的管理 | 服从用户选择 |
 
 ### 无痕迹例外
 
@@ -211,11 +211,13 @@ Talk 写入 `byissue/talks/`；Note 写入 `byissue/notes/`，同主题更新原
 | **完成** | 实现和验证已经达到目标 |
 | **关闭** | 用户授权收尾：`o` → `x` 或 `d`，并完成毕业回写；关闭的事项留在原树原位；Git 操作按关闭契约执行 |
 
+**默认不做三件事：不自动 commit、不自动 push / 发布、不自动关闭常规 Issue。** 三件都要用户开口。
+
 | 用户动作或场景 | 默认行为 |
 |---|---|
-| 快改 | 验证后必须写 `ff`，也可以直接写成 `x-ff`；不自动 commit 或 push |
-| 受管理实现 | 推进到完成即可；不自动关闭 Issue，也不自动 commit 或 push；收尾时若常规 Issue 仍 `-o-`，必须列出路径并显式询问是否关闭（见 [do](references/do.md)） |
-| 用户说“做完”或“修好” | 完成实现与验证；小改仍留下 `ff`，除非用户明确不要痕迹；常规 Issue 不自动关闭，收尾时须显式提醒待关闭 |
+| 快改 | 验证后必须写 `ff`，也可以直接写成 `x-ff` |
+| 受管理实现 | 推进到完成即可；收尾时若常规 Issue 仍 `-o-`，必须列出路径并显式询问是否关闭（见 [do](references/do.md)） |
+| 用户说“做完”或“修好” | 完成实现与验证；小改仍留下 `ff`；收尾时须显式提醒待关闭 |
 | 用户说“关闭”或“收尾” | 执行 [close](references/close.md)；关闭的事项留在原树原位 |
 | push、部署、初始化或覆盖 `byissue/`、关闭 Epic、破坏性操作 | 必须取得明确授权 |
 
@@ -233,7 +235,7 @@ Talk 写入 `byissue/talks/`；Note 写入 `byissue/notes/`，同主题更新原
 
 使用 ISO/IEC 25010:2023 的九个质量特征作为统一语言，但不要把它变成九项必填表。**一旦选中某项，它就是承诺。**
 
-快改不写形式化质量清单，但仍须遵守 spec、用户要求与必要护栏。信息安全性与安全性是不同概念，不要笼统混称为“安全”。详见 [quality](references/quality.md)。
+快改不写形式化质量清单，但仍须遵守 spec、用户要求与必要护栏。详见 [quality](references/quality.md)。
 
 ---
 
@@ -260,7 +262,7 @@ Talk 写入 `byissue/talks/`；Note 写入 `byissue/notes/`，同主题更新原
 - **在执行类姿态下**，方向已经确认且用户要求执行时，持续推进到**完成**或遇到真实阻塞，不要在正常步骤之间反复确认。这条不适用于讨论：把每一轮都收成「要我现在就…吗」，等于把 Talk 的价值丢掉。
 - 用户确认前，讨论不落盘；设计不写代码。
 - 完成不等于关闭；关闭后文件留在原树原位。
-- 实现或快改后，不自动 Review，也不自动 push。
+- 实现或快改后不自动 Review。
 - 初始化 `byissue/`、覆盖入口文件、关闭 Epic、危险操作、推送和部署，都必须取得明确授权。
 
 ---

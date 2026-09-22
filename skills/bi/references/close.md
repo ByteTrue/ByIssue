@@ -95,7 +95,7 @@
 
 若在 git 仓库：关闭结论与长期实体回写完成后，**相关变更同一 commit**（业务代码、目标 issue/epic、project/epic spec、notes/Agent 指令/tools）。
 
-提交前 `git status --short`，只暂存相关文件。无关脏改不碰；同文件混有无关变更则停下说明。不 amend / rebase / reset；不 push，除非用户明确要求。
+提交前 `git status --short`，只暂存相关文件。无关脏改不碰；同文件混有无关变更则停下说明。不 amend / rebase / reset。
 
 ## 产物契约
 
