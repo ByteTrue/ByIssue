@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.6.1
+
+- Closing and graduation are now aligned as part of the commit flow rather than a trailing afterthought. Implementation wrap-up presents the closing recommendation alongside sediment candidates; upon commit authorization, issue renaming (`-o-` → `-x-`), graduation writeback, and code changes are batched into a single commit.
+- Removed permissive phrasing in `do.md` that tolerated trailing close decisions after code commits, cutting off the failure mode where pushed code triggers a round of CI and closing triggers a second.
+- Cleaned up three stale references to `Agent 指令` in `close.md` that survived the 1.5.0 migration.
+
 ## 1.6.0
 
 - Prohibitions now have to earn their attention cost. A "don't do X" is only worth writing when X is a strong model default; forbidding something the model was never going to do both costs context and puts the thing into attention — don't think of an elephant.

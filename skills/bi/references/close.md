@@ -18,7 +18,7 @@
 
 **毕业是筛选，不是搬运。** 独立 issue → project spec；epic issue → epic spec；epic 关闭 → project spec 并检查 Vision。但回写前先过 Project Spec 的准入判据（见 [spec](spec.md)）：**能从代码重建的不写**。多数 Epic 关闭时真正该进 Project Spec 的只有几个词、一两条边界和被排除的方案，而不是一节能力说明。
 
-筛掉的内容不是丢失：它在代码里。Epic 链接保留为历史、证据或深入设计的阅读入口。普通 issue 不更新 Vision。notes / Agent 指令 / tools 按复用价值分流。
+筛掉的内容不是丢失：它在代码里。Epic 链接保留为历史、证据或深入设计的阅读入口。普通 issue 不更新 Vision。notes / tools 按复用价值分流。
 
 **只按事实更新 Vision 状态。** 实现程度与链接可更新；目标内容或候选关系要变时须用户确认，否则记录偏差。
 
@@ -43,7 +43,7 @@
 - issue：用户给路径则读该文件/目录；否则递归搜索根 `byissue/issues/` 与各 Epic 的 `issues/`，按名称、完整路径或 `Epic NNN / Issue NNN` 消歧
 - epic：读权威 `spec.md`、同目录 `issues/`、明确引用的相邻材料
 
-写入或暂存前确认目标事项、将回写的 spec/notes/Agent 指令/tools、以及要提交代码的当前版本。
+写入或暂存前确认目标事项、将回写的 spec/notes/tools、以及要提交代码的当前版本。
 
 ### 关闭 issue
 
@@ -93,7 +93,7 @@
 
 ### 提交关闭变更
 
-若在 git 仓库：关闭结论与长期实体回写完成后，**相关变更同一 commit**（业务代码、目标 issue/epic、project/epic spec、notes/Agent 指令/tools）。
+在 git 仓库中，关闭改名与毕业回写作为变更的一部分，与业务代码在同一次提交中完成（业务代码、目标 issue/epic、project/epic spec、notes/tools）。代码已被先行提交时，关闭单独成笔。
 
 提交前 `git status --short`，只暂存相关文件。无关脏改不碰；同文件混有无关变更则停下说明。不 amend / rebase / reset。
 
