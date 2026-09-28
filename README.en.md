@@ -88,6 +88,8 @@ ByIssue centers the software's state, understanding, and changes—not agent orc
 
 Within one conversation, a user may be discussing, understanding current behavior, designing, making a quick change, advancing managed work, or closing it out. `bi` identifies the primary posture first, then reads the smallest set of rules and project material for that posture. Material already read and unchanged is reused instead of being pushed into context again.
 
+Discussion, Vision and Design share one multi-round interview loop (`references/grilling.md`): build a decision tree, ask the whole frontier each round, recompute the next round from the answers, and stop only when the frontier is empty. "Three options plus one recommendation" is not grilling — that flattens the decision tree into a single layer.
+
 Users therefore do not need to choose a sub-skill, and the system does not load workflows that have not happened. For an agent, the right context matters more than a larger context.
 
 ### Locate change in a four-layer world model
@@ -114,7 +116,7 @@ Unknowns are normal. They should not be hidden by splitting work into tasks too 
 
 | What is unknown | First technique | Stop when |
 |---|---|---|
-| The real problem, boundary, or trade-off | Talk | The problem, boundary, and largest unknown can be stated clearly |
+| The real problem, boundary, or trade-off | Talk | The decision tree's frontier has been asked out and the user confirms a shared understanding |
 | How the current system reaches a result from a trigger | Current-state explanation / Explore | A causal model is sufficient for action and remaining unknowns are explicit |
 | Whether a future design can work | Spike | The highest-risk path has real evidence; if it fails, address the design first |
 

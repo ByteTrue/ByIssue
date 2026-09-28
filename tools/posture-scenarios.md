@@ -28,8 +28,8 @@
 
 | # | 说法 | 期望姿态 | 应读取 | 不应读取 |
 |---|---|---|---|---|
-| 1 | 先聊清楚这个改动再动手 | 讨论 | talk | do、fast、design |
-| 2 | 帮我规划一下这块怎么做 | 讨论 | talk | do、design |
+| 1 | 先聊清楚这个改动再动手 | 讨论 | talk、grilling | do、fast、design |
+| 2 | 帮我规划一下这块怎么做 | 讨论 | talk、grilling | do、design |
 | 3 | 这条链路是怎么工作的 | 理解现状 | explore | design、do |
 | 4 | 影响范围有多大 | 理解现状 | explore | do |
 | 5 | 快速修一下这个文案 | 快交付 | fast | do、design、complain |
@@ -43,9 +43,10 @@
 | 13 | 看看这个 diff 有没有问题 | 审代码 | code-design | do、fast |
 | 14 | 记一下这个坑 | 记知识 | note | close、spec |
 | 15 | 维护一下 spec，这块真相变了 | 规格 | spec | do、design |
-| 16 | 整理一下 vision，说说应用将来什么样 | 愿景 | vision | spec、do |
+| 16 | 整理一下 vision，说说应用将来什么样 | 愿景 | vision、grilling | spec、do |
 | 17 | 在这个项目接入 ByIssue | 接入 | onboard | talk、spec |
 | 18 | 我带你跑一遍这个发布流程 | 学流程 | maketools | do、fast |
+| 25 | 拷问我，先别动手 | 讨论 | talk、grilling | do、fast、design |
 
 ## 边界场景（更容易翻车的那些）
 
