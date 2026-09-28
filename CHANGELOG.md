@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.7.1
+
+- Sediment now has one named competitor. Hosts that ship their own memory layer (Magic Context's `ctx_memory`, and anything else injected into the system prompt) were quietly winning the capture decision: a resident system-prompt line like "a fact worth keeping is memory" outbids an on-demand skill file saying the only destination is `byissue/notes/`. Measured on the ByIssue repository itself, 5 of 6 stored memories were duplicates of text already in `spec/index.md`, `decisions/`, or an issue — a second source of truth, exactly what this project's own contract forbids, and one the host then spends tokens re-verifying daily.
+- Added one paragraph to the `SKILL.md` write-boundary contract: the host's memory layer is not a destination either. It does not enter version control and is keyed to a local database or the repository's git identity, so switching machines, rewriting history, or working in parallel worktrees loses or splits it. Placed in `SKILL.md` rather than `note.md` because `note.md` only loads in the 记知识 posture, while the capture that actually happens runs in 收尾 (`close.md` sediment harvest) and 快改 (`ff` wrap-up) — and `SKILL.md` is the one file guaranteed to be present in all three.
+- Evidence for the git-identity failure mode: one project's memory pool had split into 1411 rows under an orphaned root-commit identity (no longer resolvable anywhere on the machine) and 143 rows under the current one. Also recorded that 1702 of 1932 memories across all projects were auto-promoted by the background compressor rather than chosen by anyone — the bulk of "stored experience" never passed through a judgment at all.
+- Deliberately not done: no second copy of the rule in `note.md` (single owner), no `spec/index.md` entry (the contract lives in `SKILL.md`, which the spec already names as the authoritative entry), and no decision record (a one-paragraph addition fails the 难以逆转 gate).
+
 ## 1.7.0
 
 - Talk had borrowed the *nouns* of Matt Pocock's `grilling` without its *verbs*: it said 「前沿清空，即对齐完成」 but never defined a decision tree, never said "recompute the frontier", and set its stop condition to 「真问题一句话且用户确认 / 做什么有轮廓 / 最大未知已标出」 — none of which require the user to speak, so the model declared itself satisfied on round one. The one numeric instruction in the whole file, 「最多三到五轮深挖」, was read as a target rather than a ceiling. This is a variant of the descriptive-vs-imperative trap already in the spec: borrowing a noun without the verbs that produce it.
