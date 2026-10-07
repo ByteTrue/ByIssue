@@ -222,6 +222,7 @@ Talk 写入 `byissue/talks/`；Note 写入 `byissue/notes/`，同主题更新原
 | 快改 | 验证后必须写 `ff`，也可以直接写成 `x-ff` |
 | 受管理实现 | 推进到完成即可；收尾汇报给出关闭建议，用户授权提交时与代码合并为单次 commit（见 [do](references/do.md)） |
 | 用户说“做完”或“修好” | 完成实现与验证；小改仍留下 `ff`；收尾汇报给出关闭建议，授权提交时合并完成 |
+| 用户直接要求提交 / 推送 / 开 PR / 发布 | 先跑 `scripts/check_open_issues.py`（`--project` 指向要推送的仓库）；存在未关闭常规 issue 时，同轮给出关闭建议并请求授权，关闭后与代码合并为单次 commit 再执行；用户明确暂不关闭的，才单独提交代码 |
 | 用户说“关闭”或“收尾” | 执行 [close](references/close.md)；关闭的事项留在原树原位 |
 | push、部署、初始化或覆盖 `byissue/`、关闭 Epic、破坏性操作 | 必须取得明确授权 |
 
