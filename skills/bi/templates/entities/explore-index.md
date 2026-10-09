@@ -2,7 +2,6 @@
 kind: issue
 title: "[探索标题]"
 type: explore
-status: open
 created: YYYY-MM-DD
 related_issue: ""
 ---

@@ -1,7 +1,6 @@
 ---
 kind: epic
 title: "[Epic 标题]"
-status: draft
 created: YYYY-MM-DD
 ---
 

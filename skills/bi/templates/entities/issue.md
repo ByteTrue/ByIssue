@@ -2,7 +2,6 @@
 kind: issue
 title: "[标题]"
 type: feature
-status: open
 created: YYYY-MM-DD
 ---
 
@@ -10,7 +9,7 @@ created: YYYY-MM-DD
 type: feature | bug | chore | refactor
 写法：按读者此刻要解决的问题组织，标题用议题语言，不套固定章节名凑满。
 未发生的信息整段省略；简单改动保持短。
-关闭时：status: closed；路径 `-o-` 改为 `-x-`（交付）或 `-d-`（放弃）。
+关闭时：路径 `-o-` 改为 `-x-`（交付）或 `-d-`（放弃）。
 -->
 
 # [标题]

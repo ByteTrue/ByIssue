@@ -2,7 +2,6 @@
 kind: issue
 title: "[快改标题]"
 type: ff
-status: open
 created: YYYY-MM-DD
 ---
 

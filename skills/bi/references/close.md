@@ -102,14 +102,14 @@
 关闭 issue：
 
 - 常规 issue 写清关闭结论：判断、验证摘要（含质量证据）、回写位置、遗留事项；ff 以「对 `byissue/` 的影响」为准，可无长关闭结论
-- `status: closed`；路径 `-o-` → `-x-` 或 `-d-`（序号与名称不变）
+- 路径 `-o-` → `-x-` 或 `-d-`（序号与名称不变）；状态由路径唯一表达
 
 关闭 Explore issue：另更新 spec 阅读路径，并在 Explore 入口记录迁入结果。
 
 关闭 epic：
 
 - Project Spec 已写入筛选后的结论：词汇、长期边界与取舍、被排除方案；能从代码重建的部分已刻意留给代码
-- `spec.md` 状态 `closed`；记录合并到 Project Spec 的具体章节与已检查/更新的 Vision
+- 记录合并到 Project Spec 的具体章节与已检查/更新的 Vision
 - 目录 `{NNN}-o-{名称}/` → `{NNN}-x-{名称}/`；不删除目录
 
 遗留事项应成新 issue 或留在 epic 当前推进/阻碍中，不藏在关闭结论里；仅用户明确要求时建新 issue。

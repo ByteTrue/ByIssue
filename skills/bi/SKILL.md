@@ -25,7 +25,7 @@ ByIssue 是一套理解和推进软件演化的方法。它用 Vision、Project 
 
 ### 节省上下文（Codex）
 
-同一会话中，已经完整读取且没有变化的 `SKILL.md`、reference、template 或相邻说明，必须复用既有理解，不要重复读取。仅在用户要求重读、文件已变化，或当前理解不足以支撑判断时，读取相关最小范围。
+同一会话中，已经完整读取且没有变化的 `SKILL.md`、reference、template 或相邻说明，必须复用既有理解，不要重复读取。仅在用户要求重读、文件已变化，或当前理解不足以支撑判断时，读取相关最小范围。姿态必读必须完整读入；批量并行读取时业务文件可以采样，规则文件采样即静默丢失。
 
 ---
 
@@ -185,7 +185,7 @@ Issue 编号不是全局身份，同一棵树里也可能有多个事项共用�
 - `ff`、bug、feature、chore、refactor 与 Explore Issue 都遵守同一归属规则。
 - Issue 的归属由物理路径表达，不使用 `epic` frontmatter。归属改变时移动原事项并更新明确引用，不复制第二份。
 
-关闭 Issue 时，将目标路径中的 `-o-` 改为 `-x-`（交付关闭）或 `-d-`（放弃关闭），序号与名称不变，并把 `status` 改为 `closed`。关闭 Epic 时只改 Epic 目录名，内部 Issue 随目录保留。
+关闭 Issue 时，将目标路径中的 `-o-` 改为 `-x-`（交付关闭）或 `-d-`（放弃关闭），序号与名称不变。关闭 Epic 时只改 Epic 目录名，内部 Issue 随目录保留。状态由路径唯一表达：文件名与目录名是状态的唯一出处，不设 frontmatter 状态字段。
 
 常规 Issue 使用 `templates/entities/issue.md`，`type` 只能是 `feature|bug|chore|refactor`。`ff` 只回答四件事：做了什么、改了哪些、怎样验证、对 `byissue/` 有什么影响；不要写成迷你 Design，也不要保留空槽位。
 
