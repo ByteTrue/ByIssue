@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """List open issues under byissue/ before committing or pushing.
 
-The mechanical half of the close-before-push contract: bound to the git
+The mechanical half of the commit contract (sediment and close settle before the push): bound to the git
 action (run right before commit / push / PR / release), not to any posture,
 so it survives long sessions where the contract text has been compacted
-away. Rule: run it, present what it lists, request close authorization in
-the same turn, close, then push rename + graduation + code as one commit.
+away. Rule: run it, present what it lists, request close AND sediment
+authorization in the same turn, settle everything onto disk, then push
+rename + graduation + sediment + code as one commit.
 
 Exit code 1 means open regular issues exist (close gates). Open ff files
 are reminders only; open epics are the normal state of ongoing work and
@@ -72,10 +73,14 @@ def main() -> int:
 
     if gates:
         print(
-            "按关闭契约：同轮给出关闭建议并请求授权，关闭改名与毕业回写与代码合并为单次 commit 后再推送；"
-            "用户明确暂不关闭的，才单独提交代码。"
+            "按提交契约：同轮给出关闭建议与沉淀候选并请求授权，关闭改名、毕业回写、沉淀落盘与代码合并为单次 commit 后再推送；"
+            "用户明确暂不处理的，才单独提交代码。"
         )
         return 1
+    print(
+        "按提交契约：沉淀候选仍未裁决时，同轮列出并请求授权，"
+        "落盘随本次提交一起走——合并后再冒出待办，意味着一笔可避免的第二提交和一轮白跑的 CI。"
+    )
     return 0
 
 
