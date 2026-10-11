@@ -19,7 +19,7 @@ ByIssue 是一套理解和推进软件演化的方法。它用 Vision、Project 
 
 向用户提问时逐条编号，每条附**推荐答案和一句理由**。需要用户裁决的清单——沉淀候选、待关闭事项、姿态歧义——同样要列出候选并标明建议留哪些、不建议哪些，不要只抛问题。只把真正需要用户定的放进去，事实自己先查。**待关闭事项只来自路径带 `-o-` 的 issue、epic、ff 与 Explore**；talk、note、decision 无状态，不进待关闭清单。
 
-「给三个选项 + 一句推荐」不是拷问，是把决策树压扁成一层。要把模糊想法真的问清楚时，走 [grilling](references/grilling.md)——它是讨论、愿景、设计共用的访谈循环，机制以那份文件为准。
+「给三个选项 + 一句推荐」不是拷问，是把决策树压扁成一层。要把模糊想法真的问清楚时，走 [grilling](references/grilling.md)——它是讨论、愿景、设计共用的访谈循环，机制以那份文件为准；访谈的伴随纪律——磨术语、拿代码对照、谈不出来去原型——见 [domain-modeling](references/domain-modeling.md)。用户明确要求「一次只问一个」时照办，那是他的节奏不是你的。
 
 尽量让问题有**事实答案**而不是判断答案。「这是不是仓库外部的事实」能答；「这个以后有用吗」在用户收尾时一定得到「算了」。
 
@@ -36,12 +36,12 @@ ByIssue 是一套理解和推进软件演化的方法。它用 Vision、Project 
 | 主姿态 | 用户常这样说 | 必读 | 按需读 | 默认边界 |
 |---|---|---|---|---|
 | **接入** | 初始化 bi、接入 ByIssue、补齐 `byissue/` | [onboard](references/onboard.md) | — | 必须明确授权；不编造业务内容 |
-| **讨论** | 聊聊、先理清、想清楚再做、帮我规划一下、拷问我 | [talk](references/talk.md)、[grilling](references/grilling.md) | [docs](references/docs.md)；具体变化 → [quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 用户确认前不落盘，不建 issue、epic 或 vision |
-| **愿景** | 应用将来什么样、整理 vision、产品全景 | [vision](references/vision.md)、[grilling](references/grilling.md) | [docs](references/docs.md)；质量方向 → [quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 确认后才写 vision；不强迫创建开发事项 |
+| **讨论** | 聊聊、先理清、想清楚再做、帮我规划一下、拷问我 | [talk](references/talk.md)、[grilling](references/grilling.md)、[domain-modeling](references/domain-modeling.md) | [docs](references/docs.md)；具体变化 → [quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 用户确认前不落盘，不建 issue、epic 或 vision |
+| **愿景** | 应用将来什么样、整理 vision、产品全景 | [vision](references/vision.md)、[grilling](references/grilling.md)、[domain-modeling](references/domain-modeling.md) | [docs](references/docs.md)；质量方向 → [quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 确认后才写 vision；不强迫创建开发事项 |
 | **规格** | 维护 spec、当前真相、epic 活规格 | [spec](references/spec.md) | [docs](references/docs.md)；质量约束 → [quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 只写仍然成立的结论 |
 | **理解现状** | 怎么工作的、这条链路、影响范围 | [explore](references/explore.md) | [docs](references/docs.md)；服务具体变化 → [quality](references/quality.md) | 先解释现状；复杂且值得复用时才建 Explore Issue |
 | **修 bug** | 坏了、不符合预期、debug、修这个 bug | [complain](references/complain.md) | [debug](references/debug.md)、[economy](references/economy.md)、[quality](references/quality.md)；结构 → [code-design](references/code-design.md) | 简单问题默认快改并留下 `ff`；复杂问题可受管理推进 |
-| **设计** | 怎么实现、先设计、实现方案 | [design](references/design.md) | [grilling](references/grilling.md)；[code-design](references/code-design.md)、[economy](references/economy.md)、[quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 不写代码；高风险先安排穿刺顺序 |
+| **设计** | 怎么实现、先设计、实现方案 | [design](references/design.md) | [grilling](references/grilling.md)、[domain-modeling](references/domain-modeling.md)；[code-design](references/code-design.md)、[economy](references/economy.md)、[quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 不写代码；高风险先安排穿刺顺序 |
 | **快交付** | 快速、快改、小改一下、直接开干、别走流程 | [fast](references/fast.md) | [economy](references/economy.md)；必要时 [quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 默认轻检索、验证并留下 `ff` |
 | **受管理实现** | 做这个 issue、推进 epic、实现（有档）、穿刺/先打通 | [do](references/do.md) | [code-design](references/code-design.md)、[economy](references/economy.md)、[quality](references/quality.md)；现状不清 → [explore](references/explore.md)；UI → [ui-spec](references/ui-spec.md) | 完成不等于关闭；风险先穿刺，再加厚 |
 | **收尾** | 关闭、收尾、做完并沉淀、毕业回写 | [close](references/close.md) | [docs](references/docs.md)、[quality](references/quality.md)；有界简化 → [economy](references/economy.md) | 关闭需要用户授权；关闭后文件留在原树原位 |
