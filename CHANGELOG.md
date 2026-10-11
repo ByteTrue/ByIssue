@@ -1,3 +1,9 @@
+## 1.8.1
+
+- Defined the scope of 待关闭事项 in `SKILL.md` (提问必须带建议): the list draws only from paths carrying `-o-` — issues, epics, `ff`, and Explore directories. talk / note / decision have no status and never enter a pending-close list.
+- Evidence: an inventory agent in a downstream repo labeled a talk 「（状态 open）」 and proposed closing it. The term 待关闭事项 appeared exactly once in `SKILL.md` with no scope definition, so the agent swept talks/ into the close list and, finding no status concept to apply there, borrowed the issue's open/closed and invented one — the same failure class as 1.8.0 (where the contract is silent, the model borrows a neighboring concept). The mechanical half was already correct: `check_open_issues.py` scans only issues trees. This is the prose half catching up.
+- Deliberately not done: no status letters for talks (a talk is born finished — it is written after convergence, its graduation is the 出口 section, and reopening a discussion is normal rather than a rename ritual); no `talk.md` change; no "how to tell a finished talk" clause either — the 出口 section already owns that contract in `talk.md` and the template, and only talk has a convergence dimension at all (notes stay valid, decisions point to their successor when superseded), so a talk-only aside read as lopsided; no decision record (a scope clarification fails the 难以逆转 gate).
+
 ## 1.8.0
 
 - Deleted the frontmatter `status` field from every ByIssue template and every rule that mentioned it. Path is now the only status field: `-o-` / `-x-` / `-d-` in the filename (directory name for Epics) is the single source of truth, stated once in `SKILL.md` as an explicit "no status field" prohibition. `epic-spec.md`'s `status: draft` went with it — no document ever defined how it transitioned, a dead field.
