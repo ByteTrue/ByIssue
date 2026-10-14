@@ -19,8 +19,8 @@ import re
 import sys
 from pathlib import Path
 
-OPEN_RE = re.compile(r"^\d+-o-")
-FF_RE = re.compile(r"^\d+-o-ff-")
+OPEN_RE = re.compile(r"^(?:\d{4}-\d{1,2}-\d{1,2}|\d+)-o-")
+FF_RE = re.compile(r"^(?:\d{4}-\d{1,2}-\d{1,2}|\d+)-o-ff-")
 
 
 def issue_trees(workspace: Path) -> list[Path]:

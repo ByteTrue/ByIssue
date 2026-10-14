@@ -35,7 +35,7 @@
 | | 现状说明 | Explore issue |
 |---|---|---|
 | 何时 | 相关路径能用紧凑叙事讲清 | 讲不清、跨多边界、证据冲突、需多篇路径文、或理解将被多处复用 |
-| 写哪 | 对话 / 目标 issue 的现状说明（及有变化时的影响分层） | 独立：`byissue/issues/{NNN}-o-{名称}/`；Epic 所属：该 Epic 的 `issues/{NNN}-o-{名称}/` |
+| 写哪 | 对话 / 目标 issue 的现状说明（及有变化时的影响分层） | 独立：`byissue/issues/{YYYY-MM-DD}-o-{名}/`；Epic 所属：该 Epic 的 `issues/{YYYY-MM-DD}-o-{名}/` |
 | 关闭 | 随目标 issue 或直接进入 Design / Do | 用户确认后 Close：独立事项毕业到 Project Spec；Epic 所属事项先毕业到 Epic Spec |
 
 ## 行动指南
@@ -79,7 +79,7 @@
 
 ### Explore issue
 
-路径按归属选择：独立 Explore 用 `byissue/issues/{NNN}-o-{名称}/`；只属于一个 Epic 的 Explore 用 `byissue/epics/{epic}/issues/{NNN}-o-{名称}/`。入口 `index.md`（`templates/entities/explore-index.md`），路径文章用 `templates/entities/explore-article.md`。关闭时只把该目录改为 `{NNN}-x-{名称}/`。编号规则见 `SKILL.md`。
+路径按归属选择：独立 Explore 用 `byissue/issues/{YYYY-MM-DD}-o-{名}/`；只属于一个 Epic 的 Explore 用该 Epic 的 `issues/{YYYY-MM-DD}-o-{名}/`。入口 `index.md`（`templates/entities/explore-index.md`），路径文章用 `templates/entities/explore-article.md`。关闭时把该目录名的 `-o-` 改为 `-x-`（交付关闭）或 `-d-`（放弃关闭），其余不动；**改名前按 [close](close.md)「原则」先修引用**。命名规则见 `SKILL.md`。
 
 `index.md` 是认知地图（见模板自检：问题与停止条件、一句话模型、边界、先读哪篇、结论、影响、修正、毕业位置）。路径文章按“某触发如何产生结果”组织，不按调查轮次或代码目录，也不套统一槽位标题。
 

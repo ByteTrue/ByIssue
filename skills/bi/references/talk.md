@@ -48,7 +48,7 @@
 
 ## 产物契约
 
-确认前无文件。确认后：`byissue/talks/{NNN}-{名称}.md`（扁平，无日期目录；编号规则见 `SKILL.md`），模板 `templates/entities/talk.md`。
+确认前无文件。确认后：`byissue/talks/{YYYY-MM-DD}-{名}.md`（直接放在 `talks/` 下，不按年/月分目录；命名规则见 `SKILL.md`），模板 `templates/entities/talk.md`。
 
 **必须留下的信息（有则写、无则省略；顺序跟随讨论，不强制下列标题）：**
 

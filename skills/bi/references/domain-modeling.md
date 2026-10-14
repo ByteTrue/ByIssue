@@ -1,7 +1,5 @@
 # Domain Modeling
 
-> Upstream: `mattpocock/skills` → `skills/engineering/domain-modeling`. The "During the session" sections are upstream verbatim. "ByIssue destinations" maps upstream's `GLOSSARY.md` / `docs/adr/` onto `byissue/` — the one place this skill is absorbed incompletely, because ByIssue's memory format differs. "Grillable and ungrillable" and "It's working if" are absorbed from the upstream `grill-me` / `grill-with-docs` docs pages. Same policy as `grilling.md`: upstream text is never paraphrased, only destination-mapped.
-
 Actively build and sharpen the project's domain model as you design. This is the *active* discipline: challenging terms, inventing edge-case scenarios, and capturing the glossary and decisions the moment they crystallise. (Merely *reading* the ubiquitous language for vocabulary is not this skill: that's a one-line habit any skill can do. This skill is for when you're changing the model, not just consuming it.)
 
 ## During the session
@@ -28,7 +26,7 @@ Three things come out of a session, and they are not equal. Create files lazily:
 
 - **A term that resolved** → the ubiquitous language in `byissue/spec/`, **the moment it resolves — don't batch these up; capture them as they happen.** Where it lands and in what format is owned by [spec](spec.md). Under Talk, capture the proposal inline and write after the user confirms ([talk](talk.md)).
 - **A decision that passes all three gates** — hard to reverse, surprising without context, a real trade-off (the contract and format are owned by `SKILL.md`「什么内容可以写到哪一层」and `templates/entities/decision.md`) → `byissue/decisions/`. Offer sparingly: if any of the three is missing, skip it.
-- **Everything else you decided** → the conversation only. At Talk 收束 it lands in `byissue/talks/` — upstream's most serious open complaint is that these decisions evaporate with the context window, and this is where ByIssue goes beyond it.
+- **Everything else you decided** → the conversation only. At Talk 收束 it lands in `byissue/talks/`, where a settled discussion keeps the decisions that would otherwise evaporate with the context window.
 
 The ubiquitous language holds vocabulary and nothing else: no implementation details, no spec prose. What qualifies is owned by [spec](spec.md).
 

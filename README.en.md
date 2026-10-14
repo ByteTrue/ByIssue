@@ -164,27 +164,27 @@ After onboarding, the project root contains the following workspace. It is the i
 your-project/
 └── byissue/
     ├── talks/                  # Confirmed discussion synthesis
-    │   └── {NNN}-{name}.md
+    │   └── {date}-{name}.md
     ├── vision/                 # Target application world
     │   └── index.md
     ├── spec/                   # Current stable understanding
     │   └── index.md
     ├── epics/                  # Bounded larger changes
-    │   └── {NNN}-o|x|d-{name}/
+    │   └── {date}-o|x|d-{name}/
     │       └── spec.md
     ├── issues/                 # Closeable work, ff, and Explore
-    │   ├── {NNN}-o|x|d-{name}.md
-    │   ├── {NNN}-o|x|d-ff-{name}.md
-    │   └── {NNN}-o|x|d-{name}/   # Explore: index.md and path articles
+    │   ├── {date}-o|x|d-{name}.md
+    │   ├── {date}-o|x|d-ff-{name}.md
+    │   └── {date}-o|x|d-{name}/   # Explore: index.md and path articles
     ├── notes/                  # Reusable knowledge
-    │   └── {NNN}-{name}.md
+    │   └── {date}-{name}.md
     ├── decisions/              # Decision records
-    │   └── {NNN}-{name}.md
+    │   └── {date}-{name}.md
     └── tools/                  # Stable tools for proven workflows
 ```
 
-- `NNN` increments independently within the issues, epics, notes, decisions, and talks trees.
-- Closing changes `-o-` to `-x-` (delivered) or `-d-` (dropped); the number and name remain unchanged, and the file stays in its tree.
+- `{date}` is the creation date (`YYYY-MM-DD`). It needs no lookup of existing files, so parallel sessions and worktrees never have to ask for a number; items created the same day share the prefix, and the full filename carries uniqueness.
+- Closing changes `-o-` to `-x-` (delivered) or `-d-` (dropped); the date prefix and name remain unchanged, and the file stays in its tree.
 - A Talk is not written before the user confirms it. Vision target content, Epic closing, and dangerous operations also retain explicit human authorization.
 
 ## People retain control of state transitions
@@ -198,8 +198,6 @@ The aim is not to make AI run more steps automatically. It is to keep software u
 ByIssue originates from [CodeStable](https://github.com/codestable/CodeStable-Lite); CodeStable grew out of real development on [MA](https://github.com/liuzhengdongfortest/MA). Early vibe coding carried many features. When the same problem recurred and historical trade-offs could not be recalled reliably, the failure was not only model capability: the project lacked a way to preserve current understanding, control change, and capture new learning.
 
 It borrows practices from specifications, design, exploration, and Issues, but does not measure success by producing more artifacts. First judge how much management the change needs; then choose the smallest action and record that are sufficient. With the upstream dormant, ByIssue continues as an independent project without carrying legacy compatibility or migration logic.
-
-It borrows practices from specifications, design, exploration, and Issues, but does not measure success by producing more artifacts. First judge how much management the change needs; then choose the smallest action and record that are sufficient.
 
 ## Roadmap
 

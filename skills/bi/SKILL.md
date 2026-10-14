@@ -36,13 +36,13 @@ ByIssue 是一套理解和推进软件演化的方法。它用 Vision、Project 
 | 主姿态 | 用户常这样说 | 必读 | 按需读 | 默认边界 |
 |---|---|---|---|---|
 | **接入** | 初始化 bi、接入 ByIssue、补齐 `byissue/` | [onboard](references/onboard.md) | — | 必须明确授权；不编造业务内容 |
-| **讨论** | 聊聊、先理清、想清楚再做、帮我规划一下、拷问我 | [talk](references/talk.md)、[grilling](references/grilling.md)、[domain-modeling](references/domain-modeling.md) | [docs](references/docs.md)；具体变化 → [quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 用户确认前不落盘，不建 issue、epic 或 vision |
+| **讨论** | 聊聊、先理清、想清楚再做、帮我规划一下、拷问我、多轮问清楚 | [talk](references/talk.md)、[grilling](references/grilling.md)、[domain-modeling](references/domain-modeling.md) | [docs](references/docs.md)；具体变化 → [quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 用户确认前不落盘，不建 issue、epic 或 vision |
 | **愿景** | 应用将来什么样、整理 vision、产品全景 | [vision](references/vision.md)、[grilling](references/grilling.md)、[domain-modeling](references/domain-modeling.md) | [docs](references/docs.md)；质量方向 → [quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 确认后才写 vision；不强迫创建开发事项 |
 | **规格** | 维护 spec、当前真相、epic 活规格 | [spec](references/spec.md) | [docs](references/docs.md)；质量约束 → [quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 只写仍然成立的结论 |
 | **理解现状** | 怎么工作的、这条链路、影响范围 | [explore](references/explore.md) | [docs](references/docs.md)；服务具体变化 → [quality](references/quality.md) | 先解释现状；复杂且值得复用时才建 Explore Issue |
 | **修 bug** | 坏了、不符合预期、debug、修这个 bug | [complain](references/complain.md) | [debug](references/debug.md)、[economy](references/economy.md)、[quality](references/quality.md)；结构 → [code-design](references/code-design.md) | 简单问题默认快改并留下 `ff`；复杂问题可受管理推进 |
 | **设计** | 怎么实现、先设计、实现方案 | [design](references/design.md) | [grilling](references/grilling.md)、[domain-modeling](references/domain-modeling.md)；[code-design](references/code-design.md)、[economy](references/economy.md)、[quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 不写代码；高风险先安排穿刺顺序 |
-| **快交付** | 快速、快改、小改一下、直接开干、别走流程 | [fast](references/fast.md) | [economy](references/economy.md)；必要时 [quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 默认轻检索、验证并留下 `ff` |
+| **快交付** | 快速、快改、小改一下、顺手改一下、直接开干、别走流程 | [fast](references/fast.md) | [economy](references/economy.md)；必要时 [quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 默认轻检索、验证并留下 `ff` |
 | **受管理实现** | 做这个 issue、推进 epic、实现（有档）、穿刺/先打通 | [do](references/do.md) | [code-design](references/code-design.md)、[economy](references/economy.md)、[quality](references/quality.md)；现状不清 → [explore](references/explore.md)；UI → [ui-spec](references/ui-spec.md) | 完成不等于关闭；风险先穿刺，再加厚 |
 | **收尾** | 关闭、收尾、做完并沉淀、毕业回写 | [close](references/close.md) | [docs](references/docs.md)、[quality](references/quality.md)；有界简化 → [economy](references/economy.md) | 关闭需要用户授权；关闭后文件留在原树原位 |
 | **审代码** | review、评审、看看这 diff/PR | [code-design](references/code-design.md)（文末 Review） | [economy](references/economy.md)；相关时 → [quality](references/quality.md) | 用户点名才做；默认只审不改 |
@@ -76,10 +76,10 @@ ByIssue 是一套理解和推进软件演化的方法。它用 Vision、Project 
 
 用户明确说「不要痕迹 / 别写 issue / 别落盘 ff」时：
 
-- **不创建任何事项**，包括 `ff`；也不自动改 Vision；默认不 commit。
+- **不为这次行动创建任何事项**，包括 `ff`；也不自动改 Vision；默认不 commit。用户另外要求记一条时，那不是这次行动的一部分，照常处理。
 - **仍然跑开工协议、仍然验证。** 省掉的只是痕迹，不是判断和证据。
 - **真相失效仍须处理**：同步相关 project spec，或明确标记漂移并告诉用户。
-- 这条**不改变姿态**。「做这个 issue，但别留痕迹」仍然是受管理实现，走 [do](references/do.md)，只是不落 `ff`；它不会因为出现「不要痕迹」就变成快改。
+- 这条**不改变姿态**。「做这个 issue，但别留痕迹」仍然是受管理实现，走 [do](references/do.md)；它不会因为出现「不要痕迹」就变成快改。
 
 这是这条例外的唯一出处，各姿态文件只链接过来，不重述。
 
@@ -117,28 +117,28 @@ byissue/
 ├── spec/                           当前稳定真相
 │   ├── index.md                    Project Spec 地图
 │   └── ...                         按场景或能力展开
-├── epics/                          有界的大变化；本树独立编号
-│   ├── EEE-o|x-{Epic名}/
+├── epics/                          有界的大变化；文件名带创建日期
+│   ├── {YYYY-MM-DD}-o|x|d-{Epic名}/
 │   │   ├── spec.md                 该 Epic 唯一权威的活规格
 │   │   └── issues/                 只属于该 Epic 的 issues 树
 ├── issues/                         不属于单个 Epic 的独立 issues 树
-├── decisions/                      拍板记录；本树独立编号
-│   └── NNN-{主题}.md               1–5 句：选了什么、为什么
-├── notes/                          可复用知识；本树独立编号
-│   └── NNN-{主题}.md
-├── talks/                          尚未落定的讨论；本树独立编号
-│   └── NNN-{议题}.md
+├── decisions/                      拍板记录；文件名带创建日期
+│   └── {YYYY-MM-DD}-{主题}.md      1–5 句：选了什么、为什么
+├── notes/                          可复用知识；文件名带创建日期
+│   └── {YYYY-MM-DD}-{主题}.md
+├── talks/                          尚未落定的讨论；文件名带创建日期
+│   └── {YYYY-MM-DD}-{议题}.md
 └── tools/                          稳定、可重复执行的流程工具
     └── ...                         说明、脚本及其所需资源
 ```
 
-根 `issues/` 与每个 Epic 内的 `issues/` 使用同一种结构，但各自独立编号：
+根 `issues/` 与每个 Epic 内的 `issues/` 使用同一种结构，各自独立：
 
 ```text
 issues/
-├── NNN-o|x|d-{事项}.md             常规 Issue（o=开、x=交付关闭、d=放弃关闭）
-├── NNN-o|x|d-ff-{事项}.md          快改记录
-├── NNN-o|x|d-{探索名}/             Explore Issue
+├── {YYYY-MM-DD}-o|x|d-{事项}.md    常规 Issue（o=开、x=交付关闭、d=放弃关闭）
+├── {YYYY-MM-DD}-o|x|d-ff-{事项}.md 快改记录
+├── {YYYY-MM-DD}-o|x|d-{探索名}/    Explore Issue
 │   ├── index.md                    认知地图、边界、结论与毕业位置
 │   └── *.md                        按「触发→结果」组织的路径文章
 ```
@@ -162,20 +162,20 @@ issues/
 | **Note** | 哪些知识、证据、步骤与坑点在未来仍值得复用 |
 | **Tool** | 哪段已跑通的流程已经稳定到可以重复执行，同时仍需守住哪些危险边界 |
 
-### 路径、命名与编号
+### 路径与命名
 
-每棵编号树分别编号：根 `issues/`、每个 Epic 的 `issues/`、`epics/`、`notes/`、`talks/` 都从本树已有最大开头数字加 1。编号至少三位；超过 999 后继续使用 `1000`、`1001`，不设上限。
+`issues/`（根与各 Epic 内）、`epics/`、`notes/`、`talks/`、`decisions/` 的文件名都以创建当日的日期开头（`YYYY-MM-DD`，用 `date +%F` 取，不要凭记忆填）。日期不读任何已有文件，所以并行会话、worktree 与克隆不需要查号、也不会互相占号；同一天建的多个事项共享前缀，**唯一性由完整文件名承担，不是由前缀**。若两个并行会话对同一需求抽出了同一个 `{名}`，在合并后把后到者改名并修正指向它的引用（修引用的锚点与判法见 [close](references/close.md)「原则」）；路径里的日期与名称都不表达顺序，无需追求先来后到。
 
-Issue 编号不是全局身份，同一棵树里也可能有多个事项共用同一个编号——并行会话各自取「最大序号 + 1」就会撞，这是已接受的代价。因此**引用任何事项都必须给完整文件名或目录名**（`issues/018-x-feishu-first-class-entry/`），不要写裸编号（`Issue 018`）。跨 Epic 引用再补完整路径，或写成 `Epic NNN / Issue NNN` 并附文件名。
+事项的唯一标识是**完整路径名**：文件型事项给完整文件名（`issues/2026-09-21-x-feishu-entry.md`），Explore 这类目录型事项给完整目录名（`issues/2026-09-21-o-feishu-entry/`）；跨 Epic 引用写成 `byissue/epics/{YYYY-MM-DD}-o|x|d-{Epic名}/issues/{YYYY-MM-DD}-o|x|d-{名}.md`。
 
 | 形态 | 路径 |
 |---|---|
-| 独立 Issue | `byissue/issues/{NNN}-o\|x-{名}.md` |
-| Epic Issue | `byissue/epics/{EEE}-o\|x-{epic}/issues/{NNN}-o\|x-{名}.md` |
-| 快改 | 所属 issues 树下 `{NNN}-o|x|d-ff-{名}.md`；`type: ff`；模板 `ff-issue.md` |
-| Explore Issue | 所属 issues 树下 `{NNN}-o\|x-{名}/index.md` |
-| Epic | `byissue/epics/{NNN}-o\|x-{名}/spec.md`；每个 Epic 只有一份权威 spec |
-| Talk / Note / Decision | `{NNN}-{名}.md`，不使用 `o`、`x` 或 `ff` |
+| 独立 Issue | `byissue/issues/{YYYY-MM-DD}-o\|x\|d-{名}.md` |
+| Epic Issue | `byissue/epics/{YYYY-MM-DD}-o\|x\|d-{Epic名}/issues/{YYYY-MM-DD}-o\|x\|d-{名}.md` |
+| 快改 | 所属 issues 树下 `{YYYY-MM-DD}-o|x|d-ff-{名}.md`；`type: ff`；模板 `ff-issue.md` |
+| Explore Issue | 所属 issues 树下 `{YYYY-MM-DD}-o\|x\|d-{名}/index.md` |
+| Epic | `byissue/epics/{YYYY-MM-DD}-o\|x\|d-{Epic名}/spec.md`；每个 Epic 只有一份权威 spec |
+| Talk / Note / Decision | `{YYYY-MM-DD}-{名}.md`，不使用 `o`、`x` 或 `ff` |
 
 **归属由路径决定：**
 
@@ -185,7 +185,7 @@ Issue 编号不是全局身份，同一棵树里也可能有多个事项共用�
 - `ff`、bug、feature、chore、refactor 与 Explore Issue 都遵守同一归属规则。
 - Issue 的归属由物理路径表达，不使用 `epic` frontmatter。归属改变时移动原事项并更新明确引用，不复制第二份。
 
-关闭 Issue 时，将目标路径中的 `-o-` 改为 `-x-`（交付关闭）或 `-d-`（放弃关闭），序号与名称不变。关闭 Epic 时只改 Epic 目录名，内部 Issue 随目录保留。状态由路径唯一表达：文件名与目录名是状态的唯一出处，不设 frontmatter 状态字段。
+关闭 Issue 时，将目标路径中的 `-o-` 改为 `-x-`（交付关闭）或 `-d-`（放弃关闭），日期前缀与名称不变。关闭 Epic 时改 Epic 目录名，内部 Issue 随目录整体保留。状态由路径唯一表达：文件名与目录名是状态的唯一出处，不设 frontmatter 状态字段。
 
 常规 Issue 使用 `templates/entities/issue.md`，`type` 只能是 `feature|bug|chore|refactor`。`ff` 只回答四件事：做了什么、改了哪些、怎样验证、对 `byissue/` 有什么影响；不要写成迷你 Design，也不要保留空槽位。
 
@@ -208,7 +208,7 @@ Talk 写入 `byissue/talks/`；Note 写入 `byissue/notes/`，同主题更新原
 
 出现冲突时，按 `用户最新确认 > 证据与代码 > 疑似过期的 spec` 判断。Epic 与 Vision 不一致时，先说明这是收窄实现还是修改目标，不要静默绕过。
 
-### 完成、关闭、done 与 Git
+### 完成、关闭与 Git
 
 | 状态 | 含义 |
 |---|---|
@@ -246,7 +246,7 @@ Talk 写入 `byissue/talks/`；Note 写入 `byissue/notes/`，同主题更新原
 
 ## 3. 开工协议
 
-在设计、实现、快改、修 bug、维护规格或穿刺之前，如果项目已有 `byissue/`，先完成以下动作。各 reference 不再重复展开这套协议。
+在设计、实现、快改、修 bug、维护规格或穿刺之前，如果项目已有 `byissue/`，先完成以下动作。各 reference 不重复展开这套协议。
 
 1. **浏览路径并检索关键词。** 扫描 `byissue/` 的结构与当前主题；同一会话中已经扫描且没有新写入时，复用已有结果。
 2. **按权重深入读取。** 先读 `spec/`，再读相关 Epic 与 Notes，然后递归检索根目录和各 Epic 的 issues 树，包括 `-x-`、`-d-` 与 `ff`；最后按需读取 Talks、Vision 和 Tools。

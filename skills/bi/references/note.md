@@ -24,11 +24,11 @@ notes 按 [docs](docs.md) 组织：服务复用，不复刻聊天流水。
 
 值得提示用户升为启动规则的典型：固定测试/构建命令、环境陷阱、目录禁区、长期命名约定。提示一句即可，文件仍然只写进 notes。
 
-写 notes：`byissue/notes/{NNN}-{名称}.md`（扁平序号，见 `SKILL.md`）。标题和正文保留可搜关键词。
+写 notes：`byissue/notes/{YYYY-MM-DD}-{名}.md`（直接放在 `notes/` 下，不按年/月分目录；命名见 `SKILL.md`）。标题和正文保留可搜关键词。
 
 ## 产物契约
 
-`byissue/notes/{NNN}-{名称}.md`：读者先要**结论**，再要**何时适用**与**细节/证据**；见 `templates/entities/notes.md` 自检。标题与正文保留可搜关键词。一次一个主题；无关主题拆开。
+`byissue/notes/{YYYY-MM-DD}-{名}.md`：读者先要**结论**，再要**何时适用**与**细节/证据**；见 `templates/entities/notes.md` 自检。标题与正文保留可搜关键词。一次一个主题；无关主题拆开。
 
 ## 收尾汇报
 

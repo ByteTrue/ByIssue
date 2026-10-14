@@ -1,6 +1,6 @@
 # Spec：维护当前真相与活规格
 
-把当前现实或有边界的变化写进正确层级：项目主线进入 `byissue/spec/`，大需求活规格边界进入 `byissue/epics/{NNN}-o-{名称}/spec.md`。目标应用全景由 Vision 模式维护，不写进 Project Spec。
+把当前现实或有边界的变化写进正确层级：项目主线进入 `byissue/spec/`，大需求活规格边界进入 `byissue/epics/{YYYY-MM-DD}-o-{Epic名}/spec.md`。目标应用全景由 Vision 模式维护，不写进 Project Spec。
 
 ## 背景
 
@@ -32,7 +32,7 @@ Project Spec 因此是结构性必腐的一层，除非它只留重建不出来�
 
 已关闭 Epic 与 Issue 是设计历史和证据，不是当前真相的替代品。
 
-**目标世界由 Vision 承担。** Project Spec 不再保存“将来想做什么”的产品全景。Vision 与当前现实不同是正常差距；Epic 负责圈住一次缩小差距的变化。发现目标方向需要调整时切换 Vision，不在 Project Spec 或 Epic 中静默改写。
+**目标世界由 Vision 承担。** Project Spec 只保存当前现实，不保存“将来想做什么”的产品全景。Vision 与当前现实不同是正常差距；Epic 负责圈住一次缩小差距的变化。发现目标方向需要调整时切换 Vision，不在 Project Spec 或 Epic 中静默改写。
 
 **质量约束属于规格，不属于检查表。** 只有长期有效、会约束后续设计或验收的质量目标与取舍才进入 project / epic spec。按九特征统一语言，但不列九项“满足 / 不适用”；一次变化的测试结果、基准数据和执行证据留在 issue。
 
@@ -47,9 +47,9 @@ Project Spec 因此是结构性必腐的一层，除非它只留重建不出来�
 先判断目标层级：
 
 - 项目长期真相、独立小需求沉淀、全局统一语言或架构方向 → 更新 `byissue/spec/`。
-- 大需求、跨模块变更、会分多批 issue、规格会反复变化 → 更新该 Epic 目录下的 `spec.md`（路径与编号见 `SKILL.md`；首个所属 Issue 创建时再建同目录 `issues/`）。
+- 大需求、跨模块变更、会分多批 issue、规格会反复变化 → 更新该 Epic 目录下的 `spec.md`（路径与命名见 `SKILL.md`；首个所属 Issue 创建时再建同目录 `issues/`）。
 - 跨越多个 Epic 的目标产品全景、候选方向或互斥实验 → 切换 Vision。
-- 没有现成 epic 但明显需要一条变更线 → 先说明为什么需要 epic；用户同意后创建 `{NNN}-o-{名称}/` 目录型 epic。
+- 没有现成 epic 但明显需要一条变更线 → 先说明为什么需要 epic；用户同意后创建 `{YYYY-MM-DD}-o-{Epic名}/` 目录型 epic。
 
 更新 project spec 时，先读 `byissue/spec/index.md`。按阅读路径找到最近的子层；缺少合适位置时，先补该层 `index.md` 或新建子层入口，不要把结论散落成平级文件。
 
@@ -71,7 +71,7 @@ Project Spec 因此是结构性必腐的一层，除非它只留重建不出来�
 
 project spec 默认入口是 `byissue/spec/index.md`，使用 `templates/entities/project-spec-index.md`。子层入口用 `templates/entities/spec-section-index.md`。
 
-epic 的权威入口是该 Epic 目录下的 `spec.md`（路径形态、关闭改名与编号见 `SKILL.md`），使用 `templates/entities/epic-spec.md`；有所属 Issue 时增加同目录 `issues/`，所属 Issue 均写入该目录。不要创建重复职责的 `index.md`、`plan.md` 或 `changes.md`。材料复杂时可增加按内容命名的相邻文档，但不能承载第二份状态或计划，并必须由 `spec.md` 说明为什么读、何时读。
+epic 的权威入口是该 Epic 目录下的 `spec.md`（路径形态、关闭改名与命名见 `SKILL.md`），使用 `templates/entities/epic-spec.md`；有所属 Issue 时增加同目录 `issues/`，所属 Issue 均写入该目录。不要创建重复职责的 `index.md`、`plan.md` 或 `changes.md`。材料复杂时可增加按内容命名的相邻文档，但不能承载第二份状态或计划，并必须由 `spec.md` 说明为什么读、何时读。
 
 `spec.md` 须让读者能回答模板自检中的问题（要改变什么、当前方案、架构与质量取舍、可推进/暂不推进、未确认项、关闭与合并候选等）；**信息职责**优先于固定章节名，内容少可合并，禁止空章凑模板。存在长期质量约束时写清适用条件、具体目标和取舍，不生成九项空清单。
 

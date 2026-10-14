@@ -14,7 +14,7 @@
 - **姿态（posture）**：用户此刻在做的那类事（讨论 / 快改 / 受管理实现 / 修 bug / 收尾…）。`bi` 先判断姿态，再只加载那个姿态需要的规则。姿态是**动作级**的：一次被授权的落盘动作不改变当前姿态。
 - **姿态文件 / 原则文件**：`references/` 下的 20 篇分成两类——姿态文件回答「这个姿态怎么行动」，原则文件是被多个姿态按需加载的尺子。**这个分类在文件系统里看不出来**，20 个 `.md` 平铺在一个目录里。
 - **Grilling（拷问循环）**：`references/grilling.md`，讨论 / 愿景 / 设计共用的多轮访谈 primitive，本体不写任何文件；落盘由调用它的姿态负责。终止条件是**决策树的前沿为空且用户确认**，不是轮数上限。**正文为上游 `mattpocock/skills` `grilling` 的逐字节镜像（ff 015）：勿手改，同步上游时整文件替换。**
-- **Domain modeling（领域建模反射）**：`references/domain-modeling.md`，访谈的伴随纪律——顶撞既有词汇、磨模糊词、编具体场景压边界、拿代码对照（读侧逐句照抄上游 `domain-modeling`），以及 grill-me / grill-with-docs 两份 docs 页的承重行为（谈不出来去原型、It's working if 判据）。写侧按 ByIssue 映射：术语 → `byissue/spec/` 统一语言，过三条件门的决策 → `byissue/decisions/`，其余留在对话、Talk 收束进 `byissue/talks/`。
+- **Domain modeling（领域建模反射）**：`references/domain-modeling.md`，访谈的伴随纪律——顶撞既有词汇、磨模糊词、编具体场景压边界、拿代码对照（读侧逐句照抄上游 `domain-modeling`），以及 grill-me / grill-with-docs 两份 docs 页的承重行为（谈不出来去原型、It's working if 判据）。写侧按 ByIssue 映射：术语 → `byissue/spec/` 统一语言，过三条件门的决策 → `byissue/decisions/`，其余留在对话、Talk 收束进 `byissue/talks/`。**读侧是上游的句级镜像：勿按项目口味改写，同步上游时整段替换；写侧三种去向是 ByIssue 的映射，可以改。**
 - **两段路由**：技能开不开是第一段，由宿主对 frontmatter `description` 做纯文本匹配决定；选哪个姿态是第二段，由 `SKILL.md` 的姿态表决定。两套触发词分别维护，checker 断言每个姿态至少有一个触发词出现在 description 里。description 里的条件式触发（「当项目存在某文件时」）无效。
 - **源头与部署副本**：`skills/bi/` 是源头，`~/.agents/skills/bi/` 是 rsync 出去的副本。改副本无效。
 - **描述句 / 祈使句**：写规则的两种语气。描述句规范产物归属（「坑点 → notes」），祈使句指挥会话中的动作（「必须在收尾汇报中列出并询问」）。**只有祈使句会被执行**，这是本项目反复踩到的坑。同一坑还有一种变体：**借了名词没借动词**——1.1.0 把 grilling 的「前沿清空，即对齐完成」抄进 `talk.md`，却没有树、没有「重算前沿」这个动作、没有终止条件的用户侧判据，结果模型第一轮就自我宣告满足（原「最多三到五轮深挖」是全场唯一有数值的指令，被当成了目标）。还有第三种变体：**祈使句绑错时点**——「沉淀收割（收尾必做）」（1.3.0 引入，活到 1.8.1）说「在收尾汇报中列出」，绑了时点，但绑在用户合并后才说的那个词上，候选就拖到合并后冒头（ff 018）。祈使句的修复不是加语气，而是把锚点挪对：**提交是所有裁决共享的终点线**，因为它是「一切还能装进同一笔 commit、同一轮 CI」的最后时刻。
@@ -32,12 +32,14 @@
 ## 发布链路
 
 ```text
-改 skills/bi/ → python3 tools/check-skill-repository.py → rsync 同步 ~/.agents/skills/bi/
-              → 动过姿态表则起 subagent 按 tools/posture-scenarios.md 跑一轮行为评测
+改 skills/bi/ → python3 tools/check-skill-repository.py
+              → 起 subagent 按 tools/prompt-review.md 跑一轮提示词对抗性审查，发现即修
+              → 动过姿态表则再按 tools/posture-scenarios.md 跑一轮行为评测
+              → rsync 同步 ~/.agents/skills/bi/
               → 更新 VERSION + CHANGELOG.md 同名小节 → 单个 commit → npx skills 分发
 ```
 
-rsync 那一步没有任何代码强制，忘了就等于没改。checker 的取舍见 `byissue/decisions/001-checker-verifies-links-not-contract-wording.md`；它带来一条硬约束：**新增 reference 或 template 必须在某处用完整路径被引用**，否则报 `packaged but nothing references it`。
+三层检查分工见 `tools/prompt-review.md` 末尾的表。rsync 那一步没有任何代码强制，忘了就等于没改；同理，对抗性审查也没有代码强制，只有本文件这一行义务。checker 的取舍见 `byissue/decisions/001-checker-verifies-links-not-contract-wording.md`；它带来一条硬约束：**新增 reference 或 template 必须在某处用完整路径被引用**，否则报 `packaged but nothing references it`。
 
 ## 当前没有的东西
 

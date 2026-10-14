@@ -164,27 +164,27 @@ ByIssue 使用 [ISO/IEC 25010:2023](https://www.iso.org/standard/78176.html) 的
 your-project/
 └── byissue/
     ├── talks/                  # 已确认的讨论整理
-    │   └── {NNN}-{name}.md
+    │   └── {date}-{name}.md
     ├── vision/                 # 目标应用世界
     │   └── index.md
     ├── spec/                   # 当前稳定理解
     │   └── index.md
     ├── epics/                  # 有界大变化
-    │   └── {NNN}-o|x|d-{name}/
+    │   └── {date}-o|x|d-{name}/
     │       └── spec.md
     ├── issues/                 # 可关闭行动、ff 与 Explore
-    │   ├── {NNN}-o|x|d-{name}.md
-    │   ├── {NNN}-o|x|d-ff-{name}.md
-    │   └── {NNN}-o|x|d-{name}/   # Explore：含 index.md 与路径文章
+    │   ├── {date}-o|x|d-{name}.md
+    │   ├── {date}-o|x|d-ff-{name}.md
+    │   └── {date}-o|x|d-{name}/   # Explore：含 index.md 与路径文章
     ├── notes/                  # 可复用知识
-    │   └── {NNN}-{name}.md
+    │   └── {date}-{name}.md
     ├── decisions/              # 拍板记录
-    │   └── {NNN}-{name}.md
+    │   └── {date}-{name}.md
     └── tools/                  # 已跑通并稳定的流程工具
 ```
 
-- `NNN` 在 issues、epics、notes、decisions、talks 各自的树内独立递增。
-- 关闭时把路径中的 `-o-` 改为 `-x-`（交付）或 `-d-`（放弃）；名称和编号不变，文件留在原树原位。
+- `{date}` 是创建当天的日期（`YYYY-MM-DD`）。它不读任何已有文件就能写出，因此并行会话与 worktree 不需要查号；同一天建的多个事项共享前缀，唯一性由完整文件名承担。
+- 关闭时把路径中的 `-o-` 改为 `-x-`（交付）或 `-d-`（放弃）；名称和日期前缀不变，文件留在原树原位。
 - Talk 在用户确认前不落盘；Vision 的目标内容、Epic 关闭和危险操作也都保留人为授权。
 
 ## 人始终掌握状态迁移
