@@ -1,3 +1,13 @@
+## 1.9.1
+
+- Sediment harvest now covers the entire course of work rather than only fixed issue sections, and removes the host-memory assumption added in 1.7.1.
+- Evidence from a real session (`01a15292-98cd-7315-8258-e67f1c70408b` in byspace): after the initial `ff` record landed, adversarial review and CI exposed two deeper pitfalls (`.strict()` nested wire compatibility and an uncommitted generated `byspace.config.v1.json`). The agent updated the `ff` body and wrote a client memory, then treated experience capture as settled — skipping a re-run of sediment harvest and missing both an existing same-topic note (`notes/002`) and a note whose claim had just gone stale (`notes/2026-10-16`).
+- Three changes close that loop positively without naming or forbidding any external memory plugin:
+  1. `skills/bi/SKILL.md` replaces the 1.7.1 paragraph ("宿主自带的记忆层同样不是去处…") with a positive completion criterion: reusable experience, implicit constraints, and trade-offs count as captured in `bi` only when written into repo-tracked `byissue/` artifacts (`notes/`, `spec/`, `decisions/`). Assuming a specific client memory extension exists (or telling the model not to use it) is noise when the extension is absent or named differently.
+  2. `skills/bi/references/close.md` and `skills/bi/references/fast.md` widen sediment harvest to scan all newly learned constraints and pitfalls from the full run and to cross-check existing `notes/` and `spec/` for same-topic updates or descriptions invalidated by the change; `fast.md` also re-runs sediment harvest whenever subsequent iterations update an `ff`.
+  3. Removed the duplicate negative sentences ("不要问『要不要写个 note』/『这些值得沉淀吗』，那是判断题") from `fast.md` and `close.md` — `SKILL.md` (提问必须带建议) already owns that contract, and repeating the negative phrasing in references both violated single-ownership and primed the exact `要不要…？` template.
+- Added the "do not assume optional external extensions exist" criterion under `byissue/spec/index.md` (改这个仓库要守什么).
+
 ## 1.9.0
 
 - The item prefix is now the creation date (`YYYY-MM-DD`) instead of a per-tree sequence number. `byissue/issues/{YYYY-MM-DD}-o-fix-login.md`, `byissue/notes/{YYYY-MM-DD}-topic.md` and every other shape keep their state letters, `ff` marker and name exactly as before — only the leading `001` became a date. 15 files moved with it: `skills/bi/SKILL.md`; ten references (`close`, `complain`, `docs`, `do`, `explore`, `fast`, `maketools`, `note`, `spec`, `talk` — path shapes plus the `编号` → `命名` wording); `check_open_issues.py`'s prefix regex; the decision template's `superseded-by` note; and both READMEs.
