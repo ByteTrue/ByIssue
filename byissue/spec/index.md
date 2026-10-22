@@ -39,7 +39,7 @@
               → 更新 VERSION + CHANGELOG.md 同名小节 → 单个 commit → npx skills 分发
 ```
 
-三层检查分工见 `tools/prompt-review.md` 末尾的表。rsync 那一步没有任何代码强制，忘了就等于没改；同理，对抗性审查也没有代码强制，只有本文件这一行义务。checker 的取舍见 `byissue/decisions/001-checker-verifies-links-not-contract-wording.md`；它带来一条硬约束：**新增 reference 或 template 必须在某处用完整路径被引用**，否则报 `packaged but nothing references it`。
+失败模式的历史分布见 `tools/retro-failure-modes.md`（一次性分析，不随链路重跑）。三层检查分工见 `tools/prompt-review.md` 末尾的表。rsync 那一步没有任何代码强制，忘了就等于没改；同理，对抗性审查也没有代码强制，只有本文件这一行义务。checker 的取舍见 `byissue/decisions/001-checker-verifies-links-not-contract-wording.md`；它带来一条硬约束：**新增 reference 或 template 必须在某处用完整路径被引用**，否则报 `packaged but nothing references it`。
 
 ## 当前没有的东西
 
