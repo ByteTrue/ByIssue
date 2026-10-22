@@ -118,7 +118,7 @@ byissue/
 │   ├── index.md                    Project Spec 地图
 │   └── ...                         按场景或能力展开
 ├── epics/                          有界的大变化；文件名带创建日期
-│   ├── {YYYY-MM-DD}-o|x|d-{Epic名}/
+│   ├── {YYYY-MM-DD}-o|x|w-{Epic名}/
 │   │   ├── spec.md                 该 Epic 唯一权威的活规格
 │   │   └── issues/                 只属于该 Epic 的 issues 树
 ├── issues/                         不属于单个 Epic 的独立 issues 树
@@ -136,14 +136,14 @@ byissue/
 
 ```text
 issues/
-├── {YYYY-MM-DD}-o|x|d-{事项}.md    常规 Issue（o=开、x=交付关闭、d=放弃关闭）
-├── {YYYY-MM-DD}-o|x|d-ff-{事项}.md 快改记录
-├── {YYYY-MM-DD}-o|x|d-{探索名}/    Explore Issue
+├── {YYYY-MM-DD}-o|x|w-{事项}.md    常规 Issue（o=open 开、x=交付关闭、w=won't do 放弃关闭）
+├── {YYYY-MM-DD}-o|x|w-ff-{事项}.md 快改记录
+├── {YYYY-MM-DD}-o|x|w-{探索名}/    Explore Issue
 │   ├── index.md                    认知地图、边界、结论与毕业位置
 │   └── *.md                        按「触发→结果」组织的路径文章
 ```
 
-图中的 `o|x|d` 表示取 `o`（open）、`x`（交付关闭）或 `d`（放弃关闭），不是路径中的字面字符。路径表达唯一归属：只属于一个 Epic 的事项进入该 Epic 的 `issues/`，其余留在根 `issues/`。常规 Issue 与 `ff` 是单文件；只有需要独立调查工作区的 Explore Issue 使用目录。Epic 的 `issues/` 在首个所属事项创建时再建立。
+图中的 `o|x|w` 表示取 `o`（open）、`x`（交付关闭）或 `w`（won't do，放弃关闭），不是路径中的字面字符。路径表达唯一归属：只属于一个 Epic 的事项进入该 Epic 的 `issues/`，其余留在根 `issues/`。常规 Issue 与 `ff` 是单文件；只有需要独立调查工作区的 Explore Issue 使用目录。Epic 的 `issues/` 在首个所属事项创建时再建立。
 
 这张图是定位地图，不是每次工作的必读清单。按当前姿态和关键词命中逐层下钻，只读取足以支撑判断的局部。
 
@@ -166,16 +166,16 @@ issues/
 
 `issues/`（根与各 Epic 内）、`epics/`、`notes/`、`talks/`、`decisions/` 的文件名都以创建当日的日期开头（`YYYY-MM-DD`，用 `date +%F` 取，不要凭记忆填）。日期不读任何已有文件，所以并行会话、worktree 与克隆不需要查号、也不会互相占号；同一天建的多个事项共享前缀，**唯一性由完整文件名承担，不是由前缀**。若两个并行会话对同一需求抽出了同一个 `{名}`，在合并后把后到者改名并修正指向它的引用（修引用的锚点与判法见 [close](references/close.md)「原则」）；路径里的日期与名称都不表达顺序，无需追求先来后到。
 
-事项的唯一标识是**完整路径名**：文件型事项给完整文件名（`issues/2026-09-21-x-feishu-entry.md`），Explore 这类目录型事项给完整目录名（`issues/2026-09-21-o-feishu-entry/`）；跨 Epic 引用写成 `byissue/epics/{YYYY-MM-DD}-o|x|d-{Epic名}/issues/{YYYY-MM-DD}-o|x|d-{名}.md`。
+事项的唯一标识是**完整路径名**：文件型事项给完整文件名（`issues/2026-09-21-x-feishu-entry.md`），Explore 这类目录型事项给完整目录名（`issues/2026-09-21-o-feishu-entry/`）；跨 Epic 引用写成 `byissue/epics/{YYYY-MM-DD}-o|x|w-{Epic名}/issues/{YYYY-MM-DD}-o|x|w-{名}.md`。
 
 | 形态 | 路径 |
 |---|---|
-| 独立 Issue | `byissue/issues/{YYYY-MM-DD}-o\|x\|d-{名}.md` |
-| Epic Issue | `byissue/epics/{YYYY-MM-DD}-o\|x\|d-{Epic名}/issues/{YYYY-MM-DD}-o\|x\|d-{名}.md` |
-| 快改 | 所属 issues 树下 `{YYYY-MM-DD}-o|x|d-ff-{名}.md`；`type: ff`；模板 `ff-issue.md` |
-| Explore Issue | 所属 issues 树下 `{YYYY-MM-DD}-o\|x\|d-{名}/index.md` |
-| Epic | `byissue/epics/{YYYY-MM-DD}-o\|x\|d-{Epic名}/spec.md`；每个 Epic 只有一份权威 spec |
-| Talk / Note / Decision | `{YYYY-MM-DD}-{名}.md`，不使用 `o`、`x` 或 `ff` |
+| 独立 Issue | `byissue/issues/{YYYY-MM-DD}-o\|x\|w-{名}.md` |
+| Epic Issue | `byissue/epics/{YYYY-MM-DD}-o\|x\|w-{Epic名}/issues/{YYYY-MM-DD}-o\|x\|w-{名}.md` |
+| 快改 | 所属 issues 树下 `{YYYY-MM-DD}-o\|x\|w-ff-{名}.md`；`type: ff`；模板 `ff-issue.md` |
+| Explore Issue | 所属 issues 树下 `{YYYY-MM-DD}-o\|x\|w-{名}/index.md` |
+| Epic | `byissue/epics/{YYYY-MM-DD}-o\|x\|w-{Epic名}/spec.md`；每个 Epic 只有一份权威 spec |
+| Talk / Note / Decision | `{YYYY-MM-DD}-{名}.md`，不使用 `o`、`x`、`w` 或 `ff` |
 
 **归属由路径决定：**
 
@@ -185,7 +185,7 @@ issues/
 - `ff`、bug、feature、chore、refactor 与 Explore Issue 都遵守同一归属规则。
 - Issue 的归属由物理路径表达，不使用 `epic` frontmatter。归属改变时移动原事项并更新明确引用，不复制第二份。
 
-关闭 Issue 时，将目标路径中的 `-o-` 改为 `-x-`（交付关闭）或 `-d-`（放弃关闭），日期前缀与名称不变。关闭 Epic 时改 Epic 目录名，内部 Issue 随目录整体保留。状态由路径唯一表达：文件名与目录名是状态的唯一出处，不设 frontmatter 状态字段。
+关闭 Issue 时，将目标路径中的 `-o-` 改为 `-x-`（交付关闭）或 `-w-`（放弃关闭），日期前缀与名称不变。关闭 Epic 时改 Epic 目录名，内部 Issue 随目录整体保留。状态由路径唯一表达：文件名与目录名是状态的唯一出处，不设 frontmatter 状态字段。
 
 常规 Issue 使用 `templates/entities/issue.md`，`type` 只能是 `feature|bug|chore|refactor`。`ff` 只回答四件事：做了什么、改了哪些、怎样验证、对 `byissue/` 有什么影响；不要写成迷你 Design，也不要保留空槽位。
 
@@ -213,7 +213,7 @@ Talk 写入 `byissue/talks/`；Note 写入 `byissue/notes/`，同主题更新原
 | 状态 | 含义 |
 |---|---|
 | **完成** | 实现和验证已经达到目标 |
-| **关闭** | 用户授权收尾：`o` → `x` 或 `d`，并完成毕业回写；关闭的事项留在原树原位；Git 操作按提交契约执行 |
+| **关闭** | 用户授权收尾：`o` → `x` 或 `w`，并完成毕业回写；关闭的事项留在原树原位；Git 操作按提交契约执行 |
 
 **默认不做三件事：不自动 commit、不自动 push / 发布、不自动关闭常规 Issue。** 三件都要用户开口。
 
@@ -249,7 +249,7 @@ Talk 写入 `byissue/talks/`；Note 写入 `byissue/notes/`，同主题更新原
 在设计、实现、快改、修 bug、维护规格或穿刺之前，如果项目已有 `byissue/`，先完成以下动作。各 reference 不重复展开这套协议。
 
 1. **浏览路径并检索关键词。** 扫描 `byissue/` 的结构与当前主题；同一会话中已经扫描且没有新写入时，复用已有结果。
-2. **按权重深入读取。** 先读 `spec/`，再读相关 Epic 与 Notes，然后递归检索根目录和各 Epic 的 issues 树，包括 `-x-`、`-d-` 与 `ff`；最后按需读取 Talks、Vision 和 Tools。
+2. **按权重深入读取。** 先读 `spec/`，再读相关 Epic 与 Notes，然后递归检索根目录和各 Epic 的 issues 树，包括 `-x-`、`-w-` 与 `ff`；最后按需读取 Talks、Vision 和 Tools。
 3. **判断现状是否足够。** 能否用一句话说明“触发如何经过系统产生结果”？不能则先做现状说明；跨多个边界或理解值得复用时，再建立 Explore Issue。
 4. **选择管理强度。** 按前文“选择管理强度”执行。
 5. **处理文档与代码冲突。** 先核对证据，再修正真相；不要用代码静默覆盖已记录的取舍，也不要盲信可能过期的文档。

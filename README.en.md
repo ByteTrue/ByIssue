@@ -170,12 +170,12 @@ your-project/
     ├── spec/                   # Current stable understanding
     │   └── index.md
     ├── epics/                  # Bounded larger changes
-    │   └── {date}-o|x|d-{name}/
+    │   └── {date}-o|x|w-{name}/
     │       └── spec.md
     ├── issues/                 # Closeable work, ff, and Explore
-    │   ├── {date}-o|x|d-{name}.md
-    │   ├── {date}-o|x|d-ff-{name}.md
-    │   └── {date}-o|x|d-{name}/   # Explore: index.md and path articles
+    │   ├── {date}-o|x|w-{name}.md
+    │   ├── {date}-o|x|w-ff-{name}.md
+    │   └── {date}-o|x|w-{name}/   # Explore: index.md and path articles
     ├── notes/                  # Reusable knowledge
     │   └── {date}-{name}.md
     ├── decisions/              # Decision records
@@ -184,7 +184,7 @@ your-project/
 ```
 
 - `{date}` is the creation date (`YYYY-MM-DD`). It needs no lookup of existing files, so parallel sessions and worktrees never have to ask for a number; items created the same day share the prefix, and the full filename carries uniqueness.
-- Closing changes `-o-` to `-x-` (delivered) or `-d-` (dropped); the date prefix and name remain unchanged, and the file stays in its tree.
+- Closing changes `-o-` to `-x-` (delivered) or `-w-` (won't do); the date prefix and name remain unchanged, and the file stays in its tree.
 - A Talk is not written before the user confirms it. Vision target content, Epic closing, and dangerous operations also retain explicit human authorization.
 
 ## People retain control of state transitions
