@@ -18,7 +18,7 @@ created: 2026-09-21
 
 `bi` 的全部行为链是「读这句话 → 选一个姿态 → 只读那几个文件 → 按那套规则做事」。选错姿态后面全错：说「快速改一下」却开始建 issue 写设计，说「做这个 issue」却当快改随手改了不留痕。散文在这个项目里就是逻辑，而 `economy.md` 自己要求「非平凡逻辑变化至少留下一个会在行为损坏时失败的检查」——技能本身是唯一的例外。
 
-`tools/check-skill-repository.py` 只挡路径漂移，挡不住语义漂移；这是 `byissue/decisions/001` 明确留下的缺口。
+`tools/check-skill-repository.py` 只挡路径漂移，挡不住语义漂移；这是 `byissue/decisions/001-checker-verifies-links-not-contract-wording.md` 明确留下的缺口。
 
 ## 方案方向
 

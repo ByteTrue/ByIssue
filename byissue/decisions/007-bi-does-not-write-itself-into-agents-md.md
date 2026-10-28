@@ -2,7 +2,7 @@
 kind: decision
 title: "bi 不为自己的可触发性去写 AGENTS.md"
 created: 2026-09-21
-superseded-by: "008"
+superseded-by: "008-bi-never-writes-agents-md"
 ---
 
 # bi 不为自己的可触发性去写 AGENTS.md

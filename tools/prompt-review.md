@@ -48,7 +48,7 @@
 > 4. **单一归属**：同一契约是否在两处被重述且可能漂移；`SKILL.md` 已有的规则是否在 reference 里被重复（`SKILL.md` 常驻上下文，reference 按需加载）。
 > 5. **自足性**：`skills/bi/` 里的**每一处路径**是否都能在用户项目里存在。注意两条隐藏通道：`init_byissue.py` 会把 `templates/entities/` 的内容**逐字写进用户项目**，模板里的技能包路径会跟着落地；`tools/`、`byissue/`、`CHANGELOG`、`VERSION`、`WHY BYISSUE.md` 都不分发。
 > 6. **可执行性**：描述句（规范产物归属）是否被当成动作期待；祈使句是否绑对了时点（本项目已知「只有祈使句会被执行」）。
-> 7. **交叉引用完整**：以 `python3 tools/check-skill-repository.py` 的输出为准，不要重做它已经断言的事。**它没有覆盖的一处**：frontmatter `description` 里有没有**存在但无姿态认领**的触发词（checker 只做 posture→description 单向覆盖）。
+> 7. **交叉引用完整**：以 `python3 tools/check-skill-repository.py` 的输出为准（已覆盖双向链接可达、模板自足性、姿态与 frontmatter `description` 双向触发词认领、本仓事项引用），不要重做它已经断言的事。
 >
 > **每条发现给三样东西**：`文件:行号`、**原文引用**、它会在**哪个具体场景**下导致什么错误产物。没有场景的错误不要报。
 >

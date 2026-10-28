@@ -60,6 +60,7 @@ ByIssue 是一套理解和推进软件演化的方法。它用 Vision、Project 
 7. 意图不清，而且选错会实质改变后续，例如是否建 Issue、是否改代码 → 给一句话推荐和理由，请用户选择；不要默认采用重流程。
 8. 写或修改 Agent 技能本身，不属于 ByIssue 的职责。
 9. **姿态在会话中持续；被授权的单个动作不改变它。** 用户在讨论里批准了一个要落盘的动作，做完就回到讨论——动手过一次不等于整场会话转成执行。切换姿态要么来自用户的新信号，要么你明说「我切到 X 姿态」并得到同意。
+10. **在执行类姿态下**，方向已经确认且用户要求执行时，持续推进到**完成**或遇到真实阻塞，不要在正常步骤之间反复确认。这条不适用于讨论：把每一轮都收成「要我现在就…吗」，等于把 Talk 的价值丢掉。
 
 ### 选择管理强度
 
@@ -201,7 +202,7 @@ Talk 写入 `byissue/talks/`；Note 写入 `byissue/notes/`，同主题更新原
 |---|---|
 | Vision 目标内容 | 用户确认愿景后；实现结论若要改变目标，必须再次确认 |
 | Vision 实现程度与链接 | Epic 关闭时，按已经发生的事实更新 |
-| Project Spec | 独立 Issue / Explore Issue 关闭毕业；Epic 关闭合并；改动使现有真相失效或新增长期约束已随代码生效；或处于规格维护姿态 |
+| Project Spec | 独立 Issue / Explore Issue 关闭毕业；Epic 关闭合并（只筛代码重建不出来的词、边界与取舍，只链接不算毕业，见 [close](references/close.md) 与 [spec](references/spec.md)）；改动使现有真相失效或新增长期约束已随代码生效；或处于规格维护姿态 |
 | Epic Spec | 处于规格维护姿态；或 Epic 下的 Issue 关闭回写 |
 | Decision | 拍板且满足三条件（难以逆转、离开当时语境会奇怪、真实取舍）时；讨论中经用户确认可即时立，关闭毕业时也可立 |
 | Note | 推进中证实可复用知识、外部事实与坑点时（无论事项本轮是否关闭），经提交前沉淀收割写入或更新同主题文件；或处于记知识姿态 |
@@ -222,19 +223,9 @@ Talk 写入 `byissue/talks/`；Note 写入 `byissue/notes/`，同主题更新原
 |---|---|
 | 快改 | 验证后必须写 `ff`（同会话可直接写成 `x-ff`），汇报时执行沉淀收割（见 [fast](references/fast.md)） |
 | 受管理实现 / 修 bug（受管理） / 用户说“做完”或“修好” | 推进到完成（或因外部阻塞阶段性收工）即可；小改仍留下 `ff`；汇报给出关闭建议（暂不可关则说明原因并保持 `-o-`）与沉淀候选，用户授权提交时将（若可关的）关闭改名、毕业回写、沉淀落盘与代码合并为单次 commit（见 [do](references/do.md)、[complain](references/complain.md)） |
-| 用户直接要求提交 / 推送 / 开 PR / 合并 / 发布 | 先跑 `scripts/check_open_issues.py`（`--project` 指向要推送的仓库）；存在未关闭常规 issue 时同轮给出关闭建议（暂不可关则说明原因并保持 `-o-`）并请求授权；沉淀候选未裁决时同轮列出并请求授权；即便事项保持 `-o-`，本轮已证实经验仍须完成沉淀裁决，将（若可关的）关闭改名、毕业回写、沉淀落盘与代码合并为单次 commit 再执行；用户明确暂不处理的，才单独提交代码 |
+| 用户直接要求提交 / 推送 / 开 PR / 合并 / 发布 | 先跑技能包内的 `scripts/check_open_issues.py`（从 `bi` skill 目录解析路径，`--project` 指向要推送的仓库）；存在未关闭常规 issue 时同轮给出关闭建议（暂不可关则说明原因并保持 `-o-`）并请求授权；沉淀候选未裁决时同轮列出并请求授权；即便事项保持 `-o-`，本轮已证实经验仍须完成沉淀裁决，将（若可关的）关闭改名、毕业回写、沉淀落盘与代码合并为单次 commit 再执行；用户明确暂不处理的，才单独提交代码 |
 | 用户说“关闭”或“收尾” | 读取并执行 [close](references/close.md)；关闭的事项留在原树原位 |
 | push、部署、初始化或覆盖 `byissue/`、关闭 Epic、破坏性操作 | 必须取得明确授权 |
-
-毕业方向：
-
-- 独立 Issue → Project Spec。
-- Epic 内 Issue → Epic Spec。
-- Epic 关闭 → 将稳定结论的**具体内容**合并进 Project Spec，并检查 Vision；只链接 Epic 不算毕业回写。
-- 长期决策 → `byissue/decisions/`（三条件：难以逆转、离开当时语境会奇怪、真实取舍）。
-- `ff` 默认不做大段毕业；若现有真相失效，则同步 spec 或明确标记漂移。
-
-详细规则见 [close](references/close.md)。
 
 ### 质量语言
 
@@ -257,30 +248,5 @@ Talk 写入 `byissue/talks/`；Note 写入 `byissue/notes/`，同主题更新原
 有目标 Issue 时，确认正在处理的是其**当前版本**；在 Epic 下工作时，读取该 Epic 的 `spec.md`。
 
 把 `byissue/` 当作制度记忆：遇到奇怪代码先查 Spec，踩到旧坑先查 Notes，要理解历史取舍先查 Issue。
-
----
-
-## 4. 授权边界
-
-这些边界适用于所有姿态：
-
-- **在执行类姿态下**，方向已经确认且用户要求执行时，持续推进到**完成**或遇到真实阻塞，不要在正常步骤之间反复确认。这条不适用于讨论：把每一轮都收成「要我现在就…吗」，等于把 Talk 的价值丢掉。
-- 用户确认前，讨论不落盘；设计不写代码。
-- 完成不等于关闭；关闭后文件留在原树原位。
-- 实现或快改后不自动 Review。
-- 初始化 `byissue/`、覆盖入口文件、关闭 Epic、危险操作、推送和部署，都必须取得明确授权。
-
----
-
-## 5. 按需读取的原则文件
-
-| 文件 | 何时读取 |
-|---|---|
-| [quality](references/quality.md) | 讨论、设计、实现或关闭具体变化；处理质量相关 bug；在 spec 中记录质量约束 |
-| [economy](references/economy.md) | 设计、实现或修 bug 时做取舍；关闭时发现可以进行有界简化 |
-| [code-design](references/code-design.md) | 设计、受管理实现或结构问题；进行 Review 时必须读取全文，包括文末 Review 部分 |
-| [ui-spec](references/ui-spec.md) | 处理 UI 空间关系、信息层级与多状态 |
-| [docs](references/docs.md) | 编写或重组 Vision、Spec、Explore、Note、Talk 等文档 |
-| [debug](references/debug.md) | 修 bug 需要升级到慢路径时 |
 
 实体模板位于 `templates/entities/`，包括 `issue.md`、`ff-issue.md` 以及 Explore、Vision、Spec、Talk、Note 等模板。初始化脚本是 `scripts/init_byissue.py`。产物格式以相应 reference 为准，不要只根据文件名猜测。

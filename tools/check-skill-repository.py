@@ -22,6 +22,7 @@ SKILL = ROOT / "skills/bi"
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$")
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)#]+)(?:#[^)]*)?\)")  # anchors allowed, path captured
 PATH_RE = re.compile(r"`((?:references|templates|scripts|agents)/[\w./-]+\.(?:md|py|yaml))`")
+REPO_ONLY_RE = re.compile(r"(?:WHY BYISSUE\.md|CHANGELOG\.md|\bVERSION\b|check-skill-repository\.py|prompt-review\.md|posture-scenarios\.md|retro-failure-modes\.md)")
 
 # Reachable by the host, not by a link from inside the skill.
 ENTRY_FILES = {"SKILL.md", "agents/openai.yaml", "scripts/init_byissue.py"}
@@ -58,8 +59,13 @@ def check_skill_links(report):
     referenced = set()
     for source in sorted(SKILL.rglob("*.md")):
         text = source.read_text(encoding="utf-8")
+        rel_doc = source.relative_to(SKILL).as_posix()
+        if REPO_ONLY_RE.search(text):
+            report(source.relative_to(ROOT).as_posix(), "references repo-only file not distributed with skills/bi/")
         targets = [t.strip() for t in LINK_RE.findall(text)] + PATH_RE.findall(text)
         for target in targets:
+            if rel_doc.startswith("templates/") and not target.startswith(("http", "<")):
+                report(source.relative_to(ROOT).as_posix(), f"template contains skill-internal path: {target}")
             if target.startswith(("http", "<")):
                 continue
             for candidate in (source.parent / target, SKILL / target):
@@ -115,6 +121,19 @@ def check_posture_table(report):
                 f"posture {posture!r} is unreachable: none of its triggers appear in the description",
             )
 
+    if "触发：" in description:
+        desc_tail = description.split("触发：", 1)[1].strip().rstrip("。")
+        claimed = set(owner)
+        for t in list(owner):
+            for part in t.split("/"):
+                if part.strip():
+                    claimed.add(part.strip())
+        for group in desc_tail.split("；"):
+            for item in group.split("、"):
+                tok = item.strip()
+                if tok and tok not in {"bi", "ByIssue"} and tok not in claimed:
+                    report("skills/bi/SKILL.md", f"description trigger {tok!r} is not claimed by any posture")
+
     if len(postures) < 5:
         report("skills/bi/SKILL.md", f"posture table looks broken, parsed only {len(postures)} rows")
 
@@ -155,14 +174,42 @@ def check_byissue_references(report):
     if not workspace.is_dir():
         return
     pattern = re.compile(r"(?<![\w/-])byissue/(?:issues|epics|notes|talks|decisions)/[\w./-]+\.md")
+    item_parts_re = re.compile(r"^(?P<prefix>\d{4}-\d{1,2}-\d{1,2}|\d{3})-[oxdw]-(?P<slug>.+)$")
+    item_ref_re = re.compile(r"(?<![A-Za-z0-9_-])((?:\d{4}-\d{1,2}-\d{1,2}|\d{3})-[oxdw]-[A-Za-z0-9_-]+(?:\.md)?)(?![A-Za-z0-9_-])")
+    existing: set[str] = set()
+    local_keys: set[tuple[str, str]] = set()
+    issue_and_epic_dirs = [workspace / "issues", workspace / "epics"]
+    if (workspace / "epics").is_dir():
+        issue_and_epic_dirs += [p / "issues" for p in (workspace / "epics").iterdir() if (p / "issues").is_dir()]
+    for folder in issue_and_epic_dirs:
+        if not folder.is_dir():
+            continue
+        for entry in folder.iterdir():
+            if entry.name == ".gitkeep":
+                continue
+            existing.add(entry.name)
+            stem = entry.stem if entry.suffix == ".md" else entry.name
+            existing.add(stem)
+            m = item_parts_re.match(stem)
+            if m:
+                local_keys.add((m.group("prefix"), m.group("slug")))
+
     for source in sorted(ROOT.rglob("*.md")):
         if ".git" in source.parts:
             continue
+        in_byissue = workspace in source.parents
         for number, line in enumerate(source.read_text(encoding="utf-8").splitlines(), 1):
             for match in pattern.finditer(line):
                 target = match.group(0).rstrip(".")
                 if not (ROOT / target).exists():
                     report(source.relative_to(ROOT).as_posix(), f"line {number}: dangling reference {target}")
+            if in_byissue:
+                for match in item_ref_re.finditer(line):
+                    ref = match.group(1)
+                    ref_stem = ref[:-3] if ref.endswith(".md") else ref
+                    m = item_parts_re.match(ref_stem)
+                    if m and (m.group("prefix"), m.group("slug")) in local_keys and ref not in existing:
+                        report(source.relative_to(ROOT).as_posix(), f"line {number}: stale item state in {ref}")
 
 
 def main() -> int:

@@ -34,7 +34,7 @@ created: 2026-09-21
 ## 关闭时
 
 - 回写候选：写作层「提问必带建议」这条如果稳定，属于跨姿态长期约束。
-- 相关：`byissue/talks/001-...` 第 4、8 节。
+- 相关：`byissue/talks/001-what-to-build-next-and-does-documentation-rot.md` 第 4、8 节。
 
 ## 执行记录
 

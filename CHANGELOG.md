@@ -1,3 +1,10 @@
+## 1.10.2
+
+- Ponytail audit cleanup (`byissue/issues/2026-10-29-x-ponytail-audit.md`): remove root `CLAUDE.md` and surviving `Agent 指令` write/short-rule clauses in `references/maketools.md` and `references/note.md` that contradicted `decisions/008` and `SKILL.md`.
+- Trim 36 lines of duplicated and drifted rules from `SKILL.md`: remove the duplicate graduation list (which still carried pre-004 wording to merge full conclusions into Project Spec) and the duplicate authorization/on-demand tables at the bottom of `SKILL.md`, folding the single unique execution-continuity rule into section 1.
+- Fix ` references/onboard.md` to invoke `python3` and clarify in `SKILL.md`, `references/do.md`, and `references/fast.md` that `scripts/check_open_issues.py` resolves from the `bi` skill directory.
+- Extend `tools/check-skill-repository.py` to catch stale `YYYY-MM-DD-` and `-w-` item references, skill self-containment leaks, and unclaimed frontmatter `description` triggers mechanically; complete 8 truncated historical references in `byissue/`.
+
 ## 1.10.1
 
 - Plug the rename-only close shortcut: `SKILL.md` and `references/do.md` now state that renaming `-o-` to `-x-` or `-w-` is the final step of `references/close.md` and requires reading and executing `close.md` first; the isolated rename hint in `templates/entities/issue.md` is removed.

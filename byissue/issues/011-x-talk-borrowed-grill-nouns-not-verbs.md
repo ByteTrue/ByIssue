@@ -51,7 +51,7 @@ created: 2026-09-23
 ## 关闭时
 
 - 毕业回写：spec/index.md 统一语言加「Grilling」、references 计数、描述句坑的变体 —— 已随本 issue 一并写入。
-- 相关：`byissue/talks/001` 第 7 节（首次发现 ByIssue 抄了 grill 但差在语气）、`byissue/issues/005-x-posture-stability-across-authorized-actions.md`（同一根因「描述句不触发」）、`byissue/issues/004-x-posture-routing-regression-tests.md`（多轮评测缺口）。
+- 相关：`byissue/talks/001-what-to-build-next-and-does-documentation-rot.md` 第 7 节（首次发现 ByIssue 抄了 grill 但差在语气）、`byissue/issues/005-x-posture-stability-across-authorized-actions.md`（同一根因「描述句不触发」）、`byissue/issues/004-x-posture-routing-regression-tests.md`（多轮评测缺口）。
 
 ## 遗留
 

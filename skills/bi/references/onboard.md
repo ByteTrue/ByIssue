@@ -17,7 +17,7 @@ onboard 可以观察项目，但不能编项目。能从代码、README、配置
 优先运行技能包内的初始化脚本。脚本路径要从 `bi` skill 根目录解析，不要假设目标项目本身存在 `scripts/`：
 
 ```bash
-python <bi-skill>/scripts/init_byissue.py --project .
+python3 <bi-skill>/scripts/init_byissue.py --project .
 ```
 
 初始化后确认 `byissue/vision/index.md` 与 `byissue/spec/index.md` 存在，并确认基础实体目录已创建或保留。Vision 骨架只是空地图，不推断用户的目标应用。

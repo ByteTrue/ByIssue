@@ -12,9 +12,7 @@
 
 先做“六个月测试”：半年后仍会影响判断或操作，而且很难只从代码、git diff、README 重新看出来，才值得写。代码已明说的细节、一次性流水、临时情绪，不要沉淀。
 
-Agent 指令不是知识库：只放短规则；复杂内容写 notes，指令里最多一行“做 X 前先读某 note”。
-
-拿不准时默认写 notes，不要污染 Agent 指令。项目主线真相进 project spec；变更历史留 issue/epic；未知流程走 [maketools](maketools.md)。
+项目主线真相进 project spec；变更历史留 issue/epic；未知流程走 [maketools](maketools.md)。
 
 notes 按 [docs](docs.md) 组织：服务复用，不复刻聊天流水。
 

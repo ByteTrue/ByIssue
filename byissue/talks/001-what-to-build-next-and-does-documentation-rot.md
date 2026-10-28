@@ -53,7 +53,7 @@
 
 推论：毕业规则要改。`close.md` 现在催 agent「把稳定结论的具体内容合并进 Project Spec」，等于在催它写最易腐的文字。应改为**从结论里筛出「代码里没有的那部分」**。
 
-→ `byissue/decisions/004`
+→ `byissue/decisions/004-project-spec-drops-implementation-description.md`
 
 ## 6. 用户抓到姿态漂移，以及三次同一个 bug
 
@@ -113,7 +113,7 @@
 
 **最终以此为准：只做 A。** 并且把话说死：没有便宜的办法真正消除碰撞（根因是两个会话同时读到同一个 max），而碰撞的实际伤害只有个位数——正确答案是**接受碰撞，让它不疼**。
 
-→ `byissue/decisions/005`
+→ `byissue/decisions/005-accept-number-collisions-require-full-name-references.md`
 
 ## 10. 真问题与出口
 

@@ -35,7 +35,7 @@ created: 2026-09-21
 ## 关闭时
 
 - 回写候选：判据本身属于长期约束，应进 ByIssue 自己的 `byissue/spec/index.md`。
-- 相关：`byissue/talks/001-...` 第 4–5 节；`byissue/decisions/004-...`。
+- 相关：`byissue/talks/001-what-to-build-next-and-does-documentation-rot.md` 第 4–5 节；`byissue/decisions/004-project-spec-drops-implementation-description.md`。
 
 ## 执行记录
 
