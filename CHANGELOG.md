@@ -1,3 +1,9 @@
+## 1.10.1
+
+- Plug the rename-only close shortcut: `SKILL.md` and `references/do.md` now state that renaming `-o-` to `-x-` or `-w-` is the final step of `references/close.md` and requires reading and executing `close.md` first; the isolated rename hint in `templates/entities/issue.md` is removed.
+- Decouple sediment harvest from issue closing so it binds to every completion report, partial handoff, and commit: `SKILL.md` now owns the whole-process harvest prompt and `notes/` + `spec/` deduplication check in always-loaded context, and requires settling confirmed external facts and live constraints before committing even when an issue stays `-o-` pending external verification.
+- Reorder `references/close.md` action steps into precondition check → sediment harvest & graduation (separating always-captured facts from `-x-`-only graduation) → reference repair & path rename; add explicit cross-posture read imperatives and sediment reporting to `references/complain.md`; require full initial reads of `SKILL.md` and posture files.
+
 ## 1.10.0
 
 - The dropped state letter is now `w` (`won't do`) instead of `d`: `-o-` → `-x-` (delivered) or `-w-` (dropped). A real misread triggered it — an Epic directory whose only state letter was `d` was read as "draft, not settled yet" and therefore judged unfinished. `d` carries three competing priors in that position (draft, date, default), sits flush against the date prefix where nothing disambiguates it, and is used rarely enough (0 of 22 sampled items) that neither user nor model ever gets to calibrate it by attrition. `w` borrows the strongest prior available — GitHub's `wontfix` — and competes with nothing. `o` and `x` are untouched: open and struck-through are already the strongest pair of priors in this position, and wordifying all three (`-open-`/`-done-`/`-dropped-`) buys nothing beyond longer paths.
