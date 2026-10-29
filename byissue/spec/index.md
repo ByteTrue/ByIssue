@@ -24,6 +24,8 @@
 - **一条规则只能有一个归属。** 新增规则先定归属，其他文件只能链接。重述过的契约一定漂移——`done/` 在 1.1.0 删除后仍在三处存活、`onboard.md` 手抄的目录清单漏掉 `decisions/`，都是这条被违反的代价。
 - **否定式表述要挣得它的注意力成本。** 一条「不要 X」只有在 X 是模型的强默认行为时才值得写（不自动 commit、不预读未命中的姿态文件、不用槽位凑模板）。挡一个模型本来不会做的事，既占上下文又把那件事送进注意力——「不要想大象」。预防性禁令尤其容易长：2026-09-21 清掉的「无边界全仓审计」在五个文件里各禁一次，而模型的默认恰恰相反，是过度聚焦当前文件。同理，**不假设可选外部扩展存在**：不为了防某个客户端功能或扩展（如记忆插件）截流而在规则里点名排斥它——用户未安装或扩展换名时那句话就是纯迷惑，规则只正向定义 `bi` 自身必须完成的闭环。
 - **`SKILL.md` 永远在上下文里，所以它已有的规则不要在 reference 里重述。** 这是单一归属原则用在否定式表述上的形式。reference 之间是按需加载的，彼此不能假定对方在场；`SKILL.md` 可以。
+- **必做环节不写成判断题，触发范围不用窄场景枚举。** 固定环节（如沉淀收割）直接规定执行动作、查重范围与输出格式，不写成「要不要补一条 note」之类带不做出口的问句；描述时机与经验来源时用抽象目的性表述覆盖同类情形，不列举「途中审查、修 CI」等具体场景清单收窄模型的判断范围。
+- **路径与状态标记必须避开高频词竞争先验，并用冷读探针验首读释义。** 状态字母或短缩写若与常见英文词撞先验（如 `d` 被读成 draft），单靠全文 `grep` 一致性核对完全看不出来；新增或改动编码标记时，必须把陌生读者首次读到该路径会给出什么释义列为必查项，并把路径单独丢给新上下文跑最小行为探针（见 `byissue/decisions/2026-10-22-wont-do-letter-replaces-draft-ambiguous-d.md`）。
 - **不设行数上限。** 按渐进式披露拆，不按行数砍；核心叙事不许为了短而打散。
 - **只分发 `skills/bi/`。** 仓库根的 README、WHY、asset 不进技能包；技能包里也不放没人引用的文件。
 - **技能必须自足。** 不引用只存在于本仓库的文件——用户装到自己项目里时那些路径不存在。
@@ -39,7 +41,7 @@
               → 更新 VERSION + CHANGELOG.md 同名小节 → 单个 commit → npx skills 分发
 ```
 
-失败模式的历史分布见 `tools/retro-failure-modes.md`（一次性分析，不随链路重跑）。三层检查分工见 `tools/prompt-review.md` 末尾的表。rsync 那一步没有任何代码强制，忘了就等于没改；同理，对抗性审查也没有代码强制，只有本文件这一行义务。checker 的取舍见 `byissue/decisions/001-checker-verifies-links-not-contract-wording.md`；它带来一条硬约束：**新增 reference 或 template 必须在某处用完整路径被引用**，否则报 `packaged but nothing references it`。
+失败模式的历史分布见 `tools/retro-failure-modes.md`（一次性分析，不随链路重跑）。三层检查分工见 `tools/prompt-review.md` 末尾的表。rsync 那一步没有任何代码强制，忘了就等于没改；同理，对抗性审查也没有代码强制，只有本文件这一行义务。checker（`tools/check-skill-repository.py`）查五件事：版本与 `CHANGELOG.md` 小节对应、技能包入口布局、技能内链接与反引号路径双向可达且自足（`skills/bi/` 不引本仓专属文件、`templates/` 不含技能内部路径）、姿态表与 frontmatter `description` 双向触发词认领及场景覆盖、`byissue/` 全名引用与事项状态字母（含 `YYYY-MM-DD-` 与 `-w-`）不悬挂。取舍见 `byissue/decisions/001-checker-verifies-links-not-contract-wording.md`；它带来一条硬约束：**新增 reference 或 template 必须在某处用完整路径被引用**，否则报 `packaged but nothing references it`。
 
 ## 当前没有的东西
 
