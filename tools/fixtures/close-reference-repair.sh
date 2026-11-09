@@ -9,7 +9,7 @@
 #      tools/posture-scenarios.md 场景 26 起子 agent 跑关闭姿态。
 set -euo pipefail
 
-d="${1:-/tmp/bi-close-fx}"
+d="${1:-/tmp/webapp}"
 rm -rf "$d"
 mkdir -p "$d"
 cd "$d"

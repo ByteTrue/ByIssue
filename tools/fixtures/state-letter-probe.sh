@@ -17,13 +17,21 @@
 #      tools/posture-scenarios.md 场景 27 起子 agent 逐臂跑。
 set -euo pipefail
 
-root="${1:-/tmp/bi-letter}"
+root="${1:-/tmp/normalizer}"
 rm -rf "$root"
 mkdir -p "$root"
 
+# 子 agent 的 cwd 就是臂目录，臂名（violation、control）会泄露期望答案，所以目录用中性名。
+dir_for() {
+  case "$1" in
+    w-clean) echo host-a ;; w-settled) echo host-b ;; w-violation) echo host-c ;;
+    o-control) echo host-d ;; x-control) echo host-e ;;
+  esac
+}
+
 # 项目外壳：真项目实施时是 git 仓库且有依赖产物目录，夹具要长得像它。
 for arm in w-clean w-settled w-violation o-control x-control; do
-  d="$root/$arm"
+  d="$root/$(dir_for "$arm")"
   mkdir -p "$d/src" "$d/node_modules/pkg" "$d/dist"
   git -C "$d" init -q
   printf 'export function normalize(input: string) {\n  return input.trim();\n}\n' > "$d/src/normalize.ts"
@@ -104,5 +112,5 @@ done
 
 echo "fixtures ready under $root"
 for arm in w-clean w-settled w-violation o-control x-control; do
-  ls -d "$root/$arm"/byissue/epics/*/
+  echo "$arm -> $(ls -d "$root/$(dir_for "$arm")"/byissue/epics/*/)"
 done

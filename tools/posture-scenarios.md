@@ -8,7 +8,7 @@
 
 每条场景起一个子 agent，并行开：
 
-- **`cwd` 指向一份可写的临时副本**：`rsync -a --exclude .git ./ /tmp/bi-eval/`。子 agent 必须能真的动手，否则行为会变形——首次评测用只读工具，结果第一条直接回「我改不了文件」就收工，那条数据作废。准备夹具目录必须在上一轮 `bash` 调用中先完成，切勿与 `subagent` 同轮并行执行 `rm -rf` 重建 `cwd`（否则 `uv_spawn` 会在目录消失瞬间报 `spawn node ENOENT`，见 `byissue/notes/2026-10-29-uv-spawn-cwd-enoent-in-parallel-subagent.md`）。
+- **`cwd` 指向一份可写的临时副本**：`rsync -a --exclude .git --exclude /tools/ --exclude /byissue/issues/ --exclude /byissue/notes/ --exclude /byissue/decisions/ --exclude /byissue/talks/ --exclude /CHANGELOG.md ./ /tmp/ByIssue/`。子 agent 必须能真的动手，否则行为会变形——首次评测用只读工具，结果第一条直接回「我改不了文件」就收工，那条数据作废。准备夹具目录必须在上一轮 `bash` 调用中先完成，切勿与 `subagent` 同轮并行执行 `rm -rf` 重建 `cwd`（否则 `uv_spawn` 会在目录消失瞬间报 `spawn node ENOENT`，见 `byissue/notes/2026-10-29-uv-spawn-cwd-enoent-in-parallel-subagent.md`）。
 - **fixture 必须含有该场景要操作的东西。** 拿本仓库当 fixture 只对「读哪些文件」这类路由断言有效；一旦场景要动手改产物就不会有判别力。实测三种失败形态，都是 fixture 缺目标物、不是路由错，观测作废：说「把这个 epic 关了吧」→「这里没有 epic」（本仓库 `epics/` 为空）；说「顺手把这个也改了吧」→「『这个』没有指代对象」；说「顺手改一下这个 README 里的错别字」→ 路由对了、也读了 `fast.md`，但仓库里并没有错别字，于是把 16 轮全烧在通读两个 README 上（这条只证明了触发词有效，场景断言拿不到）。要测关闭就造含 `{日期}-o-{Epic名}/` 的副本，要测受管理实现就造仍 `-o-` 的 issue，要测改文案就在 fixture 里放一处真的错别字。**先问一句「这个场景期望子 agent 改哪个文件」，答不上来就换 fixture。**
 - **要测动作路径，fixture 得让条件真的成立。** 实测一个只有 Epic 目录、子 issue 仍 `-o-`、没有代码的副本 + 「关闭条件满足了，关掉它」：子 agent 正确拒绝关闭（要求证据），于是那条只验证了「会读 `close.md` 并守住关闭门槛」，**没验到改名与修引用的路径**。把同一句话换成子 issue 已关、有验证记录的副本，子 agent 就走完了动作路径：改名前 grep 到 2 处引用 → 更新到新路径 → 改名目录 → 改后再 grep 确认 0 处，并在收尾汇报里报了「找到 2 处引用，已更新」。拒绝路径和动作路径是两条不同的断言，别指望一个 fixture 同时测到。
 - **依赖前文的场景必须补上上下文。** 「顺手把这个也改了吧」的 `这个`、「继续 talk」都必须有指代对象，否则子 agent 只会（正确地）追问指代对象，你无法区分「追问得对」与「路由失败」。要么在 `task` 里补一两轮前文，要么改用不依赖前文的说法（如「顺手改一下这个 README 里的错别字」）。
@@ -16,9 +16,10 @@
 - **给完整工具，不要限制为只读。** 副本提供隔离，工具限制只会污染观测。
 - **`maxTurns` 至少 15。** 首次用 8，三条被截断在关键处。
 - `task` **只放那一句话**，不要附加「请说明你进入了哪个姿态」——那会污染路由。
+- **子 agent 看得见的名字里不带评测味。** 副本目录、夹具目录和 `task` 里不出现 eval、test、judge、control、violation、评测、对照这类词，取用户自己会起的项目名；`tools/`、`byissue/` 下的往轮记录（issues、notes、decisions、talks）与 `CHANGELOG.md` 整个排除在副本外——本表和往轮评测的「说法→期望」表就在里面，留着等于把答案放进考场。夹具脚本建出的目录同理，臂名只留在脚本打印给父会话的映射里。不知道自己在被评测的 agent 才会照常行事，附带产出也来自它（见 `tools/retro-failure-modes.md` 第一节）。
 - 跑完读子会话日志，看它**实际读了哪些文件**，与本表比对。判据是调用序列，不是它自己的说法。
 
-**注意技能来源：** 子 agent 加载的是部署副本 `~/.agents/skills/bi/`，不是仓库里的 `skills/bi/`。改完必须先 rsync 同步再跑，否则测的是旧版本。
+**注意技能来源：** 子 agent 加载的是宿主实际加载的部署副本（经 `npx skills` 安装时是 `~/.agents/skills/bi/`），不是仓库里的 `skills/bi/`。改完必须先 rsync 同步到那份、用 `diff -rq` 确认一致再跑，否则测的是旧版本。bi 经索引类技能间接安装时，只给一句话的子 agent 基本不会打开 bi，路由评测在那种环境里没有判别力，见 `byissue/notes/2026-11-09-bi-behind-magpie-index-is-rarely-opened.md`。
 
 为什么必须是子 agent 而不是你自己：上下文隔离。已经参与过设计讨论的 agent 知道答案，测自己等于自己判自己。
 

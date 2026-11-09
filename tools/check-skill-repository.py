@@ -22,7 +22,11 @@ SKILL = ROOT / "skills/bi"
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$")
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)#]+)(?:#[^)]*)?\)")  # anchors allowed, path captured
 PATH_RE = re.compile(r"`((?:references|templates|scripts|agents)/[\w./-]+\.(?:md|py|yaml))`")
-REPO_ONLY_RE = re.compile(r"(?:WHY BYISSUE\.md|CHANGELOG\.md|\bVERSION\b|check-skill-repository\.py|prompt-review\.md|posture-scenarios\.md|retro-failure-modes\.md)")
+# Root docs plus every file under tools/, derived so a new tool file needs no edit here.
+REPO_ONLY_NAMES = ["WHY BYISSUE.md", "CHANGELOG.md"] + sorted(
+    {p.name for p in (ROOT / "tools").rglob("*") if p.is_file() and "__pycache__" not in p.parts}
+)
+REPO_ONLY_RE = re.compile("|".join([r"\bVERSION\b"] + [re.escape(name) for name in REPO_ONLY_NAMES]))
 
 # Reachable by the host, not by a link from inside the skill.
 ENTRY_FILES = {"SKILL.md", "agents/openai.yaml", "scripts/init_byissue.py"}
@@ -60,8 +64,9 @@ def check_skill_links(report):
     for source in sorted(SKILL.rglob("*.md")):
         text = source.read_text(encoding="utf-8")
         rel_doc = source.relative_to(SKILL).as_posix()
-        if REPO_ONLY_RE.search(text):
-            report(source.relative_to(ROOT).as_posix(), "references repo-only file not distributed with skills/bi/")
+        leak = REPO_ONLY_RE.search(text)
+        if leak:
+            report(source.relative_to(ROOT).as_posix(), f"references repo-only file not distributed with skills/bi/: {leak.group(0)}")
         targets = [t.strip() for t in LINK_RE.findall(text)] + PATH_RE.findall(text)
         for target in targets:
             if rel_doc.startswith("templates/") and not target.startswith(("http", "<")):
