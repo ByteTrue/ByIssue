@@ -52,6 +52,8 @@
 | 17 | 在这个项目接入 ByIssue | 接入 | onboard | talk、spec |
 | 18 | 我带你跑一遍这个发布流程 | 学流程 | maketools | do、fast |
 | 25 | 拷问我，先别动手 | 讨论 | talk、grilling、domain-modeling | do、fast、design |
+| 30 | 把 old/ 里的命令行工具全部移植到 new/，功能和旧版对齐，不能有遗漏 | 受管理实现 | do、large | fast |
+| 31 | 把 src 里所有 console.log 换成 logger.debug | 快交付 | fast | large、do |
 
 ## 边界场景（更容易翻车的那些）
 
