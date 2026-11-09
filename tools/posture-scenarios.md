@@ -8,6 +8,8 @@
 
 每条场景起一个子 agent，并行开：
 
+- **整表一次搭好**：`python3 tools/fixtures/posture_table.py /tmp/shop` 给全部场景（含边界场景、状态字母五臂和大任务探针）各搭一个可写夹具，并写出 `/tmp/shop-plan.json`，里面每条有目录、原样发给子 agent 的 `task`、应读与不应读、要人工核对的行为断言。逐条把 `task` 交给一个普通子 agent（`cwd` 设为该目录）。跑完用 `python3 tools/fixtures/posture_judge.py /tmp/shop-plan.json` 判路由：它从工具调用参数里取读过的 reference，并打出子 agent 实际用的模型和各夹具的 git 状态；行为断言仍要逐条去看夹具。会话中途重启会杀掉还在跑的子 agent，这种中断的条目换一个根目录重搭后单独重跑。
+
 - **`cwd` 指向一份可写的临时副本**：`rsync -a --exclude .git --exclude /tools/ --exclude /byissue/issues/ --exclude /byissue/notes/ --exclude /byissue/decisions/ --exclude /byissue/talks/ --exclude /CHANGELOG.md ./ /tmp/ByIssue/`。子 agent 必须能真的动手，否则行为会变形——首次评测用只读工具，结果第一条直接回「我改不了文件」就收工，那条数据作废。准备夹具目录必须在上一轮 `bash` 调用中先完成，切勿与 `subagent` 同轮并行执行 `rm -rf` 重建 `cwd`（否则 `uv_spawn` 会在目录消失瞬间报 `spawn node ENOENT`，见 `byissue/notes/2026-10-29-uv-spawn-cwd-enoent-in-parallel-subagent.md`）。
 - **fixture 必须含有该场景要操作的东西。** 拿本仓库当 fixture 只对「读哪些文件」这类路由断言有效；一旦场景要动手改产物就不会有判别力。实测三种失败形态，都是 fixture 缺目标物、不是路由错，观测作废：说「把这个 epic 关了吧」→「这里没有 epic」（本仓库 `epics/` 为空）；说「顺手把这个也改了吧」→「『这个』没有指代对象」；说「顺手改一下这个 README 里的错别字」→ 路由对了、也读了 `fast.md`，但仓库里并没有错别字，于是把 16 轮全烧在通读两个 README 上（这条只证明了触发词有效，场景断言拿不到）。要测关闭就造含 `{日期}-o-{Epic名}/` 的副本，要测受管理实现就造仍 `-o-` 的 issue，要测改文案就在 fixture 里放一处真的错别字。**先问一句「这个场景期望子 agent 改哪个文件」，答不上来就换 fixture。**
 - **要测动作路径，fixture 得让条件真的成立。** 实测一个只有 Epic 目录、子 issue 仍 `-o-`、没有代码的副本 + 「关闭条件满足了，关掉它」：子 agent 正确拒绝关闭（要求证据），于是那条只验证了「会读 `close.md` 并守住关闭门槛」，**没验到改名与修引用的路径**。把同一句话换成子 issue 已关、有验证记录的副本，子 agent 就走完了动作路径：改名前 grep 到 2 处引用 → 更新到新路径 → 改名目录 → 改后再 grep 确认 0 处，并在收尾汇报里报了「找到 2 处引用，已更新」。拒绝路径和动作路径是两条不同的断言，别指望一个 fixture 同时测到。
@@ -44,7 +46,7 @@
 | 7 | 推进这个 issue | 受管理实现 | do | fast、talk |
 | 8 | 先打通这条主路径再加厚 | 受管理实现 | do | explore |
 | 9 | 这里坏了，和预期不一样 | 修 bug | complain | design、do |
-| 10 | 这个 bug 我 debug 半天没头绪 | 修 bug | complain、debug | design |
+| 10 | 这个 bug 我 debug 半天没头绪 | 修 bug | complain（debug 是按需读，根因说不清或偶现难复现时才读） | design |
 | 11 | 先设计一下实现方案 | 设计 | design | do、fast |
 | 12 | 关闭并沉淀 | 收尾 | close | do、design |
 | 13 | 看看这个 diff 有没有问题 | 审代码 | code-design | do、fast |

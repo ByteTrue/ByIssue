@@ -1,3 +1,16 @@
+## 1.13.3
+
+Fixes from rerunning the whole posture-scenario table and the large-task probes on a low-cost model (`deepseek-flash`), per the user's ruling that the workflow must hold on weaker models. 41 runs; three failures, all the same shape: the rule lived in a `SKILL.md` parenthetical or behind a "(see X)" pointer, while the model followed the posture file it was reading.
+
+- `fast.md` and `complain.md`: syncing the spec covers current truth; relaxing or overturning a spec constraint, including one whose underlying fact went stale, asks the user first with evidence and a recommendation. DeepSeek had silently relaxed a rate-limit constraint.
+- `large.md`: the five pre-start steps finish, with spec and ledger on disk, before the first line of code. DeepSeek had written the whole port first and the ledger last.
+- `complain.md`: escalation says to read `debug.md`「升级」first instead of pointing at it.
+- `SKILL.md`: a question the rules require must stop the work until the user answers; without a question tool, the question goes in the reply and the work still stops. DeepSeek, lacking the tool, had "gone with the recommendation" and relaxed a constraint.
+- `SKILL.md`: a quote is only what the user said in the conversation; text taken from an issue or spec names the record it was paraphrased from. DeepSeek had written issue text into the spec as the user's words.
+- `SKILL.md`: the large-task row says the main posture is managed implementation, read `do.md` first, then `large.md` before starting. DeepSeek had skipped `do.md`.
+- Review fixes, same shape: escalation conditions live only in `complain.md` (`debug.md` had a drifted second copy and now points there); `fast.md`'s opening constraint line asks the user instead of "change the spec (authorized)"; `close.md`'s "no spec text conflicting with the implementation" no longer lets a relaxed constraint be written in without the user's agreement; `large.md` and `complain.md` drop two negative restatements.
+- `tools/fixtures/posture_table.py` builds every scenario's fixture plus a plan file; `tools/fixtures/posture_judge.py` scores routing from tool-call arguments and reports the model each child actually ran on. Scenario 10's expectation lists `debug.md` as on-demand. Results in `byissue/notes/2026-11-09-posture-table-on-deepseek.md`.
+
 ## 1.13.2
 
 Fixes from a whole-skill review of 1.11.0–1.13.1 together, a dedicated review of negative statements across all of `skills/bi/`, and a fresh-context review of the merged fixes.
