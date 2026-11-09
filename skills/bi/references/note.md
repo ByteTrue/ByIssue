@@ -6,7 +6,7 @@
 
 **去处只有一个：`byissue/notes/`。** 拍板进 `byissue/decisions/`（三条件见 `SKILL.md`）；notes 收的是做法、坑点与操作经验。
 
-**写进 `notes/` 是这条知识的终点。** 遇到确实值得每次启动都知道的规则，照常写进 notes，然后**告诉用户**：这条如果想每次启动都生效，可以自己往 `AGENTS.md` 加一行索引。说到为止，不代劳、不追问。边界归 [SKILL.md](../SKILL.md)。
+**写进 `notes/` 是这条知识的终点。** 遇到确实值得每次启动都知道的规则，照常写进 notes，然后**告诉用户**：这条如果想每次启动都生效，可以自己往 `AGENTS.md` 加一行索引。边界归 [SKILL.md](../SKILL.md)。
 
 ## 原则
 
@@ -18,11 +18,11 @@ notes 按 [docs](docs.md) 组织：服务复用，不复刻聊天流水。
 
 ## 行动指南
 
-先复用框架已注入的指令与当前上下文；查重时搜 `byissue/notes/`、相关 spec 与 issue/epic。已有相近 notes 则更新原文件（文末可加日期小节），不另开一条。
+先复用框架已注入的指令与当前上下文；查重时搜 `byissue/notes/`、相关 spec 与 issue/epic。已有相近 notes 则更新原文件（文末可加日期小节）。
 
 值得提示用户升为启动规则的典型：固定测试/构建命令、环境陷阱、目录禁区、长期命名约定。提示一句即可，文件仍然只写进 notes。
 
-写 notes：`byissue/notes/{YYYY-MM-DD}-{名}.md`（直接放在 `notes/` 下，不按年/月分目录；命名见 `SKILL.md`）。标题和正文保留可搜关键词。
+写 notes：`byissue/notes/{YYYY-MM-DD}-{名}.md`（直接放在 `notes/` 下；命名见 `SKILL.md`）。标题和正文保留可搜关键词。
 
 ## 产物契约
 
