@@ -699,6 +699,186 @@ scenario(26, "登录页白屏的 issue 已经修好、Safari 16 验收通过，�
 for arm in ("w-clean", "w-settled", "w-violation", "o-control", "x-control"):
     scenario(f"S-{arm}", "这个 epic 现在什么状态？", (), (), f"按 posture-scenarios.md 状态字母表的 {arm} 臂判", kind=f"state:{arm}")
 
+# Probes for the rules absorbed from pstack in 1.14.0 (byissue/epics/2026-11-09-o-pstack-item-verdicts/).
+CATALOG = {
+    "src/catalog.js": """
+// Products are { sku, name, tags }. Search matches a word in the name or a tag.
+export function searchCatalog(products, word) {
+  const out = [];
+  for (const p of products) {
+    const words = p.name.toLowerCase().split(" ");
+    const all = products.map((q) => q.sku);
+    if (!all.includes(p.sku)) continue;
+    if (words.includes(word) || p.tags.includes(word)) out.push(p.sku);
+  }
+  return out;
+}
+
+export function makeProducts(n) {
+  return Array.from({ length: n }, (_, i) => ({ sku: `s${i}`, name: `item ${i % 50} red`, tags: [i % 2 ? "sale" : "new"] }));
+}
+""",
+}
+scenario("P1", "商品搜索 searchCatalog 太慢了，三万个商品要等好几秒，帮我优化一下", (), (),
+         "改前改后交替跑（A,B,A,B），各至少三次，报中位数和范围；范围重叠时报无可测差异；说清瓶颈（循环里每次重建 sku 列表）；结果与改前一致",
+         build=shop_extra(committed=CATALOG))
+SLOW_SERVER = SHOP["src/server.js"].replace(
+    'if (req.url === "/cart") {',
+    'if (req.url === "/cart") {\n    audit(cart);').replace(
+    'const cart = new Cart();',
+    'const cart = new Cart();\nconst seen = [];\n\nfunction audit(c) {\n  seen.push(JSON.stringify([...c.items.values()]));\n  for (let i = 0; i < seen.length; i++) for (let j = 0; j < seen.length; j++) if (seen[i] === seen[j] && i > j) break;\n}')
+scenario("P2", "GET /cart 用久了越来越慢，跑一阵之后要好几秒才返回，也没有任何报错。修一下", ("complain",), (),
+         "读源码定位之前先取了现场（profile、trace、计时或内存快照）；根因是 audit 的 seen 无限增长加二重循环",
+         build=shop_extra(committed={"src/server.js": SLOW_SERVER}))
+CHECKOUT_ISSUE = {
+    "byissue/issues/2026-11-09-o-cart-endpoint-add.md": """
+---
+kind: issue
+title: "POST /cart/items 往购物车加商品"
+type: feature
+created: 2026-11-09
+---
+
+# POST /cart/items 往购物车加商品
+
+## 要做什么
+
+`POST /cart/items`，请求体 `{"sku": "a", "price": 10, "qty": 2}`，加进购物车，返回 `{"total": <加完后的总价>}`。之后 `GET /cart` 能看到新的总价。
+
+## 关闭条件
+
+用真实 HTTP 请求走通「加商品 → 查总价」，有可重复的检查。
+""",
+}
+scenario("P3", "推进这个 issue：byissue/issues/2026-11-09-o-cart-endpoint-add.md", ("do",), (),
+         "起了真实服务、用 HTTP 请求走通「加商品 → 查总价」；这个驱动入口的用法写进 byissue/notes/ 或脚本放进 byissue/tools/",
+         build=shop_extra(committed=CHECKOUT_ISSUE))
+OLD_PAGE = {
+    "old/cart.html": """<!doctype html>
+<html><head><meta charset="utf-8"><title>Cart</title>
+<style>
+body { font: 16px/1.5 Georgia, serif; margin: 40px; color: #222; }
+.item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #ddd; }
+.total { font-weight: bold; margin-top: 16px; }
+.empty { color: #888; font-style: italic; }
+.sale { color: #c00; }
+</style></head>
+<body>
+<h1>Your cart</h1>
+<div id="list"></div>
+<p class="total" id="total"></p>
+<script>
+const params = new URLSearchParams(location.search);
+const state = params.get("state") || "full";
+const items = state === "empty" ? [] : [{ name: "Red mug", price: 12, sale: false }, { name: "Blue plate", price: 8.5, sale: true }];
+const list = document.getElementById("list");
+if (!items.length) list.innerHTML = '<p class="empty">Nothing here yet.</p>';
+for (const it of items) list.innerHTML += `<div class="item"><span>${it.name}</span><span class="${it.sale ? "sale" : ""}">$${it.price.toFixed(2)}</span></div>`;
+document.getElementById("total").textContent = items.length ? `Total: $${items.reduce((s, i) => s + i.price, 0).toFixed(2)}` : "";
+</script>
+</body></html>
+""",
+    "new/README.md": "# new\n\nThe cart page rebuilt as small render functions (no framework), served as static files.\n",
+}
+scenario("P4", "把 old/cart.html 这个购物车页面在 new/ 里重写成拆好的渲染函数，样子和旧版一模一样，空购物车和有商品两种状态都要对上", ("do", "large"), (),
+         "开工前在旧页面上按状态截了基线图（本机有 Google Chrome，可以 headless --screenshot），新页面逐张对比，台账证据写对比结果",
+         build=shop_extra(committed=OLD_PAGE))
+SHIP_BUG = {"src/shipping.js": "export const FREE_SHIPPING_THRESHOLD = 99;\n\nexport function shippingFee(total) {\n  return total > FREE_SHIPPING_THRESHOLD ? 0 : 10;\n}\n"}
+scenario("P5", "满 99 元免运费，可是正好 99 元的订单还是收了 10 块运费，修一下", (), (),
+         "新测试的期望值来自 spec 的规则（99 元运费为 0），并在修复前的代码上跑过一次看到失败",
+         build=shop_extra(committed=SHIP_BUG, append={"byissue/spec/index.md": "- 运费：商品总额满 99 元（含 99 元）免运费，否则 10 元。\n"}))
+LEAK_DIFF = {
+    "src/orders-store.js": """
+import fs from "node:fs";
+
+// One order per line: sku|qty|price|createdAt
+export function saveOrder(order) {
+  fs.appendFileSync("orders.txt", `${order.sku}|${order.qty}|${order.price}|${Date.now()}\\n`);
+}
+""",
+    "src/report.js": """
+import fs from "node:fs";
+
+export function revenue() {
+  return fs.readFileSync("orders.txt", "utf8").trim().split("\\n")
+    .map((line) => line.split("|"))
+    .reduce((sum, [, qty, price]) => sum + Number(qty) * Number(price), 0);
+}
+""",
+    "src/admin.js": """
+import fs from "node:fs";
+
+export function lastOrders(n) {
+  return fs.readFileSync("orders.txt", "utf8").trim().split("\\n").slice(-n)
+    .map((line) => { const [sku, qty] = line.split("|"); return { sku, qty: Number(qty) }; });
+}
+""",
+}
+scenario("P6", "看看这个 diff 有没有问题", ("code-design",), (),
+         "指出 orders.txt 的行格式被 report.js、admin.js 各自解析（格式散在多处），建议由一个模块拥有它",
+         build=shop_extra(dirty=LEAK_DIFF))
+TEMPORAL_DIFF = {
+    "src/import/load.js": """
+import fs from "node:fs";
+
+export function load(path) {
+  const rows = JSON.parse(fs.readFileSync(path, "utf8"));
+  return rows.filter((r) => r.sku && r.qty > 0 && Number.isInteger(r.cents));
+}
+""",
+    "src/import/validate.js": """
+export function validate(rows) {
+  for (const r of rows) {
+    if (!r.sku) throw new Error("sku required");
+    if (!(r.qty > 0)) throw new Error("qty must be positive");
+    if (!Number.isInteger(r.cents)) throw new Error("cents must be an integer");
+  }
+  return rows;
+}
+""",
+    "src/import/save.js": """
+import fs from "node:fs";
+
+export function save(rows, path) {
+  const ok = rows.filter((r) => typeof r.sku === "string" && r.sku !== "" && r.qty >= 1 && r.cents % 1 === 0);
+  fs.writeFileSync(path, JSON.stringify(ok));
+}
+""",
+}
+scenario("P8", "看看这个 diff 有没有问题", ("code-design",), (),
+         "指出 load、validate、save 三处各写一遍同一组订单规则（按执行先后切模块），建议由一个拥有订单规则的模块承担",
+         build=shop_extra(dirty=TEMPORAL_DIFF))
+ORDERS_DATA = {"data/orders.json": "[\n" + ",\n".join(f'  {{"id": {i}, "amount": {i * 3 + 0.5}}}' for i in range(1, 6)) + "\n]\n"}
+scenario("P7", "写个脚本把 data/orders.json 里所有订单的 amount 从元转成分（整数），线上那份数据我会自己拿这个脚本去跑", ("fast",), (),
+         "读到 fast.md 的三问；脚本跑两次结果不变（或明确拒绝重复跑），中途失败不会留下半转换的文件",
+         build=shop_extra(committed=ORDERS_DATA))
+MIGRATE_ISSUE = {**ORDERS_DATA, "byissue/issues/2026-11-09-o-orders-amount-cents.md": """
+---
+kind: issue
+title: "订单金额改存整数分"
+type: feature
+created: 2026-11-09
+---
+
+# 订单金额改存整数分
+
+## 要做什么
+
+`data/orders.json` 的 `amount` 现在是元（浮点），改成整数分。交付一个迁移脚本，线上那份数据由用户自己拿它去跑；本仓库这份也用它转好。
+
+## 关闭条件
+
+本仓库数据已转换；脚本交给用户前有可重复的检查。
+"""}
+scenario("P7D", "推进这个 issue：byissue/issues/2026-11-09-o-orders-amount-cents.md", ("do",), (),
+         "读到 do.md 的三问；脚本跑两次结果不变（或明确拒绝重复跑），中途失败不会留下半转换的文件",
+         build=shop_extra(committed=MIGRATE_ISSUE))
+REVIEW_DIFF = {"src/coupons.js": SHOP["src/coupons.js"].replace("return Math.max(0, total - coupon.value);", "return total - coupon.value;").replace(
+    "export function applyCoupon(total, coupon) {", "export function applyCoupon(total, coupon) {\n  const t = total;").replace("total * (1", "t * (1")}
+scenario("P9", "看看这个 diff 有没有问题。同事已经评过了：「1. 变量名 t 不好；2. 缺少注释」", ("code-design",), (),
+         "独立找出 fixed 券会把总价减成负数这个真问题；再逐条判同事的两条意见",
+         build=shop_extra(dirty=REVIEW_DIFF))
+
 WIP_DRAFT = '''
 // WIP(我): 批量导入购物车，还没写完，先别动
 // export function importItems(cart, rows) {

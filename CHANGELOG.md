@@ -1,3 +1,16 @@
+## 1.14.0
+
+Nine rules absorbed from pstack after an item-by-item verdict on all 118 of its skills, playbooks, agents, hooks and plugin config files (`byissue/epics/2026-11-09-o-pstack-item-verdicts/`: every row has a verdict with a quoted `file:line`; the user approved the nine recommended candidates and declined sixteen). Each rule sits in the file the model is reading at that moment and has a behavior probe on `deepseek-flash`.
+
+- `SKILL.md`「证据本身要可信」: expected values in a new test or check come from the requirement, spec or hand calculation rather than the code's own output (baseline tests that pin current behavior before a structural step excepted); a check counts as guarding something only after it was seen failing on the pre-change code, a real past bug or a deliberately broken copy; speed and savings claims run the same command alternately before and after, at least three times each, report median and range, call overlapping ranges no measurable difference, name the bottleneck, and confirm the work happened inside the timed span.
+- `debug.md`「升级」step 1: hangs, leaks and slowdowns with no error to follow start from a profile, trace or heap snapshot of the running process (or the one the user gave), mapped back to source.
+- `do.md`: when the project has no way to drive real behavior the way a user would, build a minimal entry and run it once; usage goes to `byissue/notes/`, a reusable script to `byissue/tools/` with its run, inputs, outputs and danger notes per the tool template; under no-trace, only in the report or a temp directory.
+- `fast.md` and `do.md`: a state-changing script (migration, batch, import, scheduled job) answers three questions before it is written: what a second run does, what a crash midway leaves, whether a rerun converges. Same sentence in both posture files, because the first probe showed a quick-change run never opening `code-design.md`.
+- `large.md`: UI parity work screenshots the old implementation per page and state before starting, compares the new one against that baseline, and marks a row `没做` with the difference when the diff is non-zero.
+- `code-design.md`: two new shapes for the "looks right from one file" list (a storage or wire format read and written by several modules; modules cut by execution order instead of knowledge); one state owner means state changes go only through it; Review step 1 finishes its own review before judging review comments the user pasted.
+- `quality.md` no longer says it provides no measurement method; it points to `SKILL.md` for the minimum on performance numbers.
+- `tools/fixtures/posture_table.py` gains probes P1–P9 and P7D for these rules.
+
 ## 1.13.3
 
 Fixes from rerunning the whole posture-scenario table and the large-task probes on a low-cost model (`deepseek-flash`), per the user's ruling that the workflow must hold on weaker models. 41 runs; three failures, all the same shape: the rule lived in a `SKILL.md` parenthetical or behind a "(see X)" pointer, while the model followed the posture file it was reading.
