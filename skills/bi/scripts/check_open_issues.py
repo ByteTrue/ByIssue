@@ -9,9 +9,10 @@ order: sediment, graduation, close rename for the items this session worked
 on or the user named that meet the close conditions, one commit, then push
 only if asked.
 
-Exit code 1 means open regular issues exist (close gates). Open ff files
-are reminders only; open epics are the normal state of ongoing work and
-are not listed.
+Exit code 1 means an item exists under more than one state letter (reported
+alone, rerun after resolving) or open regular issues exist (close gates).
+Open ff files are reminders only; open epics are the normal state of ongoing
+work and are not listed.
 """
 from __future__ import annotations
 
@@ -22,6 +23,7 @@ from pathlib import Path
 
 OPEN_RE = re.compile(r"^(?:\d{4}-\d{1,2}-\d{1,2}|\d+)-o-")
 FF_RE = re.compile(r"^(?:\d{4}-\d{1,2}-\d{1,2}|\d+)-o-ff-")
+STATE_RE = re.compile(r"^((?:\d{4}-\d{1,2}-\d{1,2}|\d+)-)[oxw](-.+)$")
 
 
 def issue_trees(workspace: Path) -> list[Path]:
@@ -47,6 +49,19 @@ def scan(workspace: Path) -> tuple[list[Path], list[Path]]:
     return gates, reminders
 
 
+def duplicates(workspace: Path) -> list[list[Path]]:
+    """Items present under more than one state letter, e.g. a close that copied instead of renamed."""
+    groups: dict[Path, list[Path]] = {}
+    for parent in [workspace / "epics", *issue_trees(workspace)]:
+        if not parent.is_dir():
+            continue
+        for entry in parent.iterdir():
+            match = STATE_RE.match(entry.name)
+            if match:
+                groups.setdefault(parent / (match.group(1) + "?" + match.group(2)), []).append(entry)
+    return [sorted(paths) for _, paths in sorted(groups.items()) if len(paths) > 1]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="List open issues in byissue/ before committing or pushing."
@@ -59,6 +74,13 @@ def main() -> int:
     if not workspace.is_dir():
         print(f"未找到 byissue/（{workspace}）；无可检查事项。")
         return 0
+
+    dupes = duplicates(workspace)
+    if dupes:
+        print("同一事项同时以多个状态存在（关闭时复制而非改名），这次没有列出打开的 issue。逐个文件对照两份内容：一份相对另一份只缺关闭写入的内容（其余不同只是关闭改掉的状态与 -o-/-x-/-w- 名字）时，按 close.md「原则」用它的全名 grep，把引用改到留下的那份，再删掉它（通常是 -o-）；两份各有对方没有的内容时，列给用户问。处理完重跑本脚本再提交：")
+        for paths in dupes:
+            print("  - " + " 与 ".join(path.relative_to(root).as_posix() for path in paths))
+        return 1
 
     gates, reminders = scan(workspace)
     if gates:
