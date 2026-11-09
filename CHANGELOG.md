@@ -1,6 +1,14 @@
+## 1.14.1
+
+A line-by-line recheck of the 53 "already in bi" verdicts in the pstack Epic downgraded four to partial; one of the uncovered pieces, from pstack's `minimize-reader-load`, was approved by the user.
+
+- `code-design.md` and `fast.md`: a value that can be computed from other state is computed when used rather than stored as a field every writer must keep in sync; a cache a performance target needs, or a snapshot such as the price at order time, gets one write point or invalidation point. Same rule in both files because quick changes do not open `code-design.md`.
+- `code-design.md`: a new shape, state wider than its use: a value only one function uses stays a local variable instead of a field or module variable.
+- `tools/fixtures/posture_table.py`: probes P10 (review of a synced count field), P10F (adding a count on the quick path) and P10S (review of a field only one method uses).
+
 ## 1.14.0
 
-Nine rules absorbed from pstack after an item-by-item verdict on all 118 of its skills, playbooks, agents, hooks and plugin config files (`byissue/epics/2026-11-09-o-pstack-item-verdicts/`: every row has a verdict with a quoted `file:line`; the user approved the nine recommended candidates and declined sixteen). Each rule sits in the file the model is reading at that moment and has a behavior probe on `deepseek-flash`.
+Nine rules absorbed from pstack after an item-by-item verdict on all 118 of its skills, playbooks, agents, hooks and plugin config files (`byissue/epics/2026-11-09-x-pstack-item-verdicts/`: every row has a verdict with a quoted `file:line`; the user approved the nine recommended candidates and declined sixteen). Each rule sits in the file the model is reading at that moment and has a behavior probe on `deepseek-flash`.
 
 - `SKILL.md`「证据本身要可信」: expected values in a new test or check come from the requirement, spec or hand calculation rather than the code's own output (baseline tests that pin current behavior before a structural step excepted); a check counts as guarding something only after it was seen failing on the pre-change code, a real past bug or a deliberately broken copy; speed and savings claims run the same command alternately before and after, at least three times each, report median and range, call overlapping ranges no measurable difference, name the bottleneck, and confirm the work happened inside the timed span.
 - `debug.md`「升级」step 1: hangs, leaks and slowdowns with no error to follow start from a profile, trace or heap snapshot of the running process (or the one the user gave), mapped back to source.

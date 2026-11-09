@@ -35,7 +35,7 @@ bi 已经独立做到、不用动的：拷问循环（覆盖了 pstack 对分叉
 - **PR 生命周期**（babysit、shipping、autopilot、orchestrate、fix-ci）：绑定特定宿主和代码托管平台，而 bi 默认不 commit、不 push。
 - **「Never block on the human」加频繁 commit**：bi 有意把 commit、push、关闭留给用户；执行类姿态持续推进到完成，`SKILL.md` 姿态判断第 10 条已经写了。
 - **每个任务把 playbook 步骤逐字抄进 todolist 并写 `skip:`**：对快改是纯仪式；bi 在关键环节已经要求显式写「无」。
-- **把 24 条 principle 拆成独立技能**：内容和 economy、code-design、debug、domain-modeling 大面积重叠，拆开违背单入口。（「大面积重叠」是类别结论，没有逐条核对。逐条裁定见 `byissue/epics/2026-11-09-o-pstack-item-verdicts/`。）
+- **把 24 条 principle 拆成独立技能**：内容和 economy、code-design、debug、domain-modeling 大面积重叠，拆开违背单入口。（「大面积重叠」是类别结论，没有逐条核对。逐条裁定见 `byissue/epics/2026-11-09-x-pstack-item-verdicts/`。）
 - **unslop、deslop、no-comments**：英文文风规则；代码精简已有 ponytail。（同日续谈推翻了这条：bi 不能假设 ponytail 已安装，这条理由违反 `byissue/spec/index.md` 的形态约束。三项在 1.12.0 吸收进 `skills/bi/references/economy.md`「交付前清理自己的 diff」和 `skills/bi/references/writing.md`，以那次为准，见 `byissue/talks/2026-11-09-bi-v2-rejected-what-carries-over.md` 第 6 节。）
 - **TSV 决策日志 + transcript 审计 + 异模型复核**：issue 的执行记录已经起这个作用；只取 Attention 段的思路，并入第 1 条。
 - **SessionStart 路由 hook、项目级 playbook 扩展**：bi 经 `npx skills` 分发，没有 hook 机制，也不写 `AGENTS.md`；项目定制本来就由 `AGENTS.md` 优先。

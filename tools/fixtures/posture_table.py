@@ -699,7 +699,7 @@ scenario(26, "登录页白屏的 issue 已经修好、Safari 16 验收通过，�
 for arm in ("w-clean", "w-settled", "w-violation", "o-control", "x-control"):
     scenario(f"S-{arm}", "这个 epic 现在什么状态？", (), (), f"按 posture-scenarios.md 状态字母表的 {arm} 臂判", kind=f"state:{arm}")
 
-# Probes for the rules absorbed from pstack in 1.14.0 (byissue/epics/2026-11-09-o-pstack-item-verdicts/).
+# Probes for the rules absorbed from pstack in 1.14.0 (byissue/epics/2026-11-09-x-pstack-item-verdicts/).
 CATALOG = {
     "src/catalog.js": """
 // Products are { sku, name, tags }. Search matches a word in the name or a tag.
@@ -873,6 +873,23 @@ created: 2026-11-09
 scenario("P7D", "推进这个 issue：byissue/issues/2026-11-09-o-orders-amount-cents.md", ("do",), (),
          "读到 do.md 的三问；脚本跑两次结果不变（或明确拒绝重复跑），中途失败不会留下半转换的文件",
          build=shop_extra(committed=MIGRATE_ISSUE))
+SYNCED_FIELD = {"src/cart.js": SHOP["src/cart.js"].replace(
+    "    this.items = new Map();\n", "    this.items = new Map();\n    this.itemCount = 0;\n").replace(
+    "    else this.items.set(sku, { sku, price, qty });\n", "    else this.items.set(sku, { sku, price, qty });\n    this.itemCount += qty;\n").replace(
+    "    this.items.delete(sku);\n", "    this.itemCount -= this.items.get(sku).qty;\n    this.items.delete(sku);\n")}
+scenario("P10", "看看这个 diff 有没有问题，加了个购物车商品件数给角标用", ("code-design",), (),
+         "指出 itemCount 能从 items 算出来却另存一份，以后改 items 的路径都得记得同步；建议现算",
+         build=shop_extra(dirty=SYNCED_FIELD))
+scenario("P10F", "购物车角标要显示商品总件数，顺手给 Cart 加一下，快点", ("fast",), (),
+         "读到 fast.md 的「能算出来的值现算」；件数从 items 现算（getter 或方法），没有另存一个要在 add/remove 里同步的字段",
+         build=shop_extra())
+WIDE_FIELD = {"src/cart.js": SHOP["src/cart.js"].replace(
+    "  add(sku, price, qty = 1) {\n    const item = this.items.get(sku);\n",
+    "  add(sku, price, qty = 1) {\n    this.lastAdded = sku;\n    const item = this.items.get(sku);\n").replace(
+    'console.log("cart add", sku, qty);', 'console.log("cart add", this.lastAdded, qty);')}
+scenario("P10S", "看看这个 diff 有没有问题", ("code-design",), (),
+         "指出 lastAdded 只在 add() 里写和读，不该是字段，留成局部变量（或直接用 sku）",
+         build=shop_extra(dirty=WIDE_FIELD))
 REVIEW_DIFF = {"src/coupons.js": SHOP["src/coupons.js"].replace("return Math.max(0, total - coupon.value);", "return total - coupon.value;").replace(
     "export function applyCoupon(total, coupon) {", "export function applyCoupon(total, coupon) {\n  const t = total;").replace("total * (1", "t * (1")}
 scenario("P9", "看看这个 diff 有没有问题。同事已经评过了：「1. 变量名 t 不好；2. 缺少注释」", ("code-design",), (),

@@ -2,7 +2,7 @@
 
 接着做或改这张表之前，先读同目录 [spec.md](spec.md) 的「已定方案与必须守住」和「结论的判据」。
 
-接续点：五个单元都已裁定（118 行）。候选去重后在 [candidates.md](candidates.md)，用户已裁决吸收 9 条，落地是单元 L（119–127 行），1.14.0 已全部落地；第 120 行行为证据无法判定，用户已确认接受。1.14.0 提交后，派审查员逐行复核 53 行「已有／已有·部分」是否同一时点同一动作，再关 Epic。引用由 `check_quotes.py` 机械核对，脚本报的不一致逐条人工看过：都是建议新文或转述放进了引号，或标点不同。
+接续点：五个单元都已裁定（118 行）。候选去重后在 [candidates.md](candidates.md)，用户已裁决吸收 9 条，落地是单元 L（119–127 行），1.14.0 已全部落地；第 120 行行为证据无法判定，用户已确认接受。53 行「已有／已有·部分」已逐行复核（4 行降级，1 行证据更新，5 行注明缺口不吸收的依据是用户对 candidates.md 的裁决；复核记在各 verdicts 行末「复核：」），复核翻出的一条新缺口用户同意吸收，落地是第 128 行（1.14.1）；它落地后关 Epic。verdicts 里 bi 的行号是裁定当时（1.13.3）的，1.14.x 加句后会漂几行，按原句 grep 定位。引用由 `check_quotes.py` 机械核对，脚本报的不一致逐条人工看过：都是建议新文或转述放进了引号，或标点不同。
 
 ## 列举来源
 
@@ -31,7 +31,7 @@ ls hooks.json models.json                   # 插件根的 hook 注册与按角�
 | 3 | playbook `autopilot-full` | U1 | 做了 | [不吸收] 见 [verdicts/U1.md](verdicts/U1.md) |
 | 4 | playbook `autopilot-stack` | U1 | 做了 | [不吸收] 见 [verdicts/U1.md](verdicts/U1.md) |
 | 5 | playbook `babysit` | U1 | 做了 | [不吸收] 见 [verdicts/U1.md](verdicts/U1.md) |
-| 6 | playbook `bug-fix` | U1 | 做了 | [已有] 见 [verdicts/U1.md](verdicts/U1.md) |
+| 6 | playbook `bug-fix` | U1 | 做了 | [已有·部分] 见 [verdicts/U1.md](verdicts/U1.md) |
 | 7 | playbook `eval` | U1 | 做了 | [已有] 见 [verdicts/U1.md](verdicts/U1.md) |
 | 8 | playbook `feature` | U1 | 做了 | [已有] 见 [verdicts/U1.md](verdicts/U1.md) |
 | 9 | playbook `hillclimb` | U1 | 做了 | [已有·部分] 见 [verdicts/U1.md](verdicts/U1.md) |
@@ -62,7 +62,7 @@ ls hooks.json models.json                   # 插件根的 hook 注册与按角�
 | 34 | skill `principle-laziness-protocol` | U2 | 做了 | [已有] 见 [verdicts/U2.md](verdicts/U2.md) |
 | 35 | skill `principle-make-operations-idempotent` | U2 | 做了 | [已有·部分] 见 [verdicts/U2.md](verdicts/U2.md) |
 | 36 | skill `principle-migrate-callers-then-delete-legacy-apis` | U2 | 做了 | [已有] 见 [verdicts/U2.md](verdicts/U2.md) |
-| 37 | skill `principle-minimize-reader-load` | U2 | 做了 | [已有] 见 [verdicts/U2.md](verdicts/U2.md) |
+| 37 | skill `principle-minimize-reader-load` | U2 | 做了 | [已有·部分] 见 [verdicts/U2.md](verdicts/U2.md) |
 | 38 | skill `principle-model-the-domain` | U2 | 做了 | [候选] 见 [verdicts/U2.md](verdicts/U2.md) |
 | 39 | skill `principle-never-block-on-the-human` | U2 | 做了 | [不吸收] 见 [verdicts/U2.md](verdicts/U2.md) |
 | 40 | skill `principle-outcome-oriented-execution` | U2 | 做了 | [已有·部分] 见 [verdicts/U2.md](verdicts/U2.md) |
@@ -84,13 +84,13 @@ ls hooks.json models.json                   # 插件根的 hook 注册与按角�
 | 56 | skill `create-formal-verification-skill` | U3 | 做了 | [不吸收] 见 [verdicts/U3.md](verdicts/U3.md) |
 | 57 | skill `create-verification-skill` | U3 | 做了 | [候选] 见 [verdicts/U3.md](verdicts/U3.md) |
 | 58 | skill `deslop` | U3 | 做了 | [已有] 见 [verdicts/U3.md](verdicts/U3.md) |
-| 59 | skill `figure-it-out` | U3 | 做了 | [已有] 见 [verdicts/U3.md](verdicts/U3.md) |
+| 59 | skill `figure-it-out` | U3 | 做了 | [已有·部分] 见 [verdicts/U3.md](verdicts/U3.md) |
 | 60 | skill `fix-ci` | U3 | 做了 | [不吸收] 见 [verdicts/U3.md](verdicts/U3.md) |
 | 61 | skill `fix-merge-conflicts` | U3 | 做了 | [不吸收] 见 [verdicts/U3.md](verdicts/U3.md) |
 | 62 | skill `get-pr-comments` | U3 | 做了 | [不吸收] 见 [verdicts/U3.md](verdicts/U3.md) |
 | 63 | skill `how` | U3 | 做了 | [已有] 见 [verdicts/U3.md](verdicts/U3.md) |
 | 64 | skill `in-your-own-words` | U3 | 做了 | [已有] 见 [verdicts/U3.md](verdicts/U3.md) |
-| 65 | skill `interrogate` | U3 | 做了 | [已有] 见 [verdicts/U3.md](verdicts/U3.md) |
+| 65 | skill `interrogate` | U3 | 做了 | [已有·部分] 见 [verdicts/U3.md](verdicts/U3.md) |
 | 66 | skill `ketchup-video` | U3 | 做了 | [不吸收] 见 [verdicts/U3.md](verdicts/U3.md) |
 | 67 | skill `ketchup` | U3 | 做了 | [已有·部分] 见 [verdicts/U3.md](verdicts/U3.md) |
 | 68 | skill `maintain-formal-verification-skill` | U3 | 做了 | [不吸收] 见 [verdicts/U3.md](verdicts/U3.md) |
@@ -153,3 +153,4 @@ ls hooks.json models.json                   # 插件根的 hook 注册与按角�
 | 125 | 落地 7：改状态的操作要能重跑（fast.md 红线、do.md「实现与验证」） | L | 做了 | 首轮 P7 只读了 fast.md、writing.md，规则当时在 code-design.md，没读到；脚本自带「全整数就拒跑」与先写 .bak，是模型自己的默认。审查 F3 后整条移进 fast.md，复测 P7：读了 fast.md；脚本改成先写 *.tmp 再 rename（首轮是原地覆盖），汇报写明「中途崩掉原文件不变」「全是整数时报错退出，避免误跑两次」；还把守卫删掉的副本上跑过测试看它失败；P7D（受管理 issue 走 do 路径）：读了 do.md，脚本默认预演、--write 走 .tmp+rename，重跑打印「已转换过，未改动」 |
 | 126 | 落地 8：测试的期望值来自需求（SKILL.md「证据本身要可信」） | L | 做了 | P5 期望值来自 spec「含 99 元」；P3「期望值按需求手算（10×2 加 20）」；P7「期望值手算得出」 |
 | 127 | 落地 9：先独立审完再看别人的评审（code-design.md Review） | L | 做了 | P9：读了 code-design.md；独立找出删掉 Math.max 致负金额（实测 -30），再判同事两条：一条方向对没到位、一条不成立 |
+| 128 | 落地 10：算得出来的值不另存一份（code-design.md、fast.md） | L | 做了 | P10F 快改路径：读了 fast.md，新增 count() 遍历 items 现算，没有另存同步字段，测试期望值手算；P10 审查重跑（审查修法后的措辞）：必须处理第一条就点名「能算出来的值另存一份」，建议换 getter。P10S（状态放得比用途宽）：读了 code-design.md，点名「状态放得比用途宽」，实测 lastAdded 让实例多一个键，建议删字段还原成用 sku。首轮 P10：读了 code-design.md；第一条就指出 itemCount「是从 items 算得出来的值，却又被单独存了一份」，用探针实测清空 items 后 itemCount 仍为 5，建议改成计算属性 |
