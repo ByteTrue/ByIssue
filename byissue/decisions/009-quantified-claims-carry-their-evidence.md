@@ -2,7 +2,7 @@
 kind: decision
 title: "写进 byissue/ 的量化判断必须附出处"
 created: 2026-09-21
-superseded-by: ""
+superseded-by: "2026-11-09-sediment-lands-directly-records-say-how-to-trust-them"
 ---
 
 # 写进 byissue/ 的量化判断必须附出处

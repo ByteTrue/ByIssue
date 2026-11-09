@@ -70,6 +70,7 @@
 - 行为回归测试（`byissue/issues/004-x-posture-routing-regression-tests.md`）。checker 只挡路径漂移，挡不住语义漂移。
 - 使用信号采集。真实分布靠人工统计外部仓库，见 `byissue/notes/001-real-world-usage-stats.md`。
 - 除 Codex 外的第二宿主适配。
+- 大任务自动拆分。Epic 只是容器，不负责把「重写前端」这类一句话的大任务拆成可验证的单元；用户说过它会在压缩几轮后跑偏、漏细节，原话见 `byissue/talks/2026-11-09-bi-v2-rejected-what-carries-over.md` 第 2、3 节。
 
 ## 想深入时
 

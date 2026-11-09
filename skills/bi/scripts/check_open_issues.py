@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """List open issues under byissue/ before committing or pushing.
 
-The mechanical half of the commit contract (sediment and close settle before the push): bound to the git
-action (run right before commit / push / PR / release), not to any posture,
-so it survives long sessions where the contract text has been compacted
-away. Rule: run it, present what it lists, request close AND sediment
-authorization in the same turn, settle everything onto disk, then push
-rename + graduation + sediment + code as one commit.
+The mechanical half of the commit contract: bound to the git action (run
+right before commit / push / PR / release), not to any posture, so it
+survives long sessions where the contract text has been compacted away.
+The user's "wrap up / close / commit / push" already authorizes the fixed
+order: sediment, graduation, close rename for the items this session worked
+on or the user named that meet the close conditions, one commit, then push
+only if asked.
 
 Exit code 1 means open regular issues exist (close gates). Open ff files
 are reminders only; open epics are the normal state of ongoing work and
@@ -61,7 +62,7 @@ def main() -> int:
 
     gates, reminders = scan(workspace)
     if gates:
-        print("打开的常规 issue（提交前需要关闭裁决）：")
+        print("打开的常规 issue（本会话推进过或用户点名、且满足关闭条件的随本次提交关闭，其余保持 -o-）：")
         for path in gates:
             print(f"  - {path.relative_to(root).as_posix()}")
     else:
@@ -73,15 +74,11 @@ def main() -> int:
 
     if gates:
         print(
-            "按提交契约：同轮给出关闭建议（暂不可关则说明原因并保持 -o-）与沉淀候选并请求授权；"
-            "即便事项保持 -o-，本轮已证实经验仍须完成沉淀裁决，将（若可关的）关闭改名、毕业回写、沉淀落盘与代码合并为单次 commit 后再推送；"
-            "用户明确暂不处理的，才单独提交代码。"
+            "按提交契约：先补齐沉淀；本会话推进过或用户点名、且满足关闭条件的事项再毕业回写、修引用并改 -x-，"
+            "不满足的保持 -o- 并在汇报里说原因；沉淀、回写、改名与代码合成一次 commit。用户点名不关的保持 -o-。"
         )
         return 1
-    print(
-        "按提交契约：沉淀候选仍未裁决时，同轮列出并请求授权，"
-        "落盘随本次提交一起走——合并后再冒出待办，意味着一笔可避免的第二提交和一轮白跑的 CI。"
-    )
+    print("按提交契约：沉淀补齐落盘，随本次提交一起走。")
     return 0
 
 

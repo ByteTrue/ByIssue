@@ -189,7 +189,7 @@ your-project/
 
 ## People retain control of state transitions
 
-ByIssue does not replace engineering judgment with documents, and it does not treat human intervention as failure. Agents can search, implement, verify, and write back. People retain control of goals, consequential trade-offs, material costs, compatibility policy, closing, publishing, and dangerous operations.
+ByIssue does not replace engineering judgment with documents, and it does not treat human intervention as failure. Agents can search, implement, verify, write back, and record what was learned, then say in the report what they wrote; people correct it if it is wrong. People retain control of goals, consequential trade-offs, material costs, compatibility policy, closing, publishing, and dangerous operations. Saying "wrap up" or "push" is enough: the agent then writes back, closes, commits (and pushes) in a fixed order.
 
 The aim is not to make AI run more steps automatically. It is to keep software understandable, verifiable, controllable, and evolvable as it encounters new facts.
 
