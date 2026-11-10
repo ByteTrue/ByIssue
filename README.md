@@ -215,6 +215,6 @@ ByIssue 源自 [CodeStable](https://github.com/codestable/CodeStable-Lite)；Cod
 
 <div align="center">
 
-MIT License · 基于 [@liuzhengdong](https://github.com/liuzhengdongfortest) 的 CodeStable · 由 [@ByteTrue](https://github.com/ByteTrue) fork 维护
+[MIT License](LICENSE) · 基于 [@liuzhengdong](https://github.com/liuzhengdongfortest) 的 CodeStable · 由 [@ByteTrue](https://github.com/ByteTrue) fork 维护
 
 </div>

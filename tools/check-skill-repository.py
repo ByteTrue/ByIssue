@@ -3,8 +3,9 @@
 
 Checks only what can actually break a release: version bookkeeping, the skill
 package layout, every path the skill points at (and that nothing packaged is
-unreachable), the posture table plus its scenario coverage, and dangling
-references inside byissue/.
+unreachable), every path the repo's current-truth docs point at, one derived
+count in the project spec, the license text inside the package, the posture table plus its scenario coverage, and
+dangling references inside byissue/.
 
 Contract wording is deliberately not checked — grepping for phrases here would
 only create a second, drifting copy of it. Semantic routing is not checked
@@ -15,6 +16,7 @@ from __future__ import annotations
 import re
 import sys
 from pathlib import Path
+from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parent.parent
 SKILL = ROOT / "skills/bi"
@@ -41,9 +43,33 @@ def check_version(report):
     if not VERSION_RE.match(version):
         report("VERSION", f"not valid semver: {version!r}")
     if not changelog.is_file():
-        report("CHANGELOG.md", "file is missing")
-    elif f"## {version}" not in changelog.read_text(encoding="utf-8"):
+        return report("CHANGELOG.md", "file is missing")
+    headings = [h for h in (line[3:].split()[0] for line in unfenced(changelog.read_text(encoding="utf-8").splitlines())
+                            if line.startswith("## ") and line[3:].strip()) if VERSION_RE.match(h)]
+    if version not in headings:
         report("CHANGELOG.md", f"missing version section {version}")
+    elif headings[0] != version:
+        report("CHANGELOG.md", f"newest section is {headings[0]}, not VERSION {version}")
+    for dup in sorted({h for h in headings if headings.count(h) > 1}):
+        report("CHANGELOG.md", f"version {dup} has more than one section")
+
+
+def unfenced(lines):
+    """Lines outside ``` fences: a heading or link quoted in a code block is an example, not a claim."""
+    return (line for _, line in numbered_unfenced(lines))
+
+
+def check_license_travels(report):
+    """MIT needs its notice in every copy; only skills/bi/ is distributed, so its NOTICE.md carries LICENSE."""
+    license_file, notice = ROOT / "LICENSE", SKILL / "NOTICE.md"
+    if not license_file.is_file():
+        return report("LICENSE", "file is missing")
+    text = notice.read_text(encoding="utf-8") if notice.is_file() else ""
+    if license_file.read_text(encoding="utf-8").strip() not in text:
+        report("skills/bi/NOTICE.md", "must contain the repository LICENSE verbatim, so installed copies carry it")
+    # grilling.md and domain-modeling.md copy mattpocock/skills; its MIT notice must ship with them.
+    if "mattpocock/skills" not in text or "Copyright (c) 2026 Matt Pocock" not in text:
+        report("skills/bi/NOTICE.md", "must keep the mattpocock/skills attribution and its MIT copyright line")
 
 
 def check_skill_layout(report):
@@ -84,6 +110,75 @@ def check_skill_links(report):
     for packaged in sorted(SKILL.rglob("*")):
         if packaged.is_file() and packaged.resolve() not in reachable:
             report(packaged.relative_to(ROOT).as_posix(), "packaged but nothing references it")
+
+
+# Docs that state current truth. History legitimately quotes deleted files and broken examples:
+# byissue/ records (issues, epics, notes, talks, decisions), the changelog, and the one-off
+# failure-mode analysis are out of scope.
+HISTORY_DIRS = {"issues", "epics", "notes", "talks", "decisions"}
+HISTORY_FILES = {"CHANGELOG.md", "tools/retro-failure-modes.md"}
+REPO_LINK_RE = re.compile(r"\[[^\]]*\]\((<[^>]+>|(?:[^()\s]|\([^()\s]*\))+)\)")  # one level of balanced parens, as CommonMark
+REPO_PREFIX = r"(?:tools|skills/bi|byissue/spec|byissue/tools)/"
+# A repo path in backticks, possibly after a command word and its flags (`python3 -u ./tools/x.py`),
+# or one a command line inside a fenced block runs (the release chain lives in a ```text block).
+# Placeholders are written <...> and skipped; a trailing :12 or #L12 line reference is dropped.
+COMMAND = r"(?:bash|sh|python3|npx)(?:\s+-\S+)*\s+"
+REPO_PATH_RE = re.compile(rf"`(?:{COMMAND})?(?:\./)?({REPO_PREFIX}[^`\s]*[\w/])")
+FENCED_COMMAND_RE = re.compile(rf"{COMMAND}(?:\./)?({REPO_PREFIX}[^\s`]*[\w/])")
+LINE_REF_RE = re.compile(r"(?::\d+(?:-\d+)?|#L\d+(?:-L?\d+)?)$")
+
+
+def check_repo_paths(report):
+    """Links and backticked repo paths in current-truth docs outside the skill resolve."""
+    for source in sorted(ROOT.rglob("*.md")):
+        rel = source.relative_to(ROOT)
+        if ".git" in rel.parts or rel.parts[0] == "skills" or rel.as_posix() in HISTORY_FILES or (
+            rel.parts[0] == "byissue" and len(rel.parts) > 1 and rel.parts[1] in HISTORY_DIRS
+        ):
+            continue
+        lines = source.read_text(encoding="utf-8").splitlines()
+        unfenced_numbers = set()
+        for number, line in numbered_unfenced(lines):
+            unfenced_numbers.add(number)
+            for raw in REPO_LINK_RE.findall(line):
+                target = unquote(raw[1:-1] if raw.startswith("<") else raw).split("#", 1)[0]
+                if target and not target.startswith(("http:", "https:", "mailto:")) and not (source.parent / target).exists():
+                    report(rel.as_posix(), f"line {number}: link points at missing path: {target}")
+            for target in REPO_PATH_RE.findall(line):
+                target = LINE_REF_RE.sub("", target)
+                if not any(c in target for c in "*{<") and not (ROOT / target).exists():
+                    report(rel.as_posix(), f"line {number}: names missing path: {target}")
+        for number, line in enumerate(lines, 1):
+            if number in unfenced_numbers or line.lstrip().startswith("```"):
+                continue
+            for target in map(lambda t: LINE_REF_RE.sub("", t), FENCED_COMMAND_RE.findall(line)):
+                if not any(c in target for c in "*{<") and not (ROOT / target).exists():
+                    report(rel.as_posix(), f"line {number}: fenced command runs missing path: {target}")
+
+
+def numbered_unfenced(lines):
+    fenced = False
+    for number, line in enumerate(lines, 1):
+        if line.lstrip().startswith("```"):
+            fenced = not fenced
+        elif not fenced:
+            yield number, line
+
+
+def check_derived_facts(report):
+    """A count the project spec states must match the tree it counts."""
+    spec = ROOT / "byissue/spec/index.md"
+    if not spec.is_file():
+        return
+    actual = len(list((SKILL / "references").glob("*.md")))
+    text = spec.read_text(encoding="utf-8")
+    claims = re.findall(r"`references/` 下的 (\d+) 篇", text) + re.findall(r"(\d+) 个 `\.md` 平铺", text)
+    if not claims:
+        report("byissue/spec/index.md", "no references/ count the checker recognizes; it looks for "
+               "「`references/` 下的 N 篇」 and 「N 个 `.md` 平铺」, update both together")
+    for claimed in claims:
+        if int(claimed) != actual:
+            report("byissue/spec/index.md", f"says references/ has {claimed} files, it has {actual}")
 
 
 POSTURE_ROW_RE = re.compile(r"^\|\s*\*\*(?P<posture>[^*]+)\*\*\s*\|(?P<rest>.*)\|\s*$")
@@ -224,7 +319,10 @@ def main() -> int:
         findings.append((path, message))
     check_version(report)
     check_skill_layout(report)
+    check_license_travels(report)
     check_skill_links(report)
+    check_repo_paths(report)
+    check_derived_facts(report)
     check_posture_table(report)
     check_byissue_references(report)
     if findings:

@@ -5,8 +5,10 @@ Usage: python3 tools/fixtures/posture_judge.py /tmp/shop-plan.json
 
 Reads are taken from tool-call arguments, never from log text: SKILL.md's own links would
 otherwise count as reads. Expected reads that never happened and forbidden reads that did are
-printed per scenario, with the model the child actually ran on. Behavior assertions (the
-plan's check column) still need a look at the fixture; this script only prints its git state.
+printed per scenario, with the model the child actually ran on. A scenario with no session log
+counts as not run, never as clean, and the exit code is 1 when any scenario is BAD or not run.
+Behavior assertions (the plan's check column) still need a look at the fixture; this script
+only prints its git state.
 """
 from __future__ import annotations
 
@@ -56,14 +58,14 @@ def git_state(d: str) -> str:
     return f"commits={commits} dirty={dirty}"
 
 
-def main() -> None:
+def main() -> int:
     plan = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-    bad = 0
+    bad = not_run = 0
     for e in plan:
         log = session_log(e["dir"])
         if not log:
-            print(f"[{e['id']:>12}] {Path(e['dir']).name}: no session log")
-            bad += 1
+            print(f"[{e['id']:>12}] {Path(e['dir']).name}: NOT RUN (no session log)")
+            not_run += 1
             continue
         reads, models = reads_and_models(log)
         missing = [r for r in e["expect"] if r not in reads]
@@ -74,8 +76,9 @@ def main() -> None:
               f"model={','.join(sorted(models))} reads={','.join(sorted(reads)) or '-'} "
               f"{'missing=' + ','.join(missing) + ' ' if missing else ''}{'forbidden=' + ','.join(hit) + ' ' if hit else ''}"
               f"{git_state(e['dir'])}\n{'':>15}check: {e['check']}")
-    print(f"\nrouting: {len(plan) - bad}/{len(plan)} clean")
+    print(f"\nrouting: {len(plan) - bad - not_run}/{len(plan)} clean, {bad} BAD, {not_run} not run")
+    return 1 if bad or not_run else 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

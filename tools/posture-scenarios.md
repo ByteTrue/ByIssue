@@ -8,7 +8,7 @@
 
 每条场景起一个子 agent，并行开：
 
-- **整表一次搭好**：`python3 tools/fixtures/posture_table.py /tmp/shop` 给全部场景（含边界场景、状态字母五臂和大任务探针）各搭一个可写夹具，并写出 `/tmp/shop-plan.json`，里面每条有目录、原样发给子 agent 的 `task`、应读与不应读、要人工核对的行为断言。逐条把 `task` 交给一个普通子 agent（`cwd` 设为该目录）。跑完用 `python3 tools/fixtures/posture_judge.py /tmp/shop-plan.json` 判路由：它从工具调用参数里取读过的 reference，并打出子 agent 实际用的模型和各夹具的 git 状态；行为断言仍要逐条去看夹具。会话中途重启会杀掉还在跑的子 agent，这种中断的条目换一个根目录重搭后单独重跑。
+- **整表一次搭好**：`python3 tools/fixtures/posture_table.py /tmp/shop` 给全部场景（含边界场景、状态字母五臂和大任务探针）各搭一个可写夹具，并写出 `/tmp/shop-plan.json`（任一夹具缺了场景要操作的东西，脚本列出来、以 1 退出、不写计划），里面每条有目录、原样发给子 agent 的 `task`、应读与不应读、要人工核对的行为断言。逐条把 `task` 交给一个普通子 agent（`cwd` 设为该目录）。跑完用 `python3 tools/fixtures/posture_judge.py /tmp/shop-plan.json` 判路由：它从工具调用参数里取读过的 reference，并打出子 agent 实际用的模型和各夹具的 git 状态，没有会话日志的条目算「没跑」，有 BAD 或没跑就以 1 退出；行为断言仍要逐条去看夹具。会话中途重启会杀掉还在跑的子 agent，这种中断的条目换一个根目录重搭后单独重跑。
 
 - **`cwd` 指向一份可写的临时副本**：`rsync -a --exclude .git --exclude /tools/ --exclude /byissue/issues/ --exclude /byissue/notes/ --exclude /byissue/decisions/ --exclude /byissue/talks/ --exclude /CHANGELOG.md ./ /tmp/ByIssue/`。子 agent 必须能真的动手，否则行为会变形——首次评测用只读工具，结果第一条直接回「我改不了文件」就收工，那条数据作废。准备夹具目录必须在上一轮 `bash` 调用中先完成，切勿与 `subagent` 同轮并行执行 `rm -rf` 重建 `cwd`（否则 `uv_spawn` 会在目录消失瞬间报 `spawn node ENOENT`，见 `byissue/notes/2026-10-29-uv-spawn-cwd-enoent-in-parallel-subagent.md`）。
 - **fixture 必须含有该场景要操作的东西。** 拿本仓库当 fixture 只对「读哪些文件」这类路由断言有效；一旦场景要动手改产物就不会有判别力。实测三种失败形态，都是 fixture 缺目标物、不是路由错，观测作废：说「把这个 epic 关了吧」→「这里没有 epic」（本仓库 `epics/` 为空）；说「顺手把这个也改了吧」→「『这个』没有指代对象」；说「顺手改一下这个 README 里的错别字」→ 路由对了、也读了 `fast.md`，但仓库里并没有错别字，于是把 16 轮全烧在通读两个 README 上（这条只证明了触发词有效，场景断言拿不到）。要测关闭就造含 `{日期}-o-{Epic名}/` 的副本，要测受管理实现就造仍 `-o-` 的 issue，要测改文案就在 fixture 里放一处真的错别字。**先问一句「这个场景期望子 agent 改哪个文件」，答不上来就换 fixture。**
@@ -18,6 +18,7 @@
 - **给完整工具，不要限制为只读。** 副本提供隔离，工具限制只会污染观测。
 - **子 agent 用低价模型跑**，理由见 `byissue/spec/index.md`「这个项目是什么」。本机子 agent 的模型由 `~/.pi/agent/pi-pkg-cfg/pi-subagent/settings.json` 决定，没有这个文件就继承主会话的模型。开跑前先起一个只回两个字的子 agent，在 `subagent_status` 里核对模型名。A/B 的两臂必须用同一个模型。
 - **A/B 测某一句话时，先确认那句所在的文件在这条路径上会被加载。** 计分前按工具调用的参数核对被测文件确实读到了；在日志全文里 grep 文件名不算数，`SKILL.md` 里的链接文字也会被数进去。实测：为测 `debug.md` 的两处从句，给了一个带完整堆栈的简单 bug，两臂共 10 次都走 complain → fast，没有一次读 `debug.md`，这组 A/B 对那两处从句没有判别力。
+- **两臂行为相同，就删掉那句。** 要说一句规则起了作用，必须有不带这句的对照臂：同一夹具、同一模型，有这句和没这句各跑至少三次，按夹具最终状态和工具调用判。两臂行为相同，说明模型不靠这句也这么做，或者这句没被执行：删掉它，不靠加强语气再试一次。只跑了带这句的一臂、结果通过，只能说「这句在场时行为对」，汇报和台账照这个写。实测：1.13.2 的 B1 两臂 5 次都一样，删了；1.14.0 改状态脚本三问第一次放在没被读到的文件里，模型照样写出了能重跑的检查，那一次的「通过」不是这句的功劳。
 - **`maxTurns` 至少 15。** 首次用 8，三条被截断在关键处。
 - `task` **只放那一句话**，不要附加「请说明你进入了哪个姿态」——那会污染路由。
 - **子 agent 看得见的名字里不带评测味。** 副本目录、夹具目录和 `task` 里不出现 eval、test、judge、control、violation、评测、对照这类词，取用户自己会起的项目名；`tools/`、`byissue/` 下的往轮记录（issues、notes、decisions、talks）与 `CHANGELOG.md` 整个排除在副本外——本表和往轮评测的「说法→期望」表就在里面，留着等于把答案放进考场。夹具脚本建出的目录同理，臂名只留在脚本打印给父会话的映射里。不知道自己在被评测的 agent 才会照常行事，附带产出也来自它（见 `tools/retro-failure-modes.md` 第一节）。

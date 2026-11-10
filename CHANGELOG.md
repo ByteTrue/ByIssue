@@ -1,3 +1,15 @@
+## 1.14.2
+
+The package now carries its license. `skills/bi/references/grilling.md` is a verbatim copy of `mattpocock/skills` and `domain-modeling.md` copies its reading side; MIT requires the notice in every copy, and only `skills/bi/` is distributed. `skills/bi/NOTICE.md` holds the ByIssue MIT text and the upstream MIT text, and `SKILL.md` ends with one line pointing to it. The repository root gains `LICENSE` (copyright liuzhengdong and ByteTrue, as the README already credited) and a short `NOTICE.md` pointing into the package.
+
+Maintenance side, from an item-by-item verdict on pstack's tests, tools, CI and change log (Epic `byissue/epics/2026-11-10-o-pstack-maintenance-side/`, 138 items, eight approved by the user). Every new check was run once against the code it replaces or a planted defect and seen to fail.
+
+- `tools/release-check.sh` runs every mechanical check, then compares `skills/bi/` with the copy the host loads (directory by argument or `BI_DEPLOYED`; `--no-deploy` skips only that comparison). The installed copy fell a version behind twice.
+- The checker also requires: the newest `CHANGELOG.md` section to be `VERSION` and no version twice; links, backticked paths and fenced command lines in current-truth docs (README, AGENTS, `byissue/spec/`, `tools/`) to resolve; the `references/` count stated in the project spec to match; the packaged NOTICE to contain `LICENSE`. Its first run caught the spec saying 20 references where there are 22.
+- `tools/check-close-reference-command.py` runs `close.md`'s reference-repair search command unchanged against the repair fixture and checks it finds exactly the planted lines; `tools/check-skill-scripts.py` gives the two packaged scripts fixture tests.
+- `tools/fixtures/posture_table.py` refuses to write a plan when a fixture lacks what its scenario is about, or when the SKILL.md the task names does not exist; `posture_judge.py` counts a scenario without a session log as not run and exits 1 on any failure.
+- `tools/posture-scenarios.md`: when both A/B arms behave the same, the sentence is deleted.
+
 ## 1.14.1
 
 A line-by-line recheck of the 53 "already in bi" verdicts in the pstack Epic downgraded four to partial; one of the uncovered pieces, from pstack's `minimize-reader-load`, was approved by the user.

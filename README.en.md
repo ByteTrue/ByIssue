@@ -215,6 +215,6 @@ Issues and feedback from real development and refactoring work are welcome.
 
 <div align="center">
 
-MIT License · based on CodeStable by [@liuzhengdong](https://github.com/liuzhengdongfortest) · fork maintained by [@ByteTrue](https://github.com/ByteTrue)
+[MIT License](LICENSE) · based on CodeStable by [@liuzhengdong](https://github.com/liuzhengdongfortest) · fork maintained by [@ByteTrue](https://github.com/ByteTrue)
 
 </div>

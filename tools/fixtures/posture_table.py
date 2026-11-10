@@ -5,15 +5,23 @@ Usage: python3 tools/fixtures/posture_table.py [root] [skill_md]
   root      prefix for fixture dirs, default /tmp/shop (dirs are <root>-01, <root>-02, ...)
   skill_md  the SKILL.md the child must load, default the deployed copy
 
+The default skill_md is this machine's magpie install; elsewhere pass the deployed SKILL.md.
 Writes the fixtures and <root>-plan.json. Each plan entry has the dir, the scenario id, the
 task to send unchanged to a plain subagent (cwd = dir), the references it should and should not
 read, and the behavior assertion to check by hand. Score with tools/fixtures/posture_judge.py.
+
+Before writing the plan, every fixture must prove it holds what its scenario is about: each
+byissue/, src/, old/, new/, data/ or test/ path the task names exists (unless listed as
+("ignore", path)), and the scenario's own pre= assertions hold; files outside those prefixes need
+a pre= entry. A run on a fixture
+that lacks its target only measures the missing target, so any failure exits 1 with no plan.
 Dir names are sequential numbers so nothing the child can see hints at the expected answer.
 """
 from __future__ import annotations
 
 import datetime
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -550,9 +558,32 @@ def summary(text: str, said: str) -> str:
 SCENARIOS: list[dict] = []
 
 
-def scenario(sid, task, expect=(), forbid=(), check="", build=None, kind="shop"):
+def scenario(sid, task, expect=(), forbid=(), check="", build=None, kind="shop", pre=()):
     SCENARIOS.append(dict(id=str(sid), task=task, expect=list(expect), forbid=list(forbid),
-                          check=check, build=build, kind=kind))
+                          check=check, build=build, kind=kind, pre=list(pre)))
+
+
+TASK_PATH_RE = re.compile(r"(?<![\w/.-])((?:byissue|src|old|new|data|test)/[\w./{}-]*\w)")
+
+
+def precondition_failures(sc: dict, d: Path) -> list[str]:
+    """What the fixture lacks that the scenario is about. Empty means the run can mean something."""
+    out = []
+    ignored = {args[0] for kind, *args in sc["pre"] if kind == "ignore"}  # e.g. a pre-rename path a summary quotes
+    for rel in TASK_PATH_RE.findall(sc["task"]):
+        if rel not in ignored and not (d / rel).exists():
+            out.append(f"task names {rel}, fixture has no such path")
+    for kind, *args in sc["pre"]:
+        if kind == "exists" and not (d / args[0]).exists():
+            out.append(f"missing {args[0]}")
+        elif kind == "absent" and (d / args[0]).exists():
+            out.append(f"{args[0]} should not exist")
+        elif kind == "contains" and args[1] not in ((d / args[0]).read_text(encoding="utf-8") if (d / args[0]).is_file() else ""):
+            out.append(f"{args[0]} lacks {args[1]!r}")
+        elif kind == "dirty" and not subprocess.run(["git", "-C", str(d), "status", "--porcelain"],
+                                                    capture_output=True, text=True).stdout.strip():
+            out.append("working tree is clean, but the scenario reviews uncommitted changes")
+    return out
 
 
 def shop_extra(committed=None, dirty=None, no_byissue=False, origin=False, append=None):
@@ -896,6 +927,25 @@ scenario("P9", "看看这个 diff 有没有问题。同事已经评过了：「1
          "独立找出 fixed 券会把总价减成负数这个真问题；再逐条判同事的两条意见",
          build=shop_extra(dirty=REVIEW_DIFF))
 
+# What each scenario is about, beyond the paths its task names. Several earlier runs were wasted
+# on fixtures without their target (tools/posture-scenarios.md, fixture rule).
+PRE = {
+    "9": [("contains", "src/cart.js", "WIP(我)")],
+    "12": [("exists", "byissue/issues/2026-11-07-o-free-shipping.md")],
+    "13": [("dirty",)], "P6": [("dirty",)], "P8": [("dirty",)], "P9": [("dirty",)], "P10": [("dirty",)], "P10S": [("dirty",)],
+    "17": [("absent", "byissue")],
+    "26": [("exists", "byissue/issues/2026-10-13-o-login.md")],
+    "27": [("dirty",)],
+    "28": [("contains", "README.md", "npm tset"), ("exists", "byissue/issues/2026-11-08-o-cart-clear.md")],
+    "30": [("exists", "old/kv.py"), ("exists", "old/todo.py"), ("exists", "old/csvsum.py")],
+    "F8": [("contains", "byissue/spec/index.md", "100 次/分"), ("contains", "upstream.py", "1000")],
+    "P2": [("contains", "src/server.js", "audit(cart)")],
+    "F2": [("contains", "money.py", 'sign = "-"'), ("dirty",)],  # the fix is made, not yet committed
+    "P5": [("contains", "byissue/spec/index.md", "含 99 元"), ("contains", "src/shipping.js", "total > FREE")],
+}
+for sc in SCENARIOS:
+    sc["pre"] += PRE.get(sc["id"], [])
+
 WIP_DRAFT = '''
 // WIP(我): 批量导入购物车，还没写完，先别动
 // export function importItems(cart, rows) {
@@ -942,13 +992,16 @@ def build_one(kind: str, d: Path, base_shop: Path, state_root: Path) -> None:
 
 
 def main() -> None:
+    Path(f"{ROOT}-plan.json").unlink(missing_ok=True)  # a failed build must not leave the last plan behind
+    if not Path(SKILL).is_file():
+        sys.exit(f"SKILL.md not found: {SKILL} (pass the deployed copy's SKILL.md as the second argument)")
     base = Path(f"{ROOT}-base")
     shutil.rmtree(base, ignore_errors=True)
     write(base, SHOP)
     git(base, "init", "-q")
     commit(base, "init")
     state_root = Path(f"{ROOT}-letters")
-    plan = []
+    plan, unfit = [], []
     for i, sc in enumerate(SCENARIOS, 1):
         d = Path(f"{ROOT}-{i:02d}")
         shutil.rmtree(d, ignore_errors=True)
@@ -959,10 +1012,15 @@ def main() -> None:
         if sc["id"] == "9":
             with open(d / "src/cart.js", "a", encoding="utf-8") as f:
                 f.write(WIP_DRAFT)
+        unfit += [f"{sc['id']} ({d.name}): {why}" for why in precondition_failures(sc, d)]
         plan.append(dict(dir=str(d), id=sc["id"], expect=sc["expect"], forbid=sc["forbid"], check=sc["check"],
                          task=f"先完整读 {SKILL}，按它工作（它是本项目的工作流技能 bi）。\n\n{sc['task']}"))
     shutil.rmtree(base)
     shutil.rmtree(state_root, ignore_errors=True)
+    if unfit:
+        print("fixtures that do not hold what their scenario is about (no plan written):")
+        print("\n".join(f"  - {line}" for line in unfit))
+        sys.exit(1)
     Path(f"{ROOT}-plan.json").write_text(json.dumps(plan, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"{len(plan)} fixtures under {ROOT}-NN, plan at {ROOT}-plan.json")
 

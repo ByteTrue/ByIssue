@@ -14,7 +14,7 @@
 ## 统一语言
 
 - **姿态（posture）**：用户此刻在做的那类事（讨论 / 快改 / 受管理实现 / 修 bug / 收尾…）。`bi` 先判断姿态，再只加载那个姿态需要的规则。姿态是**动作级**的：一次被授权的落盘动作不改变当前姿态。
-- **姿态文件 / 原则文件**：`references/` 下的 20 篇分成两类——姿态文件回答「这个姿态怎么行动」，原则文件是被多个姿态按需加载的尺子。**这个分类在文件系统里看不出来**，20 个 `.md` 平铺在一个目录里。
+- **姿态文件 / 原则文件**：`references/` 下的 22 篇分成两类——姿态文件回答「这个姿态怎么行动」，原则文件是被多个姿态按需加载的尺子。**这个分类在文件系统里看不出来**，22 个 `.md` 平铺在一个目录里。
 - **Grilling（拷问循环）**：`references/grilling.md`，讨论 / 愿景 / 设计共用的多轮访谈 primitive，本体不写任何文件；落盘由调用它的姿态负责。终止条件是**决策树的前沿为空且用户确认**，不是轮数上限。**正文为上游 `mattpocock/skills` `grilling` 的逐字节镜像（ff 015）：勿手改，同步上游时整文件替换。**
 - **Domain modeling（领域建模反射）**：`references/domain-modeling.md`，访谈的伴随纪律——顶撞既有词汇、磨模糊词、编具体场景压边界、拿代码对照（读侧逐句照抄上游 `domain-modeling`），以及 grill-me / grill-with-docs 两份 docs 页的承重行为（谈不出来去原型、It's working if 判据）。写侧按 ByIssue 映射：术语 → `byissue/spec/` 统一语言，过三条件门的决策 → `byissue/decisions/`，其余留在对话、Talk 收束进 `byissue/talks/`。**读侧是上游的句级镜像：勿按项目口味改写，同步上游时整段替换；写侧三种去向是 ByIssue 的映射，可以改。**
 - **两段路由**：技能开不开是第一段，由宿主对 frontmatter `description` 做纯文本匹配决定；选哪个姿态是第二段，由 `SKILL.md` 的姿态表决定。两套触发词分别维护，checker 断言每个姿态至少有一个触发词出现在 description 里。description 里的条件式触发（「当项目存在某文件时」）无效。
@@ -31,6 +31,7 @@
 - **不设行数上限。** 按渐进式披露拆，不按行数砍；核心叙事不许为了短而打散。
 - **只分发 `skills/bi/`。** 仓库根的 README、WHY、asset 不进技能包；技能包里也不放没人引用的文件。
 - **技能必须自足。** 不引用只存在于本仓库的文件——用户装到自己项目里时那些路径不存在。
+- **许可证随包走。** 只有 `skills/bi/` 被分发，而 MIT 要求声明跟着每份拷贝；`grilling.md`、`domain-modeling.md` 抄自上游 `mattpocock/skills`。所以 `skills/bi/NOTICE.md` 放 ByIssue 的 `LICENSE` 原文和上游的 MIT 原文，改 `LICENSE` 或同步上游时一起改它。
 - **零依赖、中文为主。** 纯 stdlib Python + Markdown；README 有英文版，技能本体目前只有中文，这是当前选择不是永久约束。
 
 ### 谁在挡这些规则
@@ -46,11 +47,16 @@
 | 路径与状态标记避开竞争先验 | 对抗审查第 3 类 + `tools/fixtures/state-letter-probe.sh` 冷读探针 |
 | 工作流文档只写给现在用它的人（`AGENTS.md`） | 对抗审查第 1 类 |
 | 只分发 `skills/bi/`；技能必须自足 | checker + 对抗审查第 5 类 |
-| `VERSION` 与 `CHANGELOG.md` 同名小节 | checker |
-| checker 自己不漏检 | `tools/check-skill-repository-selftest.py`（改过 checker 后跑） |
+| `VERSION` 与 `CHANGELOG.md` 最新小节一致、版本不重复 | checker |
+| 当前真相文档里的路径存在、本文件写的篇数对得上 | checker |
+| checker 自己不漏检；每修一次漏检加一条旧版会放过的坏样例 | `tools/check-skill-repository-selftest.py`，`tools/release-check.sh` 每次跑 |
+| `close.md` 里的修引用搜索命令找全、不混进 `.git` | `tools/check-close-reference-command.py` 对夹具原样执行 |
+| 分发的两个脚本在用户项目里行为正确 | `tools/check-skill-scripts.py` |
+| 评测夹具真含场景要操作的东西；判分不把没跑算通过 | `tools/fixtures/posture_table.py` 前提断言、`posture_judge.py` 退出码 |
 | 改完 `skills/bi/` 跑对抗审查 | **无** |
 | 动过姿态表或必读文件后跑姿态评测 | **无**（checker 只挡场景覆盖） |
-| rsync 同步部署副本 | **无**，忘了就等于没改 |
+| rsync 同步部署副本 | `tools/release-check.sh` 比对部署副本，没同步就失败 |
+| 许可证与上游归属随包 | checker |
 | 零依赖 | **无** |
 
 对抗审查本身也没有代码强制，所以标「对抗审查」的几行只在审查真的跑了时生效。
@@ -58,14 +64,14 @@
 ## 发布链路
 
 ```text
-改 skills/bi/ → python3 tools/check-skill-repository.py
+改 skills/bi/ → bash tools/release-check.sh --no-deploy（checker、checker 自测、close.md 搜索命令、分发脚本夹具）
               → 起 subagent 按 tools/prompt-review.md 跑一轮提示词对抗性审查，并行一轮粉色大象专审，发现即修；两组修法合并后用新上下文再复核一次
               → rsync 同步宿主实际加载的部署副本（评测子 agent 加载的是这份）
               → 动过姿态表或任一必读文件则再按 tools/posture-scenarios.md 跑一轮行为评测
-              → 更新 VERSION + CHANGELOG.md 同名小节 → 单个 commit → npx skills 分发
+              → 更新 VERSION，并在 CHANGELOG.md 最上面加同名小节 → bash tools/release-check.sh <部署副本目录> → 单个 commit → npx skills 分发
 ```
 
-失败模式的历史分布见 `tools/retro-failure-modes.md`（一次性分析，不随链路重跑）；把一次真实会话变成修改候选，按 `tools/session-retro.md`。各项检查的分工见 `tools/prompt-review.md` 末尾的表，每条规则由谁挡见上节。checker（`tools/check-skill-repository.py`）查五件事：版本与 `CHANGELOG.md` 小节对应、技能包入口布局、技能内链接与反引号路径双向可达且自足（`skills/bi/` 不引本仓专属文件、`templates/` 不含技能内部路径）、姿态表与 frontmatter `description` 双向触发词认领及场景覆盖、`byissue/` 全名引用与事项状态字母（含 `YYYY-MM-DD-` 与 `-w-`）不悬挂。取舍见 `byissue/decisions/001-checker-verifies-links-not-contract-wording.md`；它带来一条硬约束：**新增 reference 或 template 必须在某处用完整路径被引用**，否则报 `packaged but nothing references it`。
+失败模式的历史分布见 `tools/retro-failure-modes.md`（一次性分析，不随链路重跑）；把一次真实会话变成修改候选，按 `tools/session-retro.md`。各项检查的分工见 `tools/prompt-review.md` 末尾的表，每条规则由谁挡见上节。`tools/release-check.sh` 把所有机械检查串起来跑一遍，最后用 `diff -rq` 比对宿主实际加载的部署副本（目录由参数或 `BI_DEPLOYED` 给，不猜），任何一步失败都以 1 退出；`--no-deploy` 只跳过这一步比对。checker（`tools/check-skill-repository.py`）查八件事：随包分发的 `skills/bi/NOTICE.md` 含仓库根 `LICENSE` 原文和上游 `mattpocock/skills` 的归属与版权行、`CHANGELOG.md` 最新小节就是 `VERSION` 且版本号不重复、当前真相文档（README、AGENTS、`byissue/spec/`、`tools/` 等；`byissue/` 下的历史记录、`CHANGELOG.md`、`tools/retro-failure-modes.md` 除外）里的链接、反引号路径和代码块里命令行跑的仓库路径（`tools/`、`skills/bi/`、`byissue/spec/`、`byissue/tools/` 开头，带行号的去掉行号；占位写成 `<…>` 不查）存在、本文件写的 `references/` 篇数与实际一致、技能包入口布局、技能内链接与反引号路径双向可达且自足（`skills/bi/` 不引本仓专属文件、`templates/` 不含技能内部路径）、姿态表与 frontmatter `description` 双向触发词认领及场景覆盖、`byissue/` 全名引用与事项状态字母（含 `YYYY-MM-DD-` 与 `-w-`）不悬挂。取舍见 `byissue/decisions/001-checker-verifies-links-not-contract-wording.md`；它带来一条硬约束：**新增 reference 或 template 必须在某处用完整路径被引用**，否则报 `packaged but nothing references it`。
 
 ## 当前没有的东西
 

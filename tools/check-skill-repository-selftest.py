@@ -2,11 +2,13 @@
 """Prove every check in check-skill-repository.py can actually fail.
 
 Each case copies the repository to a temp dir, plants one known-bad change,
-runs the copied checker, and expects its message. Two cases replay mistakes
-this repo really made (a scenario typo, a reference left pointing at a closed
-item's old -o- name). A check that cannot go red here guards nothing.
+runs the copied checker, and expects its message. Cases commented "Real
+mistake" replay something this repo really shipped. A check that cannot go red
+here guards nothing.
 
-Run after any change to tools/check-skill-repository.py.
+Every fix to the checker, a new check or a silent miss closed, adds the case
+that the previous checker lets through, and is run once against that previous
+checker to see it fail. Run after any change to tools/check-skill-repository.py.
 """
 from __future__ import annotations
 
@@ -55,6 +57,19 @@ def both(*steps):
     return apply
 
 
+def prepend(rel, text):
+    def apply(root: Path):
+        path = root / rel
+        path.write_text(text + path.read_text(encoding="utf-8"), encoding="utf-8")
+    return apply
+
+
+def duplicate_current_version(root: Path):
+    version = (root / "VERSION").read_text(encoding="utf-8").strip()
+    with (root / "CHANGELOG.md").open("a", encoding="utf-8") as handle:
+        handle.write(f"\n## {version}\n\nagain\n")
+
+
 def unbold_posture_rows(root: Path):
     path = root / "skills/bi/SKILL.md"
     path.write_text(path.read_text(encoding="utf-8").replace("| **", "| "), encoding="utf-8")
@@ -90,6 +105,44 @@ CASES = [
     # Real mistake: issue 006's negative test.
     ("scenario names a misspelled reference", edit("tools/posture-scenarios.md", "| 设计 | design |", "| 设计 | desgin |"),
      "unknown reference 'desgin'"),
+    # Real mistake: an anchored link matched nothing and was never checked (issue 009).
+    ("anchored link to missing file", append("skills/bi/references/note.md", "[x](references/nope.md#a)"),
+     "points at missing path: references/nope.md"),
+    # Real mistake: the release chain told people to run a deleted script (issue 009).
+    ("current doc names a deleted tool", append("byissue/spec/index.md", "跑 `tools/check-posture-routing.py`"),
+     "names missing path: tools/check-posture-routing.py"),
+    ("current doc links a missing file", append("README.md", "[x](docs/nope.md)"),
+     "link points at missing path: docs/nope.md"),
+    ("angle-bracket link to a missing file with a space", append("README.md", "[x](<WHY NOPE.md>)"),
+     "link points at missing path: WHY NOPE.md"),
+    # The original 009 shape: a command in the fenced release chain runs a deleted script.
+    ("fenced release chain runs a deleted tool",
+     edit("byissue/spec/index.md", "改 skills/bi/ → bash tools/release-check.sh", "改 skills/bi/ → python3 tools/check-posture-routing.py"),
+     "fenced command runs missing path: tools/check-posture-routing.py"),
+    ("inline command runs a deleted tool", append("byissue/spec/index.md", "跑 `python3 tools/deleted.py` 一下"),
+     "names missing path: tools/deleted.py"),
+    ("spec count rewritten out of the checker's sight",
+     both(edit("byissue/spec/index.md", "`references/` 下的 ", "`references/` 目前 "),
+          edit("byissue/spec/index.md", " 个 `.md` 平铺", " 个文件平铺")),
+     "no references/ count the checker recognizes"),
+    ("changelog newest section is not VERSION", prepend("CHANGELOG.md", "## 0.0.0\n\nold\n\n"),
+     "newest section is 0.0.0"),
+    ("changelog repeats a version", duplicate_current_version, "has more than one section"),
+    # Real mistake: the spec said references/ had 20 files while it had 22.
+    ("new reference leaves the spec count stale", write("skills/bi/references/extra.md", "# extra\n"),
+     "says references/ has"),
+    ("license edited but the packaged NOTICE not", edit("LICENSE", "2026 ByteTrue", "2027 ByteTrue"),
+     "must contain the repository LICENSE verbatim"),
+    ("packaged NOTICE loses the upstream attribution",
+     edit("skills/bi/NOTICE.md", "Copyright (c) 2026 Matt Pocock", "Copyright (c) 2026"),
+     "must keep the mattpocock/skills attribution"),
+    ("command with flags and ./ runs a deleted tool", append("byissue/spec/index.md", "跑 `bash -x ./tools/deleted.py` 一下"),
+     "names missing path: tools/deleted.py"),
+    ("fenced command with a flag runs a deleted tool",
+     edit("byissue/spec/index.md", "改 skills/bi/ → bash tools/release-check.sh", "改 skills/bi/ → python3 -u tools/gone.py"),
+     "fenced command runs missing path: tools/gone.py"),
+    ("line reference to a deleted file", append("byissue/spec/index.md", "见 `tools/deleted.py:12`"),
+     "names missing path: tools/deleted.py"),
     ("dangling byissue reference", append("byissue/spec/index.md", "见 `byissue/notes/2026-01-01-nope.md`"),
      "dangling reference byissue/notes/2026-01-01-nope.md"),
     # Real mistake: closing renames break full-name references (issue 008).

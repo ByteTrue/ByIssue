@@ -277,3 +277,5 @@ Talk 写入 `byissue/talks/`；Note 写入 `byissue/notes/`，同主题更新原
 把 `byissue/` 当作制度记忆：遇到奇怪代码先查 Spec，踩到旧坑先查 Notes，要理解历史取舍先查 Issue。
 
 实体模板位于 `templates/entities/`，包括 `issue.md`、`ff-issue.md` 以及 Explore、Vision、Spec、Talk、Note 等模板。初始化脚本是 `scripts/init_byissue.py`。产物格式以相应 reference 为准，不要只根据文件名猜测。
+
+许可证与上游归属见 [NOTICE.md](NOTICE.md)。

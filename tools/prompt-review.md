@@ -94,7 +94,8 @@
 
 | 检查 | 挡什么 | 什么时候 |
 |---|---|---|
-| `tools/check-skill-repository.py` | 机械：版本、包布局、路径可达、姿态表结构、`byissue/` 内的悬挂引用 | 每次改完 |
-| `tools/check-skill-repository-selftest.py` | checker 自己的漏检：每项检查都有一个必须报错的坏夹具 | 改过 checker 后 |
+| `tools/release-check.sh` | 下面两行机械检查加 `close.md` 搜索命令、分发脚本夹具，最后比对部署副本 | 每次改完带 `--no-deploy`；rsync 之后带上宿主实际加载的部署副本目录再跑一次 |
+| `tools/check-skill-repository.py` | 机械：`CHANGELOG.md` 最新小节等于 `VERSION` 且不重复、包布局、许可证与上游归属随包、路径可达（技能内与当前真相文档）、本仓 spec 写的篇数、姿态表结构、`byissue/` 内的悬挂引用 | 由 release-check 跑 |
+| `tools/check-skill-repository-selftest.py` | checker 自己的漏检：每项检查都有一个必须报错的坏夹具 | 由 release-check 跑 |
 | `tools/posture-scenarios.md` | 语义：姿态路由是否选对、必读是否加载 | 动过姿态表或任一姿态必读文件后 |
 | 本文件 | 文本：规则本身会不会让模型判断错；粉色大象另起专审 | 改过 `skills/bi/` 任何字节后 |
