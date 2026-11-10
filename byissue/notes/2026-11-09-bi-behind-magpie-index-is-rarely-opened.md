@@ -19,5 +19,6 @@
 **怎么办：**
 
 - **评测前先找出宿主实际加载的副本**，同步到那里，再用 `diff -rq` 确认和仓库 `skills/bi/` 一致。本机找法：`readlink -f ~/.pi/agent/skills/magpie-skills/.skills/bi`。
+- **magpie 会从 GitHub 拉回这份副本，盖掉本地 rsync 的内容。** `~/.config/magpie/library.json` 里 bi 的来源是 `github`、`Bytetrue/ByIssue`、`skills/bi`。2026-11-10 10:57 它把副本换回了当时远端的 `0d7e5f6`（1.13.3），而本地已经 rsync 过 1.14.0–1.14.2，`diff -rq` 对 0d7e5f6 的归档为 0 处差异。所以没 push 的改动在这台机器上只能临时测：rsync 之后马上跑探针，跑前跑后各 `diff -rq` 一次；中间隔得久，先重新 rsync。push 之后它会拉到新版本。
 - **在本机测 bi 内部规则的探针**，task 里写明 bi 的 `SKILL.md` 路径，再接用户那句话。这样测的是「打开之后怎么做」，测不了路由。
 - **路由评测**（`tools/posture-scenarios.md` 的场景表）在这种安装方式下测的是「索引会不会被打开」，不是 bi 的姿态路由。要测姿态路由，得换一个 bi 直接列在系统提示里的环境。
