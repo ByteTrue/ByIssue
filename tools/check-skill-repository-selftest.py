@@ -26,7 +26,7 @@ def edit(rel, old, new):
     def apply(root: Path):
         path = root / rel
         text = path.read_text(encoding="utf-8")
-        assert old in text, f"{rel}: fixture anchor not found: {old!r}"
+        assert text.count(old) == 1, f"{rel}: fixture anchor must occur exactly once, found {text.count(old)}: {old!r}"
         path.write_text(text.replace(old, new, 1), encoding="utf-8")
     return apply
 
@@ -143,6 +143,9 @@ CASES = [
      "fenced command runs missing path: tools/gone.py"),
     ("line reference to a deleted file", append("byissue/spec/index.md", "见 `tools/deleted.py:12`"),
      "names missing path: tools/deleted.py"),
+    ("angle-bracket link inside the skill to a missing file", append("skills/bi/references/note.md", "[x](<references/nope.md>)"),
+     "points at missing path: references/nope.md"),
+    ("project spec deleted", lambda root: (root / "byissue/spec/index.md").unlink(), "byissue/spec/index.md: file is missing"),
     ("dangling byissue reference", append("byissue/spec/index.md", "见 `byissue/notes/2026-01-01-nope.md`"),
      "dangling reference byissue/notes/2026-01-01-nope.md"),
     # Real mistake: closing renames break full-name references (issue 008).

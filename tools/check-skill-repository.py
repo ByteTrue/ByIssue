@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SKILL = ROOT / "skills/bi"
 
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$")
-LINK_RE = re.compile(r"\[[^\]]*\]\(([^)#]+)(?:#[^)]*)?\)")  # anchors allowed, path captured
+LINK_RE = re.compile(r"\[[^\]]*\]\(<?([^)#>]+)>?(?:#[^)]*)?\)")  # anchors and <...> allowed, path captured
 PATH_RE = re.compile(r"`((?:references|templates|scripts|agents)/[\w./-]+\.(?:md|py|yaml))`")
 # Root docs plus every file under tools/, derived so a new tool file needs no edit here.
 REPO_ONLY_NAMES = ["WHY BYISSUE.md", "CHANGELOG.md"] + sorted(
@@ -169,7 +169,7 @@ def check_derived_facts(report):
     """A count the project spec states must match the tree it counts."""
     spec = ROOT / "byissue/spec/index.md"
     if not spec.is_file():
-        return
+        return report("byissue/spec/index.md", "file is missing")
     actual = len(list((SKILL / "references").glob("*.md")))
     text = spec.read_text(encoding="utf-8")
     claims = re.findall(r"`references/` 下的 (\d+) 篇", text) + re.findall(r"(\d+) 个 `\.md` 平铺", text)

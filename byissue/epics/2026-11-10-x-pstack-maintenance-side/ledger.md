@@ -18,7 +18,7 @@ cd plugins/pstack/skills && find . -path '*/scripts/*' -type f ! -name '*.test.*
 
 接着做或改这张表之前，先读同目录 spec.md 的已定方案与必须守住。
 
-接续点：五个单元都已裁定（138 行），每个单元的引用由父会话核对，记在各 `verdicts/M<n>.md` 末尾。候选去重后在 [candidates.md](candidates.md)，用户已裁决学 8 条并补 LICENSE，落地是单元 L（139–147 行），随 1.14.2 发布。维护侧审查（3 P1、11 P2）与合并复审（5 P2）已全修；selftest 32 条，换回 HEAD 的 checker 放过其中 14 条。收尾前还有两步（见 spec「收尾前补的两步」）：33 行已有类逐行复核；M6 技能自带脚本 13 行。
+接续点：五个单元都已裁定（138 行），每个单元的引用由父会话核对，记在各 `verdicts/M<n>.md` 末尾。候选去重后在 [candidates.md](candidates.md)，用户已裁决学 8 条并补 LICENSE，落地是单元 L（139–147 行），随 1.14.2 发布。维护侧审查（3 P1、11 P2）与合并复审（5 P2）已全修；selftest 32 条，换回 HEAD 的 checker 放过其中 14 条。收尾前还有两步（见 spec「收尾前补的两步」）：已有类逐行复核已做（表格里实为 30 行，维持 29、翻为不吸收 1；5 处证据过时或残余未处置已就地标「复核：」，其中三处顺手修进 checker 与 selftest）；M6 技能自带脚本 13 行已判（唯一候选用户定为暂不学）。Epic 已关闭。
 
 | # | 项 | 单元 | 状态 | 结论与证据 |
 |---|---|---|---|---|
@@ -61,7 +61,7 @@ cd plugins/pstack/skills && find . -path '*/scripts/*' -type f ! -name '*.test.*
 | 37 | .github/ISSUE_TEMPLATE/bug_report.yml | M2 | 做了 | [已有·部分] 见 [verdicts/M2.md](verdicts/M2.md) |
 | 38 | .github/ISSUE_TEMPLATE/config.yml | M2 | 做了 | [不吸收] 见 [verdicts/M2.md](verdicts/M2.md) |
 | 39 | .github/ISSUE_TEMPLATE/feature_request.yml | M2 | 做了 | [已有·部分] 见 [verdicts/M2.md](verdicts/M2.md) |
-| 40 | .github/pull_request_template.md | M2 | 做了 | [已有·部分] 见 [verdicts/M2.md](verdicts/M2.md) |
+| 40 | .github/pull_request_template.md | M2 | 做了 | [不吸收] 见 [verdicts/M2.md](verdicts/M2.md) |
 | 41 | .github/scripts/statechart-watchdog.sh | M2 | 做了 | [不吸收] 见 [verdicts/M2.md](verdicts/M2.md) |
 | 42 | .github/workflows/ci.yml | M2 | 做了 | [已有·部分] 见 [verdicts/M2.md](verdicts/M2.md) |
 | 43 | .github/workflows/security.yml | M2 | 做了 | [不吸收] 见 [verdicts/M2.md](verdicts/M2.md) |
@@ -169,16 +169,16 @@ cd plugins/pstack/skills && find . -path '*/scripts/*' -type f ! -name '*.test.*
 | 145 | 落地 7：A/B 删句判据（posture-scenarios.md） | L | 做了 | `tools/posture-scenarios.md` 新增「两臂行为相同，就删掉那句」 |
 | 146 | 落地 8：发布前检查脚本与部署副本核对 | L | 做了 | `tools/release-check.sh` 串起四项检查与部署副本 diff；对本机部署副本通过，对改过一字节的副本与不存在的目录都失败；spec「谁在挡」rsync 行改为它 |
 | 147 | 落地 9：仓库根 LICENSE 与上游镜像 NOTICE | L | 做了 | 仓库根 `LICENSE`（MIT，liuzhengdong 与 ByteTrue），README 两版链到它。审查指出 MIT 要求声明随拷贝走而根 NOTICE 不进分发包，用户 2026-11-10 在「放进分发包，打成 1.14.2」上确认：`skills/bi/NOTICE.md` 含 ByIssue 与上游 mattpocock/skills（GitHub API 核对为 MIT）两份原文，`SKILL.md` 末尾一行指向它，根 `NOTICE.md` 改为指向包内；checker 断言包内 NOTICE 含 LICENSE 原文 |
-| 148 | poteto-mode/scripts/bootstrap.ts | M6 | 没做 | |
-| 149 | poteto-mode/scripts/check-plan.mjs | M6 | 没做 | |
-| 150 | poteto-mode/scripts/check-playbooks.mjs | M6 | 没做 | |
-| 151 | poteto-mode/scripts/codex-session-effort.mjs | M6 | 没做 | |
-| 152 | poteto-mode/scripts/resume.mjs | M6 | 没做 | |
-| 153 | poteto-mode/scripts/worktree-audit.mjs | M6 | 没做 | |
-| 154 | reflect/scripts/claude-project-dir.mjs | M6 | 没做 | |
-| 155 | reflect/scripts/find-transcript.mjs | M6 | 没做 | |
-| 156 | setup-pstack/scripts/check-sheet.awk | M6 | 没做 | |
-| 157 | setup-pstack/scripts/check-sheet.sh | M6 | 没做 | |
-| 158 | setup-pstack/scripts/read-sheet.sh | M6 | 没做 | |
-| 159 | setup-pstack/scripts/sheet.awk | M6 | 没做 | |
-| 160 | show-me-your-work/scripts/log.sh | M6 | 没做 | |
+| 148 | poteto-mode/scripts/bootstrap.ts | M6 | 做了 | [不吸收] 见 [verdicts/M6.md](verdicts/M6.md) |
+| 149 | poteto-mode/scripts/check-plan.mjs | M6 | 做了 | [候选] 见 [verdicts/M6.md](verdicts/M6.md) |
+| 150 | poteto-mode/scripts/check-playbooks.mjs | M6 | 做了 | [不吸收] 见 [verdicts/M6.md](verdicts/M6.md) |
+| 151 | poteto-mode/scripts/codex-session-effort.mjs | M6 | 做了 | [不吸收] 见 [verdicts/M6.md](verdicts/M6.md) |
+| 152 | poteto-mode/scripts/resume.mjs | M6 | 做了 | [不吸收] 见 [verdicts/M6.md](verdicts/M6.md) |
+| 153 | poteto-mode/scripts/worktree-audit.mjs | M6 | 做了 | [不吸收] 见 [verdicts/M6.md](verdicts/M6.md) |
+| 154 | reflect/scripts/claude-project-dir.mjs | M6 | 做了 | [已有·部分] 见 [verdicts/M6.md](verdicts/M6.md) |
+| 155 | reflect/scripts/find-transcript.mjs | M6 | 做了 | [不吸收] 见 [verdicts/M6.md](verdicts/M6.md) |
+| 156 | setup-pstack/scripts/check-sheet.awk | M6 | 做了 | [不吸收] 见 [verdicts/M6.md](verdicts/M6.md) |
+| 157 | setup-pstack/scripts/check-sheet.sh | M6 | 做了 | [不吸收] 见 [verdicts/M6.md](verdicts/M6.md) |
+| 158 | setup-pstack/scripts/read-sheet.sh | M6 | 做了 | [不吸收] 见 [verdicts/M6.md](verdicts/M6.md) |
+| 159 | setup-pstack/scripts/sheet.awk | M6 | 做了 | [不吸收] 见 [verdicts/M6.md](verdicts/M6.md) |
+| 160 | show-me-your-work/scripts/log.sh | M6 | 做了 | [不吸收] 见 [verdicts/M6.md](verdicts/M6.md) |

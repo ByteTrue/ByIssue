@@ -78,8 +78,7 @@
 - 行为回归测试（`byissue/issues/004-x-posture-routing-regression-tests.md`）。checker 只挡路径漂移，挡不住语义漂移。
 - 使用信号采集。真实分布靠人工统计外部仓库，见 `byissue/notes/001-real-world-usage-stats.md`。
 - 除 Codex 外的第二宿主适配。
-- 维护侧的自测与变更记录做法（pstack 的 `tests/`、`CHANGES.md` 那一类）还没学。用户 2026-11-09 定为 pstack 逐项裁定之后的下一个议题，原话见 `byissue/epics/2026-11-09-x-pstack-item-verdicts/spec.md`「下一个议题」。
-- 大任务的单元交给独立子代理执行、再由另一个子代理验收。台账和重读纪律已经有了（`skills/bi/references/large.md`），这一步等台账在真实项目里用过一次再定，见 `byissue/talks/2026-11-09-large-tasks-ledger-and-reread.md`。
+- 大任务的单元交给独立子代理执行、再由另一个子代理验收。台账和重读纪律已经有了（`skills/bi/references/large.md`），这一步等台账在真实项目里用过一次再定，见 `byissue/talks/2026-11-09-large-tasks-ledger-and-reread.md`。同一个门还挡着一条：用脚本检查台账形态（表头、状态取值、「做了」行带证据、没做完时有接续点），来自 pstack 的 `check-plan.mjs`，用户 2026-11-10 定为等台账用过再看，见 `byissue/epics/2026-11-10-x-pstack-maintenance-side/verdicts/M6.md`。
 
 ## 想深入时
 
