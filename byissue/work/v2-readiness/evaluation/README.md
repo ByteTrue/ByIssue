@@ -49,7 +49,7 @@ python3 byissue/work/v2-readiness/evaluation/acceptance.py <被测项目目录>
 - 7 条报表路径通过，覆盖默认汇总、客户精确匹配、阈值边界及组合过滤。
 - 3 个非法阈值非零退出。
 
-pi 另外编写了 18 个 CLI 回归测试，并实际在改坏的副本上验证部分检查会失败。独立验收程序从未提供给 pi。
+pi 另外编写了 18 个 CLI 回归测试，并实际在改坏的副本上验证部分检查会失败。父会话用 `python3 -m unittest discover -s tests -v` 重跑，18/18 通过。独立验收程序从未提供给 pi。
 
 ### 工作流观察
 
@@ -67,6 +67,30 @@ pi 另外编写了 18 个 CLI 回归测试，并实际在改坏的副本上验�
 另有一处证据标注错误：首轮实际运行的是默认 `shasum`（SHA-1），work 却写成 SHA-256。第二轮使用 `shasum -a 256` 并修正了记录。原数据字节未变化，问题在记录的算法名称。
 
 这次证明了该样例能完成迁移、跨会话继续并交付正确行为，也暴露了规则写在文件里仍可能未按时执行。没有测试多轮真实压缩、大型代码库、其他模型或长期效率提升。上述未通过项保留为 v2 后续修改依据，本轮未通过追加提示或改写产物来抹掉失败。
+
+## 远端安装与调用验证
+
+主体提交 `d5793ae` 推送到 `origin/v2` 后，在另一个空目录运行 README 中的分支安装命令，增加 `--copy` 以便核对实际文件：
+
+```bash
+DISABLE_TELEMETRY=1 npx --yes skills add https://github.com/ByteTrue/ByIssue/tree/v2 --skill bi -a pi --copy -y
+```
+
+实测安装成功，目标为 `.agents/skills/bi`。`skills-lock.json` 记录 `source: ByteTrue/ByIssue`、`ref: v2`、`installMode: copy`。在仓库根目录运行：
+
+```bash
+bash tools/release-check.sh "$RUN/remote-install/.agents/skills/bi"
+```
+
+实测 checker、自测 22/22、初始化检查全部通过，远端安装副本与 `skills/bi/` 一致。
+
+随后在远端安装目录使用同一隔离配置、模型和新会话，显式加载该副本并仅开放 `read,grep,find,ls`，调用：
+
+```text
+/skill:bi 只说明当前工作入口与五个检查点字段，不要创建或修改文件。
+```
+
+实测 pi 正确报告目录只安装了技能、尚无工作区，指出入口为 `byissue/work/{slug}/index.md`，准确解释 `status`、`current_unit`、`next_action`、`must_hold`、`proof_gap`，并区分类型标记 `kind: work`。本次调用没有创建或修改文件。原始调用记录保存在临时运行目录的 `remote-sessions/`，本次安装与只读调用不计入前述两轮业务任务指标。
 
 ## 证据文件
 
