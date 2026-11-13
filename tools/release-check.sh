@@ -4,9 +4,7 @@
 # Usage: bash tools/release-check.sh <deployed-skill-dir> | --no-deploy
 #   The deployed copy is the directory the host actually loads (an `npx skills` install puts it in
 #   ~/.agents/skills/bi; an index install such as magpie puts it elsewhere). It comes from the
-#   argument, else $BI_DEPLOYED; there is no guessed default, because syncing to a copy the host
-#   does not load is how the copy fell a version behind twice
-#   (byissue/issues/015-x-ff-grilling-verbatim-upstream.md, byissue/issues/016-x-ff-absorb-upstream-grill-family.md).
+#   argument, else $BI_DEPLOYED. The target must be the directory the host actually loads.
 #   --no-deploy skips only the deployed-copy comparison: use it right after editing, before syncing.
 # Exits 1 at the end if any step failed; every step runs so one report shows all failures.
 set -uo pipefail
@@ -20,7 +18,6 @@ step() {
 
 step "checker" python3 tools/check-skill-repository.py
 step "checker self-test" python3 tools/check-skill-repository-selftest.py
-step "close.md search command" python3 tools/check-close-reference-command.py
 step "packaged scripts" python3 tools/check-skill-scripts.py
 
 target="${1:-${BI_DEPLOYED:-}}"

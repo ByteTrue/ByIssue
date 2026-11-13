@@ -1,0 +1,54 @@
+---
+kind: work
+status: in_progress
+current_unit: "migrate 已通过行为门与范围门"
+next_action: "下一次会话实现 report：从 output.json 汇总 count/total_cents，支持 --customer 精确匹配"
+must_hold: "只用 Python 3 标准库；金额不用浮点；失败时 output.json 逐字节不变；不改原始 CSV；report 输出只有 count 和 total_cents 两个整数；不提交、不推送、不装依赖"
+proof_gap: "report 子命令尚未实现，其行为行保持无法判定"
+---
+
+# 账单迁移工具（migrate + report）
+
+## 目标与边界
+
+用户要为 `ledger.py` 提供两个真实 CLI：`migrate` 把 `legacy/` 这样的 CSV 目录递归合并成一个 JSON 数组；`report` 从该 JSON 汇总计数与总额。
+
+本轮只完成、测试 `migrate`。`report` 的接口已经由用户写死，留给下一次会话实现。原始数据在 `legacy/`，只读。
+
+## 已定方案与约束
+
+- 金额用字符串正则校验后按整数分计算，绝不经过 `float`。接受 `0`、`12`、`0.10`、`12.34` 这类写法，小数最多两位。
+- 明确拒绝：负数、`NaN`、`Infinity`、指数格式、多于两位小数、空金额。
+- 表头必须恰好是 `id,customer,amount`；`id` 与 `customer` 非空；`id` 跨文件唯一。
+- 先完成全部解析和校验，再原子写入（临时文件 + `os.replace`），所以任何错误都不会触碰已有输出文件。
+- JSON 数组按 `id` 字符串排序，每行只有 `id`、`customer`、`amount_cents`。
+- 递归枚举 `source-dir` 下所有 `.csv`（后缀大小写不敏感），按路径排序读取，保证重跑确定。
+- `report` 的输出是只含 `count`、`total_cents` 两个整数的 JSON 对象；`--customer` 按完整名称精确匹配，无匹配时两项为 0。
+- 回归检查用标准库 `unittest`，从真实 CLI 入口驱动。
+
+## 行为证明
+
+| 行为路径 | 真实入口 | 操作 | 应观察到 | 证据 | 结果 |
+|---|---|---|---|---|---|
+| migrate 合并 legacy 全部 CSV | `python3 ledger.py migrate legacy out.json` | 在项目根运行 | JSON 数组按 id 排序，7 行，金额为整数分（0.10→10、12.34→1234、1000.01→100001） | 实测：输出 7 行，ids `a001,a002,a003,b001,b002,c001,c002`，总额 101570 分；`tests/test_migrate.py::LegacyMigrationTest::test_migrates_legacy_tree_exactly` 逐行比对通过 | 通过 |
+| migrate 重复 id | `python3 ledger.py migrate <tmp> out.json` | 同文件内与跨文件各放一个重复 id | 退出码非零，stderr 有 `error:`，已有输出逐字节不变 | 实测：`tests/test_migrate.py::InvalidInputTest` 的 `duplicate_id` 与 `test_duplicate_id_across_files_fails` 通过；手工用 NaN 输入得到 `error: ...:2: ... got 'NaN'`、退出码 1、哨兵输出保持 `SENTINEL` | 通过 |
+| migrate 非法行/表头 | 同上 | 21 个用例：负金额、NaN、Infinity、指数、三位小数、空 id、空 customer、错表头、列数不符等 | 每个用例都非零退出，stderr 含 `error:`，已有输出不变且无 `.tmp` 残留 | 实测：`test_each_invalid_case_fails` 21 个子用例全部通过 | 通过 |
+| migrate 重跑与只读 | 同上 | 对同一输入运行两次，比较输出与 CSV 哈希 | 输出逐字节相同，CSV 哈希不变 | 实测：两次运行 `cmp` 无差异；CSV SHA-256 与开工时一致（`6560fcd6…`、`3639937f…`、`73b970f9…`） | 通过 |
+| report 汇总 | `python3 ledger.py report out.json [--customer NAME]` | 下一次会话实现 | 只输出 count、total_cents 两个整数，精确匹配无结果时为 0/0 | 本轮按约定不实现，未运行 | 无法判定 |
+
+## 证据与决定
+
+- `legacy/` 实际内容：`01.csv`（Alice/Bob）、`02.csv`（张三/Bob）、`nested/03.csv`（Alice/张三），共 7 行，覆盖中文客户名、整数金额、两位小数、嵌套目录。
+- 可重跑检查：`python3 tests/test_migrate.py`（8 个测试，约 1.3 秒）。也支持 `python3 -m unittest discover -s tests`。
+- 检查确实能挡住错误（在 `/tmp` 的副本上故意改坏后运行）：
+  - 金额改成 `int(float(raw) * 100)` 时有 5 个子用例失败；
+  - 改成 `round(float(raw) * 100)` 时大额用例失败；
+  - 去掉按 id 排序时排序断言失败；
+  - 在校验前先写输出时，全部“不写坏输出”用例失败。
+- 当前实现接受的边界写法（用户未逐条点名，按“普通写法”理解）：前导零（如 `007`）接受；空行视为列数不符而拒绝；目录里没有 CSV 时输出 `[]`。
+
+## 完成核对
+
+- 行为门：migrate 四条全部通过；report 行为行保持无法判定（本轮约定不做）。
+- 范围门：`scope.md` 已按 `find legacy -type f -iname '*.csv'` 枚举，3/3 文件逐项对账。
+- 需要用户看的推断或无法判定：report 未实现；领先零、空行、空目录三种解释是本轮自定，若与预期不符需在写 report 前调整。

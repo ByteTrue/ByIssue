@@ -6,7 +6,7 @@ Actively build and sharpen the project's domain model as you design. This is the
 
 ### Challenge against the glossary
 
-When the user uses a term that conflicts with the existing language — the ubiquitous language in `byissue/spec/`, or the code's own naming — call it out immediately. "Your spec defines 'cancellation' as X, but you seem to mean Y. Which is it?"
+When the user uses a term that conflicts with the existing language — the project's durable vocabulary in `byissue/memory/`, or the code's own naming — call it out immediately. "Your project defines 'cancellation' as X, but you seem to mean Y. Which is it?"
 
 ### Sharpen fuzzy language
 
@@ -22,25 +22,23 @@ When the user states how something works, check whether the code agrees. If you 
 
 ## ByIssue destinations
 
-Three things come out of a session, and they are not equal. Create files lazily: only when the first entry lands, following the `byissue/` map in `SKILL.md`:
+Create files lazily, following the current work map:
 
-- **A term that resolved** → the ubiquitous language in `byissue/spec/`, **the moment it resolves — don't batch these up; capture them as they happen.** Where it lands and in what format is owned by [spec](spec.md). Under Talk, capture the proposal inline and write after the user confirms ([talk](talk.md)).
-- **A decision that passes all three gates** — hard to reverse, surprising without context, a real trade-off (the contract and format are owned by `SKILL.md`「什么内容可以写到哪一层」and `templates/entities/decision.md`) → `byissue/decisions/`. Offer sparingly: if any of the three is missing, skip it.
-- **Everything else you decided** → the conversation only. At Talk 收束 it lands in `byissue/talks/`, where a settled discussion keeps the decisions that would otherwise evaporate with the context window.
+- **A term that resolved** goes to the relevant `byissue/memory/{topic}.md` when it will affect future decisions. The work entry keeps the local wording and evidence.
+- **A durable user decision** goes to the relevant Memory topic when it is long-lived, hard to reverse or surprising without context. The current work keeps the decision needed for this change.
+- **An external observation or rerunnable proof** goes to Memory when future work should be able to find and rerun it. Code, tests and configuration remain the implementation truth.
 
-The ubiquitous language holds vocabulary and nothing else: no implementation details, no spec prose. What qualifies is owned by [spec](spec.md).
+Memory stores the conclusion, scope, basis and revisit condition. It does not become a copy of the code or a second behavior specification.
 
 ## Grillable and ungrillable
 
-Some questions can be answered by talking. Others can't, and no amount of grilling will get you there.
+Some questions can be answered by talking. Others need something concrete to react to.
 
-"One long form or three pages?" and "how should this interaction feel?" are ungrillable. You need something to react to before you can answer them. When you hit one, stop grilling. Build the throwaway version — a sketch or a prototype — look at it together, then come back and answer in one line (UI → [ui-spec](ui-spec.md)).
-
-Sessions grow too long when you try to talk through an ungrillable question: rephrasing loops, guessing, and the scope growing with the uncertainty.
+"One long form or three pages?" and "how should this interaction feel?" are ungrillable. Stop grilling, build a throwaway sketch or prototype, look at it together, then answer in one line. UI questions use [ui-spec](ui-spec.md).
 
 ## It's working if
 
 - Questions the codebase can answer get answered by reading the codebase, not asked of the user.
-- It challenges a word the user used because the existing language defines it differently.
-- A resolved term is captured *during* the session, term by term, rather than appearing in one lump at the end.
-- Decisions are few, and each one is a decision the user would be annoyed to have to argue again.
+- The agent challenges a word because the existing language defines it differently.
+- A resolved term is captured during the session when it will affect future work.
+- Decisions are few and each one prevents the user from having to argue the same choice again.

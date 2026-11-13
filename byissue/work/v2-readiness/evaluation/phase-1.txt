@@ -1,0 +1,13 @@
+请使用 bi 完成这个两阶段的账单迁移工具，使用 Python 3 标准库。
+
+完整目标是 ledger.py 的两个真实 CLI：
+1. python3 ledger.py migrate <source-dir> <output.json>
+   递归迁移 source-dir 下所有 CSV（包括子目录），表头固定为 id,customer,amount。
+   JSON 顶层是数组，按 id 排序，每行只含 id、customer、amount_cents。
+   amount 是非负十进制金额，接受 0、12、0.10、12.34 等普通写法，最多两位小数；不接受负数、NaN、Infinity、指数格式或多于两位小数。转换必须精确，不用浮点金额。
+   id 与 customer 非空；重复 id、错误表头或任一非法行都要以非零码退出，错误写 stderr，并保持原有 output.json 逐字节不变。
+   重跑同一批输入得到相同结果，原始 CSV 不变。
+2. python3 ledger.py report <output.json> [--customer <name>]
+   输出 JSON 对象，只有 count 和 total_cents 两个整数。未指定 customer 时统计全部；指定时按完整名称精确匹配；没有匹配时两项均为 0。
+
+这轮只完成、测试 migrate，然后停下；report 留给下一次会话。先在这个项目接入 ByIssue，按你实际采用的方法保存继续工作需要的内容。请为代码留下可运行回归检查。原始数据已在 legacy/。不要提交或推送，不要安装依赖。

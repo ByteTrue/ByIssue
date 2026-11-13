@@ -1,0 +1,70 @@
+{
+  "pi_version": "1.5.2",
+  "model": "bytetrueapi/deepseek/deepseek-flash",
+  "thinking": "medium",
+  "project": "<run-root>/project",
+  "session_dir": "<run-root>/sessions",
+  "phases": [
+    {
+      "phase": 1,
+      "returncode": 0,
+      "seconds": 123.8,
+      "assistant_messages": 21,
+      "tool_calls": {
+        "read": 1,
+        "bash": 20,
+        "write": 6
+      },
+      "usage": {
+        "input": 43622,
+        "output": 19155,
+        "cacheRead": 348928,
+        "cacheWrite": 0,
+        "reasoning": 7211,
+        "totalTokens": 411705
+      }
+    },
+    {
+      "phase": 2,
+      "returncode": 0,
+      "seconds": 133.7,
+      "assistant_messages": 18,
+      "tool_calls": {
+        "read": 11,
+        "bash": 11,
+        "edit": 6,
+        "write": 1
+      },
+      "usage": {
+        "input": 55570,
+        "output": 21160,
+        "cacheRead": 411776,
+        "cacheWrite": 0,
+        "reasoning": 8933,
+        "totalTokens": 488506
+      }
+    }
+  ],
+  "installed_skill_sha256": {
+    "SKILL.md": "fd6e4dea19425c1f79ce7e8170e943a05a1e15f623aafd169bc587d943df852f",
+    "NOTICE.md": "c0c8c9bce963917b02bf703bf9e476d4a40427fc4e7650070c8eb2c8cf56a0d5",
+    "references/prove.md": "ffd5eb938ea1c625f97a5fc60cd2f3c533a8b4ae8e1ff6d0ecea34c8bbcb34f1",
+    "references/domain-modeling.md": "869ff13a03bb936dc0b0fed44fa1ba0198f2db54c64b52a13d69113a63055217",
+    "references/ui-spec.md": "1a111fc4d0db201814f2a3eb9d56f3df864462c29d885dfec948985558493c9b",
+    "references/memory-direction.md": "51b4484c52c83067f3cb19197a2c136a1c7e544cf7a2abb6152cda9e7e4d3420",
+    "references/change.md": "4601fabeef137a405c6db1fbcbd37a82b4bd1e005f85bd18c7e57f4a8748ef00",
+    "references/understand-review.md": "4c12133c566173849f4cce3bbe33a38d5521ebffdaf492596a13c8ccba50959c",
+    "references/quality.md": "b331d3d0d7fb349ca082554492d0df16526a0e3dbbb28b87d77b59699627bb3a",
+    "references/clarify.md": "eefac9b4f8a25c4d68e49cf70367e945cd3eb8d813985590ea0ba2f86fd838bf",
+    "references/writing.md": "7106cf72113e322beaee44e2b445c41475164f4aecaac54032e974a273a7775b",
+    "references/economy.md": "b8db59675bb4852396ff741af5612ea2818fa143ac6bc1c777453c74bfa1401e",
+    "references/onboard.md": "a645253d4a117d4bf7ee35e09c3cacbd928d7327d66c74d65d893cdedeb6bd9b",
+    "references/grilling.md": "60e8be1b0635a82221dfd6601cf3bc91fda50ea290c0ad07cee98b11ebd5c26d",
+    "agents/openai.yaml": "21eb9602bcb98ec42d75c1b09d68c10acee0da01ea5f1b49aee70da097fa2d25",
+    "scripts/init_byissue.py": "60af368fbe4b9f6b0e71e72e966f96e4eda42f21162bfae82614864c4e6d9bb5",
+    "templates/work.md": "6ebc5d366dd7fdc311cd5eff360930964da99e45c412649f09d38c73d9ce4930",
+    "templates/scope.md": "42c3cb2f6413532dd492d264f88c39cdac4b64ee1b92a98ec0773e38b8125fef",
+    "templates/memory.md": "fd72d8ce85fc7dfd29346213a21901f046bc7ce6638e88891d35e9552505d705",
+    "templates/vision.md": "871b901d12080acfdcc87b187d37667e88c0a805196f9512ff2b2d6bfdd5ac72"
+  }
+}

@@ -1,0 +1,210 @@
+#!/usr/bin/env python3
+"""Regression checks for the ledger.py migrate CLI.
+
+Run with:
+    python3 tests/test_migrate.py
+    python3 -m unittest discover -s tests
+
+Every check drives the real command line in a subprocess. Expected values come
+from the task contract, not from the implementation's own output.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import subprocess
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+PROJECT = Path(__file__).resolve().parents[1]
+LEDGER = PROJECT / "ledger.py"
+LEGACY = PROJECT / "legacy"
+
+EXPECTED_LEGACY_ROWS = [
+    {"id": "a001", "customer": "Alice", "amount_cents": 10},
+    {"id": "a002", "customer": "Alice", "amount_cents": 20},
+    {"id": "a003", "customer": "Alice", "amount_cents": 105},
+    {"id": "b001", "customer": "Bob", "amount_cents": 1234},
+    {"id": "b002", "customer": "Bob", "amount_cents": 200},
+    {"id": "c001", "customer": "张三", "amount_cents": 100001},
+    {"id": "c002", "customer": "张三", "amount_cents": 0},
+]
+
+HEADER = "id,customer,amount\n"
+SENTINEL = b"existing output must survive a failed migration\n"
+
+
+def run_migrate(source: Path, output: Path) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        [sys.executable, str(LEDGER), "migrate", str(source), str(output)],
+        cwd=str(PROJECT),
+        capture_output=True,
+        text=True,
+    )
+
+
+def sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+class LegacyMigrationTest(unittest.TestCase):
+    def test_migrates_legacy_tree_exactly(self) -> None:
+        csv_hashes = {path: sha256(path) for path in LEGACY.rglob("*.csv")}
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "ledger.json"
+            result = run_migrate(LEGACY, output)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            rows = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(rows, EXPECTED_LEGACY_ROWS)
+            for row in rows:
+                self.assertEqual(set(row), {"id", "customer", "amount_cents"})
+                self.assertIsInstance(row["amount_cents"], int)
+            ids = [row["id"] for row in rows]
+            self.assertEqual(ids, sorted(ids))
+            self.assertTrue(output.read_bytes().endswith(b"\n"))
+        self.assertEqual(csv_hashes, {path: sha256(path) for path in csv_hashes})
+
+    def test_rerun_is_byte_identical(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "ledger.json"
+            first = run_migrate(LEGACY, output)
+            self.assertEqual(first.returncode, 0, first.stderr)
+            first_bytes = output.read_bytes()
+            second = run_migrate(LEGACY, output)
+            self.assertEqual(second.returncode, 0, second.stderr)
+            self.assertEqual(output.read_bytes(), first_bytes)
+            self.assertEqual(first.stdout, second.stdout)
+            leftovers = sorted(p.name for p in Path(tmp).iterdir() if p.name != "ledger.json")
+            self.assertEqual(leftovers, [])
+
+    def test_empty_source_directory_writes_empty_array(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "empty"
+            source.mkdir()
+            output = Path(tmp) / "ledger.json"
+            result = run_migrate(source, output)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(json.loads(output.read_text(encoding="utf-8")), [])
+
+    def test_missing_source_directory_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "ledger.json"
+            result = run_migrate(Path(tmp) / "nope", output)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("error:", result.stderr)
+            self.assertFalse(output.exists())
+
+
+class InvalidInputTest(unittest.TestCase):
+    CASES = {
+        "wrong_header": "id,name,amount\na001,Alice,1\n",
+        "reordered_header": "id,amount,customer\na001,1,Alice\n",
+        "missing_header": "",
+        "too_few_columns": HEADER + "a001,Alice\n",
+        "too_many_columns": HEADER + "a001,Alice,1,extra\n",
+        "duplicate_id": HEADER + "a001,Alice,1\na001,Bob,2\n",
+        "empty_id": HEADER + ",Alice,1\n",
+        "empty_customer": HEADER + "a001,,1\n",
+        "negative": HEADER + "a001,Alice,-1\n",
+        "negative_zero_fraction": HEADER + "a001,Alice,-0.01\n",
+        "nan": HEADER + "a001,Alice,NaN\n",
+        "infinity": HEADER + "a001,Alice,Infinity\n",
+        "exponent": HEADER + "a001,Alice,1e3\n",
+        "exponent_upper": HEADER + "a001,Alice,1E3\n",
+        "three_decimals": HEADER + "a001,Alice,1.055\n",
+        "empty_amount": HEADER + "a001,Alice,\n",
+        "amount_with_space": HEADER + "a001,Alice, 1\n",
+        "amount_leading_dot": HEADER + "a001,Alice,.5\n",
+        "amount_trailing_dot": HEADER + "a001,Alice,1.\n",
+        "amount_plus_sign": HEADER + "a001,Alice,+1\n",
+        "amount_thousands_separator": HEADER + 'a001,Alice,"1,000"\n',
+    }
+
+    def assert_fails_without_touching_output(self, source: Path) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            existing = Path(tmp) / "ledger.json"
+            existing.write_bytes(SENTINEL)
+            result = run_migrate(source, existing)
+            self.assertNotEqual(result.returncode, 0, "migration should fail")
+            self.assertIn("error:", result.stderr)
+            self.assertEqual(existing.read_bytes(), SENTINEL)
+
+            fresh = Path(tmp) / "fresh.json"
+            result = run_migrate(source, fresh)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertFalse(fresh.exists())
+            leftovers = sorted(p.name for p in Path(tmp).iterdir() if p.suffix == ".tmp")
+            self.assertEqual(leftovers, [])
+
+    def test_each_invalid_case_fails(self) -> None:
+        for name, content in self.CASES.items():
+            with self.subTest(name=name):
+                with tempfile.TemporaryDirectory() as tmp:
+                    source = Path(tmp) / "source"
+                    source.mkdir()
+                    (source / "data.csv").write_text(content, encoding="utf-8")
+                    self.assert_fails_without_touching_output(source)
+
+    def test_duplicate_id_across_files_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "source"
+            (source / "nested").mkdir(parents=True)
+            (source / "one.csv").write_text(HEADER + "dup,Alice,1\n", encoding="utf-8")
+            (source / "nested" / "two.csv").write_text(
+                HEADER + "dup,Bob,2\n", encoding="utf-8"
+            )
+            self.assert_fails_without_touching_output(source)
+
+
+class AmountConversionTest(unittest.TestCase):
+    VALID = {
+        "0": 0,
+        "12": 1200,
+        "0.00": 0,
+        "0.1": 10,
+        "0.10": 10,
+        "0.01": 1,
+        "0.29": 29,
+        "1.13": 113,
+        "1.15": 115,
+        "4.35": 435,
+        "12.3": 1230,
+        "12.34": 1234,
+        "1000.01": 100001,
+        "99999999999999.99": 9999999999999999,
+    }
+
+    def test_exact_cent_conversion(self) -> None:
+        for raw, expected in self.VALID.items():
+            with self.subTest(amount=raw):
+                with tempfile.TemporaryDirectory() as tmp:
+                    source = Path(tmp) / "source"
+                    source.mkdir()
+                    (source / "data.csv").write_text(
+                        HEADER + f"a001,Alice,{raw}\n", encoding="utf-8"
+                    )
+                    output = Path(tmp) / "ledger.json"
+                    result = run_migrate(source, output)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    rows = json.loads(output.read_text(encoding="utf-8"))
+                    self.assertEqual(rows, [{"id": "a001", "customer": "Alice", "amount_cents": expected}])
+
+    def test_sums_large_amount_without_float_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "source"
+            source.mkdir()
+            body = "".join(f"a{i:03d},Alice,0.10\n" for i in range(1000))
+            (source / "data.csv").write_text(HEADER + body, encoding="utf-8")
+            output = Path(tmp) / "ledger.json"
+            result = run_migrate(source, output)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            rows = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(len(rows), 1000)
+            self.assertEqual(sum(row["amount_cents"] for row in rows), 10000)
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)

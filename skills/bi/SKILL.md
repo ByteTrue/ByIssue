@@ -1,281 +1,150 @@
 ---
 name: bi
 description: >
-  ByIssue：用 Vision / Project Spec / Epic / Issue 与 byissue/ 制度记忆理解和推进软件演化；按用户当前姿态行动——讨论、设计、快改、受管理实现、修 bug、理解现状、整理愿景/规格、关闭收尾、记知识、学流程、按需 review。
-  触发：bi、ByIssue、初始化 bi、接入 ByIssue；聊聊、先理清、想清楚再做、帮我规划一下、拷问我、多轮问清楚；怎么实现、先设计、实现方案；快速、快改、小改一下、顺手改一下、直接开干、别走流程；做这个 issue、推进 epic、穿刺、先打通；坏了、不符合预期、debug、修这个 bug；怎么工作的、这条链路、影响范围；整理 vision、维护 spec、产品全景、当前真相；关闭、收尾、做完并沉淀；review、评审、看看这 diff/PR；记一下坑、写 note；我带你跑一遍、教 AI 做某流程。
+  ByIssue：用 work/{slug}/、memory/{topic}.md 与按需的 vision/ 管理软件演化；按用户当前行动推进澄清、改变、理解与审查、记忆与方向。
+  触发：bi、ByIssue、初始化 bi、接入 ByIssue；聊聊、先理清、想清楚再做、帮我规划一下、拷问我、多轮问清楚；怎么实现、先设计、实现方案、快速、快改、小改一下、顺手改一下、直接开干、别走流程、做这个、推进、修这个 bug、穿刺、先打通；怎么工作的、这条链路、影响范围、review、评审、看看这 diff/PR；整理 vision、维护 spec、当前真相、记一下坑、写 note、我带你跑一遍、教 AI 做某流程。
 ---
 
 # ByIssue
 
-ByIssue 是一套理解和推进软件演化的方法。它用 Vision、Project Spec、Epic、Issue 和 `byissue/` 中的制度记忆连接目标、现实与行动；它**不是**强制流水线。
+ByIssue 是一套帮助人和 Agent 推进软件变化的方法。它把当前工作、可观察证据和长期判断放在项目里，让下一轮工作能从事实继续，而不是从上一轮对话猜测。
 
-调用 `bi` 不等于跑完整流程。先判断用户此刻要讨论、理解、设计、实现还是收尾，再采用匹配的管理强度。
+调用 `bi` 先判断用户此刻的行动，再读取该行动需要的最小规则。它不要求每次请求都生成完整文档，也不把一次小改扩成固定流水线。
 
-### 沟通方式：先结论，再展开
+## 共同规则
 
-先用用户正在使用的词，简短说明**结论和原因**。只有需要做取舍、取得授权，或必须展示验证与风险证据时，才展开框架、规则和细节。简短不等于省略关键判断，而是先让用户容易理解，再按需下钻。
+### 先给结论，再给证据
 
-**结论带出处。** 说改动起了什么作用、根因是什么、影响到哪里、验证结果如何时，同一句里标明是**实测**（本轮跑过并亲眼看到结果，附命令与输出，或日志、截图的位置）还是**推断**（读代码或材料得出、没有运行，引了代码位置也是推断）。验证结果只有三种：通过、未通过、无法判定；检查没有走到改动真正生效的那条路径（只跑了相邻测试、只编译通过、换了环境）就是无法判定。能自己跑的检查自己跑。每次完成汇报或阶段性收工，末尾把推断与无法判定的项集中列为「需要你看的」，没有就写「无」。
+先用用户的词说明结论和下一步。说改动效果、根因、影响或验证时，在同一句里注明来源：
 
-**证据本身要可信。** 新写的测试或检查（包括把旧教训落成的那条），期望值从需求、规格或手算得出，不照抄被测代码跑出来的结果（给结构步钉住现有行为的基线测试除外，见 [code-design](references/code-design.md)「先改善可修改性」）；要说它挡住了，先在改动前的代码、一条真实旧错或故意做坏的副本上跑一次，看它失败。说变快、变省时，同一条命令在改动前后交替跑，各至少三次，报中位数和范围，两边范围重叠就报无可测差异；说清瓶颈在哪，并确认计时区间里活真的做了（没有命中缓存、没有报错提前返回）。
+- **实测**：本轮实际运行并看到结果，给出命令与输出，或日志、截图位置。
+- **推断**：由代码或材料得出，尚未运行；代码位置仍然只是推断出处。
 
-**写成人话。** 第一次写 `byissue/` 文档、commit message 或完成汇报之前，读取 [writing](references/writing.md)；读过之后，同一会话的回复也照它写。
+验证结果只有 `通过`、`未通过`、`无法判定`。检查没有走到本次改动真正生效的入口时，写 `无法判定`。完成汇报或阶段性收工时，把推断和无法判定集中列在「需要你看的」；没有就写「无」。
 
-### 提问必须带建议
+### 提问带推荐
 
-向用户提问时逐条编号，每条附**推荐答案和一句理由**。规则要求先问用户的事，问完就停在这一步，等用户回答再做；手上没有提问工具时，把问题写在回复里，同样停下。需要用户裁决的清单——待关闭事项、姿态歧义——同样要列出候选并标明建议留哪些、不建议哪些，不要只抛问题。只把真正需要用户定的放进去，事实自己先查；跑一下就能看到的（行为、输出、时序、性能）也是事实，先用最小探针或一次性原型（跑完即删）跑出结果，再带着结果给推荐。**待关闭事项只来自路径带 `-o-` 的 issue、epic、ff 与 Explore**；talk、note、decision 无状态，不进待关闭清单。
+问题按序编号，每条给推荐答案和一句理由。能从代码、配置、测试或运行中得到的事实先自己查。真正属于用户的目标、边界、阈值、兼容策略和取舍才交给用户；提问后停在这一轮，等用户回答。
 
-「给三个选项 + 一句推荐」不是拷问，是把决策树压扁成一层。要把模糊想法真的问清楚时，走 [grilling](references/grilling.md)——它是讨论、愿景、设计共用的访谈循环，机制以那份文件为准；访谈的伴随纪律——磨术语、拿代码对照、谈不出来去原型——见 [domain-modeling](references/domain-modeling.md)。用户明确要求「一次只问一个」时照办，那是他的节奏不是你的。
+需要用户决定的事项也用候选清单表达，推荐要保留的项和理由。用户要求一次只问一个时，按用户节奏执行。
 
-尽量让问题有**事实答案**而不是判断答案。「这是不是仓库外部的事实」能答；「这个以后有用吗」在用户收尾时一定得到「算了」。
+### 证据要能挡住错误
 
-### 节省上下文（Codex）
+新检查的期望值来自用户要求、规格或手算，不从被测代码的输出倒推。要说检查挡住了某个错误，先在改动前、真实旧错或故意做坏的副本上看到它失败。性能和节省时间的结论用同一命令交替测改动前后，各至少三次，报告中位数和范围；范围重叠时写无可测差异，并说明计时区间确实做了目标工作。
 
-`SKILL.md` 全文与所选姿态的必读文件首次加载必须完整读入；批量并行读取时业务文件可以采样，规则文件采样即静默丢失。同一会话中，已经完整读取、内容仍在上下文里且没有变化的 `SKILL.md`、reference、template 或相邻说明，必须复用既有理解，不要重复读取；仅在用户要求重读、文件已变化，或已完整读过但局部细节需核对时，才补读相关最小范围。
+### 节省上下文
 
----
+首次加载本文件和行动的必读 reference 时完整读取。并行读取时，业务材料可以采样，规则文件不采样。同一会话里已经完整读取、内容仍在上下文且没有变化的文件直接复用；用户要求重读、文件发生变化或需要核对局部时，再补读最小范围。
 
-## 1. 先定姿态
+第一次写 `byissue/` 文档、commit message 或完成汇报前，读取 [writing](references/writing.md)。
 
-从用户原话与上下文中选择**一个主姿态**。选定后立即读取“必读”，再开始行动；未命中的姿态文件不要预读。
+## 四种行动
 
-| 主姿态 | 用户常这样说 | 必读 | 按需读 | 默认边界 |
+从用户原话中选一个主行动。选定后继续推进到完成或真实阻塞；一次被授权的落盘动作不会自动改变主行动，新的用户意图才会改变它。
+
+| 主行动 | 用户常这样说 | 必读 | 按需读取 | 默认出口 |
 |---|---|---|---|---|
-| **接入** | 初始化 bi、接入 ByIssue、补齐 `byissue/` | [onboard](references/onboard.md) | — | 必须明确授权；不编造业务内容 |
-| **讨论** | 聊聊、先理清、想清楚再做、帮我规划一下、拷问我、多轮问清楚 | [talk](references/talk.md)、[grilling](references/grilling.md)、[domain-modeling](references/domain-modeling.md) | [docs](references/docs.md)；具体变化 → [quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 用户确认前不落盘，不建 issue、epic 或 vision |
-| **愿景** | 应用将来什么样、整理 vision、产品全景 | [vision](references/vision.md)、[grilling](references/grilling.md)、[domain-modeling](references/domain-modeling.md) | [docs](references/docs.md)；质量方向 → [quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 确认后才写 vision；不强迫创建开发事项 |
-| **规格** | 维护 spec、当前真相、epic 活规格 | [spec](references/spec.md) | [docs](references/docs.md)；质量约束 → [quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 只写仍然成立的结论 |
-| **理解现状** | 怎么工作的、这条链路、影响范围 | [explore](references/explore.md) | [docs](references/docs.md)；服务具体变化 → [quality](references/quality.md) | 先解释现状；复杂且值得复用时才建 Explore Issue |
-| **修 bug** | 坏了、不符合预期、debug、修这个 bug | [complain](references/complain.md) | [debug](references/debug.md)、[economy](references/economy.md)、[quality](references/quality.md)；结构 → [code-design](references/code-design.md) | 简单问题默认快改并留下 `ff`；复杂问题可受管理推进 |
-| **设计** | 怎么实现、先设计、实现方案 | [design](references/design.md) | [grilling](references/grilling.md)、[domain-modeling](references/domain-modeling.md)；[code-design](references/code-design.md)、[economy](references/economy.md)、[quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 不写代码；高风险先安排穿刺顺序 |
-| **快交付** | 快速、快改、小改一下、顺手改一下、直接开干、别走流程 | [fast](references/fast.md) | [economy](references/economy.md)；必要时 [quality](references/quality.md)；UI → [ui-spec](references/ui-spec.md) | 默认轻检索、验证并留下 `ff` |
-| **受管理实现** | 做这个 issue、推进 epic、实现（有档）、穿刺/先打通 | [do](references/do.md) | 大任务或带台账的 Epic → [large](references/large.md)；[code-design](references/code-design.md)、[economy](references/economy.md)、[quality](references/quality.md)；现状不清 → [explore](references/explore.md)；UI → [ui-spec](references/ui-spec.md) | 完成不等于关闭；风险先穿刺，再加厚 |
-| **收尾** | 关闭、收尾、做完并沉淀、毕业回写 | [close](references/close.md) | [docs](references/docs.md)、[quality](references/quality.md)；有界简化 → [economy](references/economy.md) | 关闭需要用户授权；关闭后文件留在原树原位 |
-| **审代码** | review、评审、看看这 diff/PR | [code-design](references/code-design.md)（文末 Review） | [economy](references/economy.md)；相关时 → [quality](references/quality.md) | 用户点名才做；默认只审不改 |
-| **记知识** | 记一下坑、写 note | [note](references/note.md) | [docs](references/docs.md) | 同主题更新原 note，不重复新建 |
-| **学流程** | 我带你跑一遍、教 AI 做某流程 | [maketools](references/maketools.md) | [docs](references/docs.md) | 危险操作前再次确认 |
+| **澄清** | 聊聊、先理清、想清楚再做、帮我规划一下、拷问我、多轮问清楚 | [clarify](references/clarify.md) | [grilling](references/grilling.md)、[domain-modeling](references/domain-modeling.md)、[ui-spec](references/ui-spec.md) | 形成用户确认的目标、边界或取舍；需要跨会话时创建澄清型 work |
+| **改变** | 怎么实现、先设计、实现方案、快速、快改、小改一下、顺手改一下、直接开干、别走流程、做这个、推进、修这个 bug、穿刺、先打通 | [change](references/change.md)、[prove](references/prove.md) | [quality](references/quality.md)、[economy](references/economy.md)、[ui-spec](references/ui-spec.md) | 小改直接验证；复杂或跨会话变化进入 `work/{slug}/` |
+| **理解与审查** | 怎么工作的、这条链路、影响范围、review、评审、看看这 diff/PR | [understand-review](references/understand-review.md) | [quality](references/quality.md)、[economy](references/economy.md)、[ui-spec](references/ui-spec.md) | 给出有范围、有证据的解释或审查结果；用户没有授权时不改代码 |
+| **记忆与方向** | 整理 vision、维护 spec、当前真相、记一下坑、写 note、我带你跑一遍、教 AI 做某流程、初始化 bi、接入 ByIssue | [memory-direction](references/memory-direction.md) | [onboard](references/onboard.md)、[grilling](references/grilling.md)、[domain-modeling](references/domain-modeling.md) | 更新 `memory/` 或按需的 `vision/`；接入时只初始化新入口 |
 
-### 怎样判断姿态
+行动的深度由目标和风险决定：模糊目标先澄清，现状不明先理解，明确的小改变直接做，跨会话或需要完整性证明的改变建立 work。改变代码本身不是建立 work 的唯一条件。
 
-1. 用户的原话与授权，优先于“看起来应该走重流程”。
-2. 事情小、目标清楚、用户要快且没有要求建档 → **快交付**。
-3. 目标模糊或取舍未定 → **讨论**；聊清后再切换到快交付、受管理实现、愿景等姿态。
-4. 已有常规 Issue，或用户点名 Issue / Epic → **受管理实现**，必要时先设计。
-5. 已有行为坏了 → **修 bug**；新增能力 → 快交付或受管理实现，不归入 Complain。
-6. 用户只问系统怎样工作 → **理解现状**，不要默认开始修改。
-7. 意图不清，而且选错会实质改变后续，例如是否建 Issue、是否改代码 → 给一句话推荐和理由，请用户选择；不要默认采用重流程。
-8. 写或修改 Agent 技能本身，不属于 ByIssue 的职责。
-9. **姿态在会话中持续；被授权的单个动作不改变它。** 用户在讨论里批准了一个要落盘的动作，做完就回到讨论——动手过一次不等于整场会话转成执行。切换姿态要么来自用户的新信号，要么你明说「我切到 X 姿态」并得到同意。
-10. **在执行类姿态下**，方向已经确认且用户要求执行时，持续推进到**完成**或遇到真实阻塞，不要在正常步骤之间反复确认。这条不适用于讨论：把每一轮都收成「要我现在就…吗」，等于把 Talk 的价值丢掉。
+## 当前工作与项目入口
 
-### 选择管理强度
+### 新入口
 
-| 情况 | 默认选择 |
-|---|---|
-| 小、低风险、一次可完成，或用户明确要快 | **快改**；完成后留下 `ff`，见 [fast](references/fast.md) |
-| 用户明确不要痕迹或不要写 Issue | **无痕迹例外**，见下 |
-| 涉及范围取舍、多轮推进、交接、显著风险或长期质量承诺 | 建立**常规 Issue**：`type: feature\|bug\|chore\|refactor` |
-| 跨模块、多批次，且规格会在边界内持续演化 | 建立 **Epic**；边界足够清楚的切片可直接在 Epic 内推进 |
-| 用户交来的任务做没做全，靠一次观察确认不了（重写、迁移、移植、和旧版对齐、每项要单独改单独验的「所有 X」），或明显要跨很多会话 | **大任务**：主姿态是受管理实现，先读 [do](references/do.md)，动手前再读取并执行 [large](references/large.md)，自己建 Epic 和台账、切单元 |
-| 技术、集成或迁移风险需要先证明可行 | 先做**穿刺**，见 [do](references/do.md)，再加厚实现 |
-| 用户明确要求更重的管理 | 服从用户选择 |
-
-### 无痕迹例外
-
-用户明确说「不要痕迹 / 别写 issue / 别落盘 ff」时：
-
-- **不为这次行动创建任何事项**，包括 `ff`。用户另外要求记一条时，那不是这次行动的一部分，照常处理。
-- **仍然跑开工协议、仍然验证。** 省掉的只是痕迹，不是判断和证据。
-- **沉淀只列不写**，用户说收尾或提交时也一样。汇报里列出候选和建议去向，用户点名要的才落盘。
-- **真相失效仍须处理**：同步相关 project spec，或明确标记漂移并告诉用户。
-- 这条**不改变姿态**。「做这个 issue，但别留痕迹」仍然是受管理实现，走 [do](references/do.md)；它不会因为出现「不要痕迹」就变成快改。
-
-这是这条例外的唯一出处，各姿态文件只链接过来，不重述。
-
----
-
-## 2. 世界模型与工作区
-
-### 从目标到现实
-
-```text
-Vision Spec（目标世界）
-        │ 摘取一段有界变化
-        ▼
-Epic Spec（变化中的活规格） ──推进──> Epic Issues
-        │ Epic 关闭后毕业
-        ▼
-Project Spec（当前现实）
-
-独立 Issue ─────────关闭毕业────────> Project Spec
-```
-
-Vision 保存目标世界；Epic 承载一段有边界的大变化；Issue 是可关闭的行动；Project Spec 只保存当前仍成立的现实。
-
-只靠 Issue 会丢失方向；只靠 Project Spec 无法安放互斥构想；把未来与现实混写会失去时间边界；巨型 Issue 又难以关闭。因此，只把**值得跨会话保留**的信息写入 `byissue/`，并放到承担相应职责的位置。
-
-### `byissue/` 工作区地图
-
-ByIssue 的制度记忆统一存放在项目的 `byissue/` 下。
+需要管理、跨会话继续或证明完整性的内容进入 `byissue/`：
 
 ```text
 byissue/
-├── vision/                         目标世界、旅程与候选方向
-│   ├── index.md                    Vision 地图
-│   └── ...                         按旅程或能力展开
-├── spec/                           当前稳定真相
-│   ├── index.md                    Project Spec 地图
-│   └── ...                         按场景或能力展开
-├── epics/                          有界的大变化；文件名带创建日期
-│   ├── {YYYY-MM-DD}-o|x|w-{Epic名}/
-│   │   ├── spec.md                 该 Epic 唯一权威的活规格
-│   │   └── issues/                 只属于该 Epic 的 issues 树
-├── issues/                         不属于单个 Epic 的独立 issues 树
-├── decisions/                      拍板记录；文件名带创建日期
-│   └── {YYYY-MM-DD}-{主题}.md      1–5 句：选了什么、为什么
-├── notes/                          可复用知识；文件名带创建日期
-│   └── {YYYY-MM-DD}-{主题}.md
-├── talks/                          尚未落定的讨论；文件名带创建日期
-│   └── {YYYY-MM-DD}-{议题}.md
-└── tools/                          稳定、可重复执行的流程工具
-    └── ...                         说明、脚本及其所需资源
+├── work/
+│   └── {slug}/
+│       ├── index.md       # 当前工作唯一入口与检查点
+│       └── scope.md       # 需要机械范围覆盖时才有
+├── memory/
+│   └── {topic}.md         # 长期判断，一个主题一份
+└── vision/                # 用户整理长期方向时按需创建
+    └── index.md
 ```
 
-根 `issues/` 与每个 Epic 内的 `issues/` 使用同一种结构，各自独立：
+新工作区从 `work/`、`memory/` 和按需的 `vision/` 取当前内容。项目里已有的其他 `byissue/` 目录按用户点名的范围读取；它们不自动成为新工作的入口。
 
-```text
-issues/
-├── {YYYY-MM-DD}-o|x|w-{事项}.md    常规 Issue（o=open 开、x=交付关闭、w=won't do 放弃关闭）
-├── {YYYY-MM-DD}-o|x|w-ff-{事项}.md 快改记录
-├── {YYYY-MM-DD}-o|x|w-{探索名}/    Explore Issue
-│   ├── index.md                    认知地图、边界、结论与毕业位置
-│   └── *.md                        按「触发→结果」组织的路径文章
-```
+### 当前工作是什么
 
-图中的 `o|x|w` 表示取 `o`（open）、`x`（交付关闭）或 `w`（won't do，放弃关闭），不是路径中的字面字符。路径表达唯一归属：只属于一个 Epic 的事项进入该 Epic 的 `issues/`，其余留在根 `issues/`。常规 Issue 与 `ff` 是单文件；只有需要独立调查工作区的 Explore Issue 使用目录。Epic 的 `issues/` 在首个所属事项创建时再建立。
+`work/{slug}/index.md` 保存一次变化的目标、边界、已定方案、行为证明、当前状态和下一动作。它是继续同一工作的唯一权威入口；实现、测试、运行产物和 git 记录是已经发生什么的事实来源。
 
-这张图是定位地图，不是每次工作的必读清单。按当前姿态和关键词命中逐层下钻，只读取足以支撑判断的局部。
+入口顶部的结构化元数据是唯一检查点：
 
-### 各实体回答什么
-
-| 实体 | 回答的问题 |
-|---|---|
-| **Vision** | 应用最终要成为什么样；有哪些旅程、能力以及候选或互斥方向 |
-| **Project Spec** | 项目现在有哪些仍然成立的稳定事实；按场景和能力组织，不按代码目录组织 |
-| **Epic** | 这段有界大变化已经确定什么、仍在变化什么、接下来可以推进什么 |
-| **Issue** | 要完成并关闭哪一个具体行动；物理位置表达唯一归属 |
-| **Fast Fix (`ff`)** | 这个小改做了什么、改了哪里、怎样验证、是否影响制度记忆 |
-| **Explore Issue** | 一个复杂、可停止、可复用的现状调查得出了什么；简单理解只做现状说明，不建事项 |
-| **Talk** | 一个尚未落定的议题如何被提出、纠正和收束，以及建议从哪里继续 |
-| **Decision** | 某个取舍当时拍了什么板、为什么；被取代时指向新决策 |
-| **Note** | 哪些知识、证据、步骤与坑点在未来仍值得复用 |
-| **Tool** | 哪段已跑通的流程已经稳定到可以重复执行，同时仍需守住哪些危险边界 |
-
-### 路径与命名
-
-`issues/`（根与各 Epic 内）、`epics/`、`notes/`、`talks/`、`decisions/` 的文件名都以创建当日的日期开头（`YYYY-MM-DD`，用 `date +%F` 取，不要凭记忆填）。日期不读任何已有文件，所以并行会话、worktree 与克隆不需要查号、也不会互相占号；同一天建的多个事项共享前缀，**唯一性由完整文件名承担，不是由前缀**。若两个并行会话对同一需求抽出了同一个 `{名}`，在合并后把后到者改名并修正指向它的引用（修引用的锚点与判法见 [close](references/close.md)「原则」）；路径里的日期与名称都不表达顺序，无需追求先来后到。
-
-事项的唯一标识是**完整路径名**：文件型事项给完整文件名（`issues/2026-09-21-x-feishu-entry.md`），Explore 这类目录型事项给完整目录名（`issues/2026-09-21-o-feishu-entry/`）；跨 Epic 引用写成 `byissue/epics/{YYYY-MM-DD}-o|x|w-{Epic名}/issues/{YYYY-MM-DD}-o|x|w-{名}.md`。
-
-| 形态 | 路径 |
-|---|---|
-| 独立 Issue | `byissue/issues/{YYYY-MM-DD}-o\|x\|w-{名}.md` |
-| Epic Issue | `byissue/epics/{YYYY-MM-DD}-o\|x\|w-{Epic名}/issues/{YYYY-MM-DD}-o\|x\|w-{名}.md` |
-| 快改 | 所属 issues 树下 `{YYYY-MM-DD}-o\|x\|w-ff-{名}.md`；`type: ff`；模板 `ff-issue.md` |
-| Explore Issue | 所属 issues 树下 `{YYYY-MM-DD}-o\|x\|w-{名}/index.md` |
-| Epic | `byissue/epics/{YYYY-MM-DD}-o\|x\|w-{Epic名}/spec.md`；每个 Epic 只有一份权威 spec |
-| Talk / Note / Decision | `{YYYY-MM-DD}-{名}.md`，不使用 `o`、`x`、`w` 或 `ff` |
-
-**归属由路径决定：**
-
-- 只属于一个 Epic 的 Issue，必须进入该 Epic 的 `issues/`。
-- 不属于任何 Epic 的 Issue，留在根 `issues/`。
-- 跨多个 Epic 的事项，不得随意挂到其中一个；应保留为独立 Issue，或升级为 Epic。
-- `ff`、bug、feature、chore、refactor 与 Explore Issue 都遵守同一归属规则。
-- Issue 的归属由物理路径表达，不使用 `epic` frontmatter。归属改变时移动原事项并更新明确引用，不复制第二份。
-
-状态由路径唯一表达：文件名与目录名是状态的唯一出处，不设 frontmatter 状态字段。关闭 Issue 时将目标路径中的 `-o-` 改为 `-x-`（交付关闭）或 `-w-`（放弃关闭），日期前缀与名称不变；关闭 Epic 时改 Epic 目录名，内部 Issue 随目录整体保留。**改名是 [close](references/close.md) 的最后一步**：凡要将 `-o-` 改为 `-x-` 或 `-w-`，动手前必须先读取并执行 [close](references/close.md)（完成沉淀收割、毕业回写与引用修复后才改名）。
-
-常规 Issue 使用 `templates/entities/issue.md`，`type` 只能是 `feature|bug|chore|refactor`。`ff` 只回答四件事：做了什么、改了哪些、怎样验证、对 `byissue/` 有什么影响；不要写成迷你 Design，也不要保留空槽位。
-
-Talk 写入 `byissue/talks/`；Note 写入 `byissue/notes/`，同主题更新原文件；Tool 写入 `byissue/tools/`。
-
-**bi 只写 `byissue/` 之内，不碰 `AGENTS.md` / `CLAUDE.md`。** 那类文件每次启动都注入，会改变该项目之后所有会话的判断，该不该改由用户决定、由用户动手；bi 最多提示一句，不代劳。
-
-**经验沉淀以落入 `byissue/` 为准，由你直接写。** 推进过程中产生的可复用经验、隐含约束与取舍，必须通过沉淀收割写进随仓库同步的 `byissue/`（`notes/`、`spec/`、`decisions/`），只有写进去才算沉淀。沉淀收割绑定每一次完成汇报、阶段性收工与代码提交（即使目标事项因外部阻塞暂留 `-o-` 也必做）：盘点全过程材料与途中新暴露的隐含约束和踩坑经验，自检事实问题「这次撞上了哪些仓库外部的事实——外部系统行为、平台差异、依赖的真实语义、失败过的尝试、被排除的方案？」；对照既有 `notes/` 与 `spec/` 查重，同主题的更新原文件，已有描述因本次改动而过期的当场改正；同主题记录早已写明、这次仍然踩中的，说明文字没挡住，首选落成一条会在复发时失败的检查（测试、类型约束、lint 规则或脚本，随代码一起提交），`byissue/` 里的记录改为指向它，项目没有可用的检查入口时才只更新文字。查重和落盘都直接做，写法按下节「记录写给下一个 agent」。汇报里列出写了什么、写在哪，改动了 `spec/` 里约束的单独列一行，没有就写「无」；用户说哪条不对，按他说的改或撤。放宽或推翻 `spec/` 里已有的约束是需求变化，不属于沉淀，先问用户。
-
-### 记录写给下一个 agent
-
-下一个 agent 读到一条记录，要知道凭什么采用它。写进 `byissue/` 的每条内容先分清是哪一种，按对应写法写：
-
-| 记的是 | 写法 | 后来者怎么用 |
-|---|---|---|
-| 用户的要求与拍板 | 引原话：只有用户在对话里亲口说的才叫原话；来自 issue、spec 等记录的，写明转述自哪份记录，写日期与适用范围（这一次 / 这个模块 / 长期） | 需求依据。实现有困难也不能自行取消；要变，先问用户 |
-| 你的观察、判断与外部事实 | 写当时的条件（日期、版本或环境）、证据（命令与输出、文件位置）和实际观察到的范围；「这两次如此」不写成「这类都如此」 | 调查线索。拿它做决定前，先在当前代码或环境上复核 |
-| 可以重跑的检查 | 记录指向测试或脚本，写怎么跑 | 直接重跑，以结果为准 |
-
-代码、配置和 git 历史能直接回答的事实不写：它们是实现的唯一真相，抄一份只会过期。一条内容分不清属于哪种时，多半是把观察写成了结论，拆开写。
-
-### 什么内容可以写到哪一层
-
-| 写入位置 | 时机 |
-|---|---|
-| Vision 目标内容 | 用户确认愿景后；实现结论若要改变目标，必须再次确认 |
-| Vision 实现程度与链接 | Epic 关闭时，按已经发生的事实更新 |
-| Project Spec | 独立 Issue / Explore Issue 关闭毕业；Epic 关闭合并（只筛代码重建不出来的词、边界与取舍，只链接不算毕业，见 [close](references/close.md) 与 [spec](references/spec.md)）；改动使现有真相失效或新增长期约束已随代码生效；或处于规格维护姿态 |
-| Epic Spec | 处于规格维护姿态；或 Epic 下的 Issue 关闭回写 |
-| Decision | 拍板且满足三条件（难以逆转、离开当时语境会奇怪、真实取舍）时；讨论中经用户确认可即时立，关闭毕业时也可立 |
-| Note | 推进中证实可复用知识、外部事实与坑点时（无论事项本轮是否关闭），经沉淀收割写入或更新同主题文件；或处于记知识姿态 |
-| Issue / Explore Issue / `ff` | 受管理推进时按归属写入对应 issues 树；快改完成后写入并关闭 `ff` |
-
-出现冲突时，按 `用户最新确认 > 证据与代码 > 疑似过期的 spec` 判断。Epic 与 Vision 不一致时，先说明这是收窄实现还是修改目标，不要静默绕过。
-
-### 完成、关闭与 Git
-
-| 状态 | 含义 |
-|---|---|
-| **完成** | 实现和验证已经达到目标 |
-| **关闭** | 用户授权收尾：`o` → `x` 或 `w`，并完成毕业回写；关闭的事项留在原树原位；Git 操作按提交契约执行 |
-
-**默认不做三件事：不自动 commit、不自动 push / 发布、不自动关闭常规 Issue。** 三件都要用户开口，开口一句就够：用户说收尾、关闭、提交、推送（或开 PR、合并、发布）里的任何一个，都按下面的固定顺序执行到下段对应的那一步，前面的步骤一并做：
-
-1. **沉淀补齐**：按上文「经验沉淀」查漏，工作中已写的不重写。
-2. **毕业回写**：本会话推进过或用户点名的事项里，满足关闭条件的读取并执行 [close](references/close.md) 的回写。
-3. **关闭改名**：同一批里的常规 Issue、Explore 与跨会话 `ff` 按 [close](references/close.md) 修引用并改 `-x-`；不满足的保持 `-o-`，汇报里说原因。
-4. **提交**：先跑技能包内的 `scripts/check_open_issues.py`（从 `bi` skill 目录解析路径，`--project` 指向本仓库），再把代码、回写、改名与沉淀合成一次 commit。脚本列出的其他 `-o-` 事项保持原样，觉得其中有该关的，在汇报里按「提问必须带建议」列出来问。
-5. **推送**（或开 PR、合并、发布）。
-
-「收尾」「关闭」「提交」做到第 4 步，「推送」「开 PR」「合并」「发布」做到第 5 步。用户点名不做的步骤跳过（例如「先只提交代码，别关」）。放弃关闭（`-w-`）与关闭 Epic 只在用户明说时做。讨论姿态里的「收尾」是收住讨论：按 [talk](references/talk.md) 给出口草案，不进这条顺序。
-
-| 用户动作或场景 | 默认行为 |
-|---|---|
-| 快改 | 验证后必须写 `ff`（同会话可直接写成 `x-ff`），汇报时执行沉淀收割（见 [fast](references/fast.md)） |
-| 受管理实现 / 修 bug（受管理） / 用户说“做完”或“修好” | 推进到完成（或因外部阻塞阶段性收工）即可；小改仍留下 `ff`；汇报写明哪些事项满足关闭条件、用户说收尾时会关哪些（不满足的说明原因并保持 `-o-`），以及按上文「经验沉淀」的格式汇报沉淀（见 [do](references/do.md)、[complain](references/complain.md)） |
-| 用户说收尾、关闭、提交、推送、开 PR、合并、发布 | 按上面的固定顺序执行到对应的那一步；关闭的事项留在原树原位 |
-| 部署、初始化或覆盖 `byissue/`、关闭 Epic、破坏性操作 | 必须取得明确授权 |
-
-### 质量语言
-
-使用 ISO/IEC 25010:2023 的九个质量特征作为统一语言，但不要把它变成九项必填表。**一旦选中某项，它就是承诺。**
-
-快改不写形式化质量清单，但仍须遵守 spec、用户要求与必要护栏。详见 [quality](references/quality.md)。
-
+```yaml
 ---
+kind: work
+status: in_progress
+current_unit: "当前正在处理的可验证行为"
+next_action: "接下来唯一的第一件事"
+must_hold: "用户已确认且不能自行改变的约束"
+proof_gap: "行为门或范围门还缺什么"
+---
+```
 
-## 3. 开工协议
+`status` 取 `in_progress`、`blocked`、`complete`。正文不重复这五项状态。`current_unit` 按可验证行为切分，不按会话数量切分；一个会话可以跨越多轮压缩。
 
-在设计、实现、快改、修 bug、维护规格或穿刺之前，如果项目已有 `byissue/`，先完成以下动作。各 reference 不重复展开这套协议。
+### 找到当前工作
 
-1. **浏览路径并检索关键词。** 扫描 `byissue/` 的结构与当前主题；同一会话中已经扫描且没有新写入时，复用已有结果。
-2. **按权重深入读取。** 先读 `spec/`，再读相关 Epic 与 Notes，然后递归检索根目录和各 Epic 的 issues 树，包括 `-x-`、`-w-` 与 `ff`；最后按需读取 Talks、Vision 和 Tools。
-3. **判断现状是否足够。** 能否用一句话说明“触发如何经过系统产生结果”？不能则先做现状说明；跨多个边界或理解值得复用时，再建立 Explore Issue。
-4. **选择管理强度。** 按前文“选择管理强度”执行。
-5. **处理文档与代码冲突。** 先核对证据，再修正真相；不要用代码静默覆盖已记录的取舍，也不要盲信可能过期的文档。读到的观察类记录（见「记录写给下一个 agent」）是线索：拿它做决定前先复核，复核不成立就当场把那条记录改成这次复核的结果（会放宽或推翻 `spec/` 约束的，按上文「经验沉淀」先问用户），按「记录写给下一个 agent」写上日期、环境与证据。
+用户说“继续”、会话从压缩摘要接续，或新会话进入一个已有主题时：
 
-有目标 Issue 时，确认正在处理的是其**当前版本**；在 Epic 下工作时，读取该 Epic 的 `spec.md`。
+1. 浏览 `byissue/work/*/index.md` 的 `status`、主题和当前代码变化。
+2. 找到一个与用户主题和当前改动相符的 `in_progress` 或 `blocked` work，就读取它的 frontmatter 和被当前动作引用的正文。
+3. 找到多个候选时，把候选路径和差异交给用户选择。
+4. 找不到时，按小改处理或创建新的 work；不从上一轮摘要猜路径。
 
-把 `byissue/` 当作制度记忆：遇到奇怪代码先查 Spec，踩到旧坑先查 Notes，要理解历史取舍先查 Issue。
+项目不维护全局 `current.md` 指针。并行工作各自拥有自己的入口。
 
-实体模板位于 `templates/entities/`，包括 `issue.md`、`ff-issue.md` 以及 Explore、Vision、Spec、Talk、Note 等模板。初始化脚本是 `scripts/init_byissue.py`。产物格式以相应 reference 为准，不要只根据文件名猜测。
+## 检查点协议
 
-许可证与上游归属见 [NOTICE.md](NOTICE.md)。
+从压缩摘要继续、开始一个行为单元、单元完成、用户改变目标或约束、执行外部副作用，以及宣布完成之前，先重读当前 work 的检查点，并核对代码、git 和真实证据。
+
+核对按三层分开：
+
+1. 用户最新明确要求决定目标与边界。
+2. 代码、配置、git 和真实运行决定已经发生什么。
+3. `work/index.md` 保存已选方案、当前单元和证据状态。
+
+如果三层不一致，先更新 work 或停下澄清。摘要中的“已完成”、文件存在、commit 存在和局部测试通过都不能单独成为当前状态。接续后的第一件真正动作必须来自 `next_action`，核对后若它已不成立，先改检查点。
+
+每个可验证行为单元结束时回写 `current_unit`、`next_action`、`proof_gap` 和证明表。完成一项并不等于完成整个 work。
+
+## 改变的完成门
+
+非平凡改变先写行为证明契约：真实入口 → 操作 → 可观察结果。契约和结果使用 `index.md` 中同一张表，形状见 [prove](references/prove.md)。没有能驱动真实行为的入口时，先搭最小入口并跑通一次；仍然跑不了就写 `无法判定`。
+
+需要逐项确认来源完整性的迁移、重写、移植、对齐和“所有 X”任务，按 [prove](references/prove.md) 增加 `scope.md`。范围覆盖与纵向行为证明分开：scope 全部覆盖不能替代真实行为通过。
+
+只有行为门和范围门都通过，work 才能标为 `complete`。完成后原路径保留，下一次新目标或新增范围创建新的 work；已有证据推翻完成结论时，直接把原 work 改回 `in_progress` 或 `blocked` 并更新证明。
+
+小而低风险、一次可完成的改变可以不创建 work。仍要从真实入口验证；中途出现跨会话、多个行为路径、完整性核对或显著风险时，把当前目标、证明契约和已发生事实补入 work，再继续。
+
+## 记忆与方向
+
+长期内容进入 `memory/{topic}.md`：用户长期决定、已确认的外部事实、值得复跑的证明。每条记录写适用边界、依据类型、证据或复核方式和重访条件。代码、配置、测试和 git 已经能回答的事实不复制。
+
+Memory 默认一个主题一份文件，不设全局索引。开始工作时按主题检索命中的 Memory；用户新决定或当前证据与旧记录冲突时，先停下判断并更新记录。
+
+Vision 只在用户整理长期方向或明确要求方向约束时使用。它描述目标世界、旅程和候选方向，不承担当前实现状态。稳定的当前事实、约束和取舍按用户需要写入 Memory。
+
+## 汇报与 Git
+
+完成或阶段性收工时说明：目标与范围、当前状态、行为证明结果、范围覆盖结果、写入的 Memory、推断和无法判定项。没有需要用户看的内容时写「需要你看的：无」。
+
+默认不自动 commit、push、开 PR、合并或发布。用户明确要求其中一个动作时，先完成当前 work 的检查点回写、行为/范围门核对和必要的 Memory 记录，再在同一动作链中执行。外部副作用前再次读取检查点；不要用会话开头的记忆代替它。
+
+## 按需材料
+
+- 质量目标与承诺：[quality](references/quality.md)
+- 实现经济性：[economy](references/economy.md)
+- UI 关系与状态：[ui-spec](references/ui-spec.md)
+- 写作：[writing](references/writing.md)
+- 项目接入：[onboard](references/onboard.md)
+
+模板位于：[`templates/work.md`](templates/work.md)、[`templates/scope.md`](templates/scope.md)、[`templates/memory.md`](templates/memory.md)、[`templates/vision.md`](templates/vision.md)。初始化脚本位于 [`scripts/init_byissue.py`](scripts/init_byissue.py)。许可证和上游归属见 [NOTICE.md](NOTICE.md)。

@@ -1,0 +1,179 @@
+#!/usr/bin/env python3
+"""Regression checks for the ledger.py report CLI.
+
+Run with:
+    python3 tests/test_report.py
+    python3 -m unittest discover -s tests
+
+Every check drives the real command line in a subprocess. Expected values come
+from the task contract and a hand count of legacy/, not from ledger.py output.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import subprocess
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+PROJECT = Path(__file__).resolve().parents[1]
+LEDGER = PROJECT / "ledger.py"
+LEGACY = PROJECT / "legacy"
+
+# legacy/ has 7 rows: 10, 20, 105 (Alice), 1234, 200 (Bob), 100001, 0 (张三).
+EXPECTED_ALL = {"count": 7, "total_cents": 101570}
+
+
+def run(*args: str) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        [sys.executable, str(LEDGER), *args],
+        cwd=str(PROJECT),
+        capture_output=True,
+        text=True,
+    )
+
+
+def sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+class ReportTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.tmp = tempfile.TemporaryDirectory()
+        cls.ledger = Path(cls.tmp.name) / "ledger.json"
+        result = run("migrate", str(LEGACY), str(cls.ledger))
+        assert result.returncode == 0, result.stderr
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.tmp.cleanup()
+
+    def report(self, *args: str) -> subprocess.CompletedProcess:
+        return run("report", str(self.ledger), *args)
+
+    def assert_summary(
+        self, expected: dict, result: subprocess.CompletedProcess
+    ) -> None:
+        self.assertEqual(result.returncode, 0, result.stderr)
+        summary = json.loads(result.stdout)
+        self.assertEqual(summary, expected)
+        self.assertEqual(set(summary), {"count", "total_cents"})
+        self.assertIs(type(summary["count"]), int)
+        self.assertIs(type(summary["total_cents"]), int)
+
+    def test_default_reports_every_row(self) -> None:
+        self.assert_summary(EXPECTED_ALL, self.report())
+
+    def test_explicit_zero_matches_default(self) -> None:
+        self.assert_summary(EXPECTED_ALL, self.report("--min-cents", "0"))
+
+    def test_customer_filter_is_an_exact_match(self) -> None:
+        self.assert_summary({"count": 3, "total_cents": 135}, self.report("--customer", "Alice"))
+        self.assert_summary({"count": 2, "total_cents": 1434}, self.report("--customer", "Bob"))
+        self.assert_summary(
+            {"count": 2, "total_cents": 100001}, self.report("--customer", "张三")
+        )
+        self.assert_summary({"count": 0, "total_cents": 0}, self.report("--customer", "ali"))
+        self.assert_summary({"count": 0, "total_cents": 0}, self.report("--customer", "张三 "))
+
+    def test_min_cents_includes_rows_at_the_threshold(self) -> None:
+        self.assert_summary(
+            {"count": 5, "total_cents": 101560}, self.report("--min-cents", "11")
+        )
+        self.assert_summary(
+            {"count": 1, "total_cents": 100001}, self.report("--min-cents", "100001")
+        )
+        self.assert_summary(
+            {"count": 0, "total_cents": 0}, self.report("--min-cents", "100002")
+        )
+
+    def test_min_cents_combines_with_customer(self) -> None:
+        self.assert_summary(
+            {"count": 2, "total_cents": 125},
+            self.report("--customer", "Alice", "--min-cents", "20"),
+        )
+        self.assert_summary(
+            {"count": 1, "total_cents": 105},
+            self.report("--min-cents", "21", "--customer", "Alice"),
+        )
+        self.assert_summary(
+            {"count": 0, "total_cents": 0},
+            self.report("--customer", "张三", "--min-cents", "100002"),
+        )
+
+    def test_report_does_not_modify_the_ledger(self) -> None:
+        before = sha256(self.ledger)
+        before_stat = self.ledger.stat()
+        self.assert_summary(
+            {"count": 6, "total_cents": 101570}, self.report("--min-cents", "10")
+        )
+        self.assertEqual(sha256(self.ledger), before)
+        self.assertEqual(self.ledger.stat().st_size, before_stat.st_size)
+
+
+class InvalidArgumentsTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.tmp = tempfile.TemporaryDirectory()
+        cls.ledger = Path(cls.tmp.name) / "ledger.json"
+        cls.ledger.write_text("[]\n", encoding="utf-8")
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.tmp.cleanup()
+
+    def test_negative_and_non_integer_min_cents_fail(self) -> None:
+        for raw in ("-1", "-100", "1.5", "1.0", "abc", "", "1e3"):
+            with self.subTest(min_cents=raw):
+                result = run("report", str(self.ledger), "--min-cents", raw)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("min-cents", result.stderr)
+                self.assertEqual(result.stdout, "")
+
+    def test_missing_min_cents_value_fails(self) -> None:
+        result = run("report", str(self.ledger), "--min-cents")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("min-cents", result.stderr)
+
+
+class InvalidLedgerTest(unittest.TestCase):
+    def assert_fails_without_writing_stdout(self, content: str) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            ledger = Path(tmp) / "ledger.json"
+            ledger.write_text(content, encoding="utf-8")
+            before = ledger.read_bytes()
+            result = run("report", str(ledger))
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("error:", result.stderr)
+            self.assertEqual(result.stdout, "")
+            self.assertEqual(ledger.read_bytes(), before)
+
+    def test_missing_ledger_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run("report", str(Path(tmp) / "missing.json"))
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("error:", result.stderr)
+            self.assertEqual(result.stdout, "")
+
+    def test_malformed_or_non_ledger_json_fails(self) -> None:
+        cases = {
+            "not_json": "not json\n",
+            "object": '{"id": "a001"}\n',
+            "string_amount": '[{"id": "a001", "customer": "Alice", "amount_cents": "10"}]\n',
+            "float_amount": '[{"id": "a001", "customer": "Alice", "amount_cents": 10.0}]\n',
+            "bool_amount": '[{"id": "a001", "customer": "Alice", "amount_cents": true}]\n',
+            "negative_amount": '[{"id": "a001", "customer": "Alice", "amount_cents": -1}]\n',
+            "missing_customer": '[{"id": "a001", "amount_cents": 10}]\n',
+            "row_not_object": '["a001"]\n',
+        }
+        for name, content in cases.items():
+            with self.subTest(name=name):
+                self.assert_fails_without_writing_stdout(content)
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)

@@ -1,3 +1,15 @@
+## 2.0.0
+
+ByIssue 的工作流入口改为 `work/{slug}/index.md` 检查点。核心行动收敛为澄清、改变、理解与审查、记忆与方向。
+
+- 当前 work 的 frontmatter 只保存 `status`、`current_unit`、`next_action`、`must_hold`、`proof_gap` 五个检查点字段，`kind` 只标识文档类型。
+- 行为证明与范围覆盖分成两道完成门。真实入口、操作、可观察结果和证据写在同一张行为证明表中；迁移、重写、移植、对齐和“所有 X”任务按事实源生成 `scope.md`。
+- 长期决定、外部事实和可重跑证明写入 `memory/{topic}.md`。代码、测试、配置和 git 保留实现事实，`vision/` 按需保存长期方向。
+- 技能包删除旧的实体模板、状态字母脚本和旧收尾链，初始化脚本只创建并保留 `byissue/work/` 与 `byissue/memory/`。
+- 发布检查改为验证新包布局、work 模板、初始化脚本和当前真相文档路径。
+- v2 文档使用分支安装地址，补充 pi 的安装与调用示例。v1 工作记录归档到 `archive/v1/`，当前仓库使用 `byissue/work/` 与 `byissue/memory/`；默认搜索和当前路径检查隔离归档内容。
+- pi 两个新会话完成账单迁移与报表任务，独立 CLI 验收通过；同时记录新要求回写偏晚、Memory 混入临时及实现事实两个执行缺口。输入、工具记录、产物和验收保存在 `byissue/work/v2-readiness/evaluation/`，该样例不代表大型长会话或普遍效率结论。
+
 ## 1.14.2
 
 The package now carries its license. `skills/bi/references/grilling.md` is a verbatim copy of `mattpocock/skills` and `domain-modeling.md` copies its reading side; MIT requires the notice in every copy, and only `skills/bi/` is distributed. `skills/bi/NOTICE.md` holds the ByIssue MIT text and the upstream MIT text, and `SKILL.md` ends with one line pointing to it. The repository root gains `LICENSE` (copyright liuzhengdong and ByteTrue, as the README already credited) and a short `NOTICE.md` pointing into the package.

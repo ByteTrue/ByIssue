@@ -1,0 +1,25 @@
+# 账单迁移的固定契约
+
+## 结论
+
+`ledger.py` 的两个 CLI 共用一份数据契约，下一阶段的 `report` 必须按这份契约读取 `migrate` 的输出。
+
+- `migrate <source-dir> <output.json>` 递归读取所有 `.csv`，表头固定 `id,customer,amount`，输出按 `id` 排序的数组，每行只有 `id`、`customer`、`amount_cents`（整数分）。
+- 金额按字符串规则解析成整数分，不经过浮点。接受非负十进制、最多两位小数；拒绝负数、`NaN`、`Infinity`、指数格式、多于两位小数。
+- 任何非法输入（重复 id、空 id/customer、错表头、坏金额）都以非零码退出，stderr 写错误，已有 `output.json` 逐字节不变。实现方式是全部校验通过后才原子写入。
+- 原始 CSV 只读。重跑同一输入得到逐字节相同的输出。
+- `report <output.json> [--customer <name>] [--min-cents <n>]` 在 stdout 输出只含 `count` 和 `total_cents` 两个整数的 JSON 对象。`--customer` 按完整名称精确匹配，无匹配时两项均为 0。`--min-cents` 默认 0，只统计 `amount_cents` 大于等于阈值的记录，可与 `--customer` 组合。负数和非整数参数以非零码退出。
+- `report` 只读 ledger JSON；文件缺失、JSON 损坏或行字段类型不对时非零退出，不修改 ledger。
+
+## 依据
+
+- 类型：用户决定（2026-11 会话中给出完整目标）
+- 证据或复核方式：`python3 tests/test_migrate.py` 和 `python3 tests/test_report.py` 驱动真实 CLI；`byissue/work/billing-ledger-migration/index.md` 的行为证明表
+- 观察条件：`legacy/` 共 3 个 CSV、7 行，含中文客户名与嵌套目录；report 默认汇总为 7 行、101570 分
+- 用户边界：只用 Python 3 标准库；不提交、不推送、不安装依赖；迁移契约保持不变
+
+## 重访条件
+
+- 用户改变金额格式、排序、输出字段或错误处理策略时。
+- `legacy/` 出现新的写法（前导零、空行、空目录等）需要确认接受还是拒绝时。
+- report 的输出位置或筛选语义改变时，例如改为写入文件、改变 `--min-cents` 的解析规则。

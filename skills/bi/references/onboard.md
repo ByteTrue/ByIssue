@@ -1,39 +1,27 @@
-# Onboard：接入 ByIssue
+# 接入 ByIssue
 
-## 背景
+接入只初始化新工作入口，不替用户填写业务目标，也不整理项目历史。
 
-Onboard 模式负责把 ByIssue 的本地工作区放进项目：创建 `byissue/`、基础实体目录，以及 vision / project spec 的主文档骨架。
+## 行动
 
-它只做初始化和补齐。已有内容默认保留，不迁移旧文档，不替用户整理需求，不创建 issue。
-
-## 原则
-
-onboard 可以观察项目，但不能编项目。能从代码、README、配置、测试和 git 历史推断的，只能作为候选事实或下一步建议；业务目标、路线图、明确不做什么、用户故事和长期取舍，除非已有文档证据或用户确认，否则不要写进 `byissue/`。
-
-默认不覆盖已有文件。只有用户明确要求重置 `byissue/vision/index.md` 与 `byissue/spec/index.md` 时，才使用 `--force`，并在执行前再次确认覆盖这两个入口。
-
-## 行动指南
-
-优先运行技能包内的初始化脚本。脚本路径要从 `bi` skill 根目录解析，不要假设目标项目本身存在 `scripts/`：
+优先运行技能包里的脚本。脚本路径从已安装的 `bi` 技能目录解析：
 
 ```bash
 python3 <bi-skill>/scripts/init_byissue.py --project .
 ```
 
-初始化后确认 `byissue/vision/index.md` 与 `byissue/spec/index.md` 存在，并确认基础实体目录已创建或保留。Vision 骨架只是空地图，不推断用户的目标应用。
+脚本会创建或保留：
 
-项目已有的旧文档保持原样：不搬、不转换，也**不要许诺「以后逐步沉淀」**。`byissue/` 从此后的新工作里长出来，旧文档需要时自己会被引用到。
+```text
+byissue/
+├── work/
+└── memory/
+```
 
-## 产物契约
+已有文件和旧目录保持原样。脚本不覆盖内容，不创建空的业务文档，也不替用户生成 Vision；用户明确整理方向时再按 [memory-direction](memory-direction.md) 建立 `byissue/vision/index.md`。
 
-脚本会创建基础实体目录，以及 `byissue/vision/index.md` 和 `byissue/spec/index.md`；具体创建或保留了哪些路径以脚本输出为准，不在本文重抄一份清单。工作区地图见 `SKILL.md`。Epic 的 `issues/` 在该 Epic 首次建立所属 Issue 时再创建。
+初始化后确认两个目录存在，并告诉用户哪些路径是新建的、哪些已存在而保留。下一步按用户意图进入澄清、改变、理解与审查或记忆与方向。
 
-`byissue/vision/index.md` 只是目标应用地图骨架，`byissue/spec/index.md` 只是当前项目真相骨架。Onboard 不替用户填写愿景或真实需求，不创建 issue、epic、note 或 tool 正文，不覆盖已有内容。已有项目缺少 Vision 时，重新运行脚本可以增量补齐，不影响原有 `byissue/` 内容。
+## 边界
 
-## 收尾汇报
-
-告诉用户创建或补齐了哪些目录和文件、哪些已存在所以保留，以及下一步最适合进入哪种模式：讨论、规格维护、知识记录或未知流程学习。
-
-## 应用场景
-
-第一次使用 bi、项目还没有 `byissue/`、用户说接入 ByIssue/初始化 bi/搭好 bi 基础结构/重跑 onboard 同步缺失骨架时使用。
+接入可以观察 README、代码、配置、测试和 git，得到的只能作为后续调查线索。业务目标、路线图、长期取舍和明确不做什么，需要用户确认或已有可信记录作为依据。

@@ -1,8 +1,7 @@
 interface:
   display_name: "ByIssue"
-  short_description: "按姿态调用的软件演化理解：讨论 / 快改 / 受管理 / 规格"
+  short_description: "用当前工作检查点防止长会话跑偏的软件演化工作流"
   default_prompt: |
-    Use $bi as ByIssue: one world model (Vision / Project Spec / Epic / Issue under byissue/), many stances.
-    First pick the user's stance (discuss / fast ship / managed implement / bug / vision-spec / explore / close / review / …), then read only that stance's reference. Do not run a full lifecycle by default.
-    Small clear changes default to 快改 with an ff issue unless the user explicitly wants no trace.
-    Continue to the authorized outcome; announce mode names only if useful.
+    使用 $bi 选择一个主行动：澄清、改变、理解与审查、记忆与方向，然后只读取该行动的必读规则。
+    需要跨会话管理的变化使用 byissue/work/{slug}/index.md 作为唯一当前工作入口。从压缩摘要继续、开始或结束行为单元、改变目标、执行外部副作用或宣布完成前，先读取它的 frontmatter 检查点。
+    把真实行为证明与范围覆盖分开。代码、测试、git 和真实运行结果是实现事实；memory/{topic}.md 只保存长期决定、外部观察和可重跑证明。

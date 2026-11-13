@@ -1,220 +1,141 @@
 <div align="center">
 
-# ByIssue
+# ByIssue v2
 
-![ByIssue：从复杂工作流编排走向清晰的软件演化路径](./asset/ByIssueCover-v2.png)
+![ByIssue](asset/ByIssueCover-v2.png)
 
-[English](./README.en.md) · **中文**
+**让 Agent 接着做对的事，用真实结果证明完成。**
 
-**让人和 Agent 共同管理软件未知性与状态演进。**
+**中文** · [English](README.en.md)
 
-<p>
-  <img src="https://img.shields.io/badge/status-beta-F59E0B?style=flat-square" alt="Status"/>
-  <img src="https://img.shields.io/badge/skills-1-6366F1?style=flat-square" alt="Skills"/>
-  <img src="https://img.shields.io/badge/license-MIT-10B981?style=flat-square" alt="License"/>
-</p>
+[快速开始](#快速开始) · [怎么用](#怎么用) · [工作如何保存](#工作如何保存) · [本地验证](#本地验证)
 
 </div>
 
----
+ByIssue 是一个名为 **`bi`** 的 Agent Skill，用于 AI 辅助软件开发。它把目标、约束、下一步和验证证据留在项目中，帮助 Agent 在长任务、上下文压缩和新会话之后继续工作。
 
-ByIssue 是面向 AI 辅助开发的**可控软件演进框架**。它不要求人替 Agent 选择 Talk、Design 或 Do，也不要求每个需求都经过一套 Spec–Plan–Task 流水线；它帮助人和 Agent 持续判断：
+你说要做什么，`bi` 根据任务选择澄清、改变、理解与审查，或记忆与方向。小改直接验证；跨会话、多条行为路径和需要完整范围核对的任务建立工作检查点。
 
-- 项目现在已知什么，目标又是什么；
-- 这次变化值得多强的管理；
-- 还缺的是需求收束、现状理解，还是可行性证据；
-- 新事实出现后，应继续、回写，还是明确转向；
-- 哪些结论足够稳定，能成为下一轮工作的上下文。
+## 快速开始
 
-它把这些判断与证据放在项目可读的 `byissue/` 工作区中，让长期项目不会只依赖某一次对话或某个 Agent 的记忆。
+需要支持 Agent Skills 的编码助手，以及 Node.js 22.20+ 和 Git。初始化工作目录使用 Python 3。
 
-## 安装
+### 1. 从 v2 分支安装
 
-使用 Skills CLI 安装：
+在要使用 ByIssue 的项目目录运行：
 
 ```bash
-npx skills add ByteTrue/ByIssue
+npx skills add https://github.com/ByteTrue/ByIssue/tree/v2 --skill bi
 ```
 
-默认安装到当前项目；希望所有项目都能使用时加 `-g`：
+按提示选择编码助手。默认安装到当前项目；加 `-g` 可全局安装。更新 v2 或从其他版本切到 v2 时，重新运行同一条命令。
 
-```bash
-npx skills add ByteTrue/ByIssue -g
-```
+> [!IMPORTANT]
+> 安装地址中的 `tree/v2` 指定 v2 分支。仅使用仓库名会安装默认分支的内容。
 
-已有安装更新到最新版本：
+### 2. 接入项目
 
-```bash
-npx skills update bi
-```
-
-本地开发时，在仓库根目录验证安装发现：
-
-```bash
-npx skills add . --list
-```
-
-接入一个项目：
-
-```bash
-/bi 请在这个项目接入 ByIssue
-```
-
-之后始终使用同一个入口：
-
-```bash
-/bi
-```
-
-例如，你可以直接说“先聊清楚这个改动”“这条链路怎么工作”“快速修一下”“设计实现方案”“推进这个 issue”或“关闭并沉淀”。`bi` 根据当前意图选择必要的理解和行动，而不是要求你先记住一组命令。
-
-仓库只分发 `skills/bi/` 这一个 Skill；共同契约在 `SKILL.md`，场景化规则按需位于 `references/`，模板与初始化脚本也留在同一技能包内。版本号记录在 `VERSION`，发布说明写入 `CHANGELOG.md`。
-
-## 它解决的不是“怎样让 Agent 多跑几步”
-
-AI 能写代码，并不等于它天然知道长期项目的当前边界、历史取舍和这次变化的真正归属。常见失败不是少了一张计划表，而是：
-
-- 尚未形成的问题被伪装成详细任务；
-- Agent 一次加载太多无关上下文，或者漏掉真正的约束；
-- 代码、规格、设计历史分别存在，却没人知道哪个结论仍可作为当前依据；
-- 实现中发现原设计不成立，却继续沿旧计划硬做；
-- 做完的经验没有回到下一轮会读取的位置。
-
-ByIssue 的核心对象不是 Agent 编排，而是软件自身的状态、认识和变化。它可以和任何 Agent、模型或协作方式一起使用；它负责让这些执行者面对的是一个可理解、可继续演进的项目。
-
-## 一套判断系统，而非固定流水线
-
-### 先判断姿态，再只加载需要的上下文
-
-同一个会话中，用户可能在讨论、理解现状、设计、快改、推进受管理事项，或收尾沉淀。`bi` 先识别此刻的主姿态，再读取对应的最小规则和项目材料；已经读过且未变化的内容会复用，而非重复塞进上下文。
-
-讨论、愿景、设计需要澄清时共用一个多轮拷问循环（`references/grilling.md`）：建决策树、每轮问整个前沿、答案来了重算下一轮、前沿为空才停。「给三个选项加一句推荐」不是拷问，那是把决策树压扁成一层。
-
-这使用户不必判断“现在应调用哪个子技能”，也避免把尚未发生的流程提前加载。对 Agent 而言，正确上下文比更大上下文重要。
-
-### 用四层世界模型定位变化
+在助手中输入：
 
 ```text
-Vision Spec ──摘取目标切片──> Epic Spec ──推进──> Issues（含 ff 快改痕迹）
-     │                            │                    │
-     │                            └──关闭毕业───────────┤
-     └──目标世界                         Project Spec（当前稳定理解）
+使用 bi，在这个项目接入 ByIssue。
 ```
 
-| 层级 | 回答的问题 | 适合承载什么 |
+Agent 会建立 `byissue/work/` 和 `byissue/memory/`，已有内容保留。随后直接告诉它目标：
+
+```text
+使用 bi，把所有旧 CSV 的金额迁移为整数分，保留原始数据，并验证实际导入入口。
+```
+
+### 在 pi 中使用
+
+```bash
+npx skills add https://github.com/ByteTrue/ByIssue/tree/v2 --skill bi -a pi -y
+pi
+```
+
+在 pi 会话中输入：
+
+```text
+/skill:bi 在这个项目接入 ByIssue，然后帮我理清这次改动。
+```
+
+其他助手按各自的技能调用方式使用 `bi`。
+
+## 怎么用
+
+| 你现在要做什么 | 可以这样说 | 得到什么 |
 |---|---|---|
-| Vision | 应用最终想成为怎样的世界？ | 用户旅程、能力地图、候选与互斥方向 |
-| Project Spec | 项目目前哪些理解和边界仍成立？ | 当前能力、长期约束、统一语言、架构取舍 |
-| Epic Spec | 这段有边界的大变化正在怎样推进？ | 活规格、当前推进、阻碍、毕业候选 |
-| Issue | 这次可关闭的演进需要完成什么？ | 目标、证据、设计、实现、验证与回写 |
+| 澄清目标 | “先聊清楚优惠券叠加的边界，再动代码。” | 确认目标、术语和取舍 |
+| 改变软件 | “修复重复导入产生重复账单的问题。” | 实现、真实入口验证，必要时建立 work |
+| 理解与审查 | “这条支付链路怎么工作？”“评审这个 diff。” | 有范围、有出处的解释或审查结果 |
+| 记忆与方向 | “记住金额始终用整数分。”“整理下一阶段的方向。” | 按主题保存 Memory，按需整理 Vision |
 
-Project Spec 是当前稳定理解的**权威入口**，不是不可质疑的绝对真理。用户的新确认优先；代码和其他证据可以证明记录已过期。遇到冲突时，先调查并修正、保留历史，或正式转向，而不是静默让任一方覆盖另一方。
+这些请求前加上“使用 bi”即可。遇到只有你能决定的产品边界或取舍，Agent 会提问；能从项目和运行中查明的事实由它自己核对。
 
-### 用不同手法处理不同的未知
+### 中途停下，再继续
 
-未知是正常状态，不应靠过早拆 Task 来假装消失。
+```text
+这轮先完成导入，报表留到下一次。
+```
 
-| 不知道什么 | 优先手法 | 停止条件 |
-|---|---|---|
-| 真问题、边界或取舍 | Talk | 决策树的前沿被问空，用户确认理解一致 |
-| 当前系统怎样从触发走到结果 | 现状说明 / Explore | 已有足够行动的因果模型，未知被显式标出 |
-| 未来方案能否成立 | 穿刺 | 最高风险路径已获得真实证据；不通就先处理方案 |
+下一次会话：
 
-Design 不会把未读懂的部分写成确定结论；Do 遇到小偏差会回写，发现目标、边界或关键设计视图不成立时则停止并回到 Design、Talk 或新的事项。**转向必须显式发生。**
+```text
+使用 bi，继续账单迁移。
+```
 
-### 让管理强度匹配变化
+Agent 从当前 work 的检查点接续，核对实际文件和证据。存在多个同主题工作时，它会请你选择。任务中途改变要求时，受影响的验证也要重新做。
 
-| 情况 | 默认处理 |
+## 工作如何保存
+
+```text
+byissue/
+├── work/
+│   └── {slug}/
+│       ├── index.md       # 本次目标、检查点和行为证明
+│       └── scope.md       # 需要完整范围核对时创建
+├── memory/
+│   └── {topic}.md         # 长期决定、外部事实、可重跑证明
+└── vision/               # 整理长期方向时按需创建
+    └── index.md
+```
+
+每个 work 的 `index.md` 顶部保存五项检查点：
+
+| 字段 | 回答的问题 |
 |---|---|
-| 小、明确、一次完成，或用户要求快 | 直接实现与验证；默认留下紧凑的 `ff` 快改记录 |
-| 有范围取舍、多轮推进、交接或显著风险 | 常规 Issue |
-| 跨模块、多批推进、规格在边界内持续演化 | Epic Spec；清楚切片可在 Epic 内直接推进，也可按需开 Issue |
-| 现状链路复杂、证据冲突或理解值得复用 | Explore Issue |
+| `status` | 正在做、被阻塞，还是已完成？ |
+| `current_unit` | 当前正在验证哪段行为？ |
+| `next_action` | 接下来先做哪一件事？ |
+| `must_hold` | 哪些已确认约束必须守住？ |
+| `proof_gap` | 还缺什么证据或范围核对？ |
 
-管理不是仪式：用户明确不要留痕时可以不建 `ff`；用户明确要跟踪时也不因“看起来很小”而绕开 Issue。完成实现不等于关闭；关闭需要用户授权；关闭后文件留在原树原位，状态由文件名表达。
+`kind: work` 标识文档类型。代码、配置、测试和 git 保留实现事实；Memory 只记录未来仍需要、无法从这些事实直接重建的判断。
 
-### 把可复用的认识毕业到正确层级
+### 怎样算完成
 
-Issue 不是普通待办，而是一次有明确认知起点、有限注意力范围和结束条件的软件演进事务。它把调查、设计、实现与验证放在能被审查的同一变化边界中。
+- **行为证明**：从真实 UI、CLI、API 或其他实际入口操作，观察预期结果和关键副作用，记录证据。
+- **范围覆盖**：迁移、重写、移植和“所有 X”任务，从事实源列出范围，逐项对账。
 
-关闭时，过程、失败尝试和证据保留在 Issue 或 Epic 中；只有经过验证且仍成立的结论才“毕业”：
+范围全部覆盖仍需行为验证。无法运行的路径会标为“无法判定”，不能靠文件存在或局部测试通过宣布完成。完整契约见 [`skills/bi/SKILL.md`](skills/bi/SKILL.md)。
 
-```text
-独立 Issue        → Project Spec
-Epic 内 Issue      → 对应 Epic Spec
-Explore Issue      → Project Spec 中的稳定现状说明
-关闭 Epic          → Project Spec，并检查 Vision 的实现状态
+## 本地验证
+
+维护仓库时，使用 Python 3 和 Bash 运行：
+
+```bash
+bash tools/release-check.sh --no-deploy
 ```
 
-这样下一轮工作读取的是当前可用理解，而不是从历史记录中猜测什么仍有效。
+这会检查技能包、引用路径、版本记录、模板和初始化脚本。传入助手实际加载的技能目录，还会逐文件比较安装副本：
 
-## 质量、实现经济性与 UI
-
-ByIssue 使用 [ISO/IEC 25010:2023](https://www.iso.org/standard/78176.html) 的九项产品质量特征作为共同语言，而非认证清单。只有会改变设计或验收的质量目标才被选中；一旦选中，Design 必须响应，Do 必须提供相称证据，Close 才能确认它已达成。
-
-实现遵循“最小充分变化”：先理解真实的触发—结果路径，再优先复用正确责任边界、删除或收窄不必要部分，最后才增加新代码。小 diff 如果落在错误归属处，不算经济。
-
-当 UI 的空间关系、信息层级或多状态交互会影响需求理解时，Vision 或相关 Spec 使用可版本化的 ASCII 线框图、Mermaid 或其他合适图示表达关系；截图和高保真稿可以是证据，不能成为唯一规格。
-
-## `byissue/` 工作区
-
-接入后，项目根目录会生成下列工作区。它是人和 Agent 共同检索、维护的软件制度记忆：
-
-```text
-your-project/
-└── byissue/
-    ├── talks/                  # 已确认的讨论整理
-    │   └── {date}-{name}.md
-    ├── vision/                 # 目标应用世界
-    │   └── index.md
-    ├── spec/                   # 当前稳定理解
-    │   └── index.md
-    ├── epics/                  # 有界大变化
-    │   └── {date}-o|x|w-{name}/
-    │       └── spec.md
-    ├── issues/                 # 可关闭行动、ff 与 Explore
-    │   ├── {date}-o|x|w-{name}.md
-    │   ├── {date}-o|x|w-ff-{name}.md
-    │   └── {date}-o|x|w-{name}/   # Explore：含 index.md 与路径文章
-    ├── notes/                  # 可复用知识
-    │   └── {date}-{name}.md
-    ├── decisions/              # 拍板记录
-    │   └── {date}-{name}.md
-    └── tools/                  # 已跑通并稳定的流程工具
+```bash
+bash tools/release-check.sh /path/to/installed/bi
 ```
 
-- `{date}` 是创建当天的日期（`YYYY-MM-DD`）。它不读任何已有文件就能写出，因此并行会话与 worktree 不需要查号；同一天建的多个事项共享前缀，唯一性由完整文件名承担。
-- 关闭时把路径中的 `-o-` 改为 `-x-`（交付）或 `-w-`（won't do，放弃）；名称和日期前缀不变，文件留在原树原位。
-- Talk 在用户确认前不落盘；Vision 的目标内容、Epic 关闭和危险操作也都保留人为授权。
-
-## 人始终掌握状态迁移
-
-ByIssue 不是用文档替代工程判断，也不把人介入视为失败。Agent 可以承担检索、实现、验证、回写和沉淀，做完在汇报里说清写了什么，人觉得不对再改。人保留对目标、重要取舍、显著成本、兼容策略、关闭、发布与危险操作的控制权；说一句“收尾”或“推送”，Agent 就按固定顺序完成回写、关闭、提交（以及推送）。
-
-它追求的不是“让 AI 自动跑完更多步骤”，而是让软件在不断获得新事实的过程中，仍保持可理解、可验证、可控制、可演进。
-
-## 缘起
-
-ByIssue 源自 [CodeStable](https://github.com/codestable/CodeStable-Lite)；CodeStable 起源于 [MA](https://github.com/liuzhengdongfortest/MA) 的真实开发。早期 Vibe Coding 足以支撑许多功能；当同一处问题反复出现、历史取舍无法被稳定召回时，显露出的并不是单纯的模型能力问题，而是项目缺少一套能保存当前理解、控制变化和沉淀新认识的机制。
-
-它借鉴了规格、设计、探索和 Issue 的实践，但不以生成更多 artifact 为成功标准。先判断这次变化需要多少管理，再选择最小但足够的行动与记录。上游停止维护后，ByIssue 以独立项目的姿态继续演化，不背负旧版兼容与迁移逻辑。
-
-## Roadmap
-
-- [ ] 继续打磨 Vision 整理与开发切片体验
-- [ ] 继续打磨直接变化、Issue、Epic 与 Explore 之间的自适应判断
-- [ ] 以真实项目使用反馈校准文档、模板和行动规则
-
-欢迎在 Issue 区分享真实的开发困境、重构经验和使用反馈。
+仓库只分发 [`skills/bi/`](skills/bi/)。[`tools/`](tools/) 保存维护检查，项目约束在 [`byissue/memory/project.md`](byissue/memory/project.md)，v1 历史材料集中在 [`archive/v1/`](archive/v1/)。pi 实际任务的输入、验收与结果见 [v2 实测记录](byissue/work/v2-readiness/evaluation/README.md)。
 
 ---
 
-## Star History
-
-[![Star History Chart](https://api.star-history.com/chart?repos=ByteTrue/ByIssue&type=date&legend=top-left)](https://www.star-history.com/?repos=ByteTrue%2FByIssue&type=date&legend=top-left)
-
-<div align="center">
-
-[MIT License](LICENSE) · 基于 [@liuzhengdong](https://github.com/liuzhengdongfortest) 的 CodeStable · 由 [@ByteTrue](https://github.com/ByteTrue) fork 维护
-
-</div>
+基于 [CodeStable](https://github.com/liuzhengdongfortest)，由 [ByteTrue](https://github.com/ByteTrue) 维护。了解[为什么做 ByIssue](WHY%20BYISSUE.md)。

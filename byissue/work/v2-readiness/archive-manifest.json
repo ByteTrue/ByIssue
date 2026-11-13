@@ -1,0 +1,370 @@
+{
+  "baseline": "471cd65abb7fe07aadff8302941cbc649f95fe08",
+  "files": [
+    {
+      "source": "byissue/decisions/001-checker-verifies-links-not-contract-wording.md",
+      "target": "archive/v1/byissue/decisions/001-checker-verifies-links-not-contract-wording.md",
+      "sha256": "d26de74707d78af17e3d0c533fc49e9b25a0d750b43fd61ac2838a20a6bfec6b"
+    },
+    {
+      "source": "byissue/decisions/002-templates-are-self-checks-not-slots.md",
+      "target": "archive/v1/byissue/decisions/002-templates-are-self-checks-not-slots.md",
+      "sha256": "cc68b6f16f4224b2a583fa74fde562750ba3b54ac69999d5b7dd05715e733cf0"
+    },
+    {
+      "source": "byissue/decisions/003-keep-spec-and-vision-section-templates-separate.md",
+      "target": "archive/v1/byissue/decisions/003-keep-spec-and-vision-section-templates-separate.md",
+      "sha256": "3c80ad944d3c18e7d8e70d9b761f316af83a71b787243c1054d4600d53cfbc9e"
+    },
+    {
+      "source": "byissue/decisions/004-project-spec-drops-implementation-description.md",
+      "target": "archive/v1/byissue/decisions/004-project-spec-drops-implementation-description.md",
+      "sha256": "afa69133b1378625f1aa82bea048b45688a2cd6a03b4c7b89c30ab667f46fc9d"
+    },
+    {
+      "source": "byissue/decisions/005-accept-number-collisions-require-full-name-references.md",
+      "target": "archive/v1/byissue/decisions/005-accept-number-collisions-require-full-name-references.md",
+      "sha256": "6ae097e90448c6f1b75b227b1a70c6c364a3913c8352b71f5d285ec74bdc2535"
+    },
+    {
+      "source": "byissue/decisions/006-one-off-migration-never-enters-the-workflow.md",
+      "target": "archive/v1/byissue/decisions/006-one-off-migration-never-enters-the-workflow.md",
+      "sha256": "02c14fccf99ac467ac4bfa6af0cbac26b25b66657b2285d09c90dd9dc138c9ba"
+    },
+    {
+      "source": "byissue/decisions/007-bi-does-not-write-itself-into-agents-md.md",
+      "target": "archive/v1/byissue/decisions/007-bi-does-not-write-itself-into-agents-md.md",
+      "sha256": "c3db6443da1f0c0410a0c312c1be56756973b0ea7c556ffed8d431a053c69620"
+    },
+    {
+      "source": "byissue/decisions/008-bi-never-writes-agents-md.md",
+      "target": "archive/v1/byissue/decisions/008-bi-never-writes-agents-md.md",
+      "sha256": "6a7d3413affb428fd1cb172d2fbbf1d7ecb4a00e762c80c1b7d2a55bb8229f8b"
+    },
+    {
+      "source": "byissue/decisions/009-quantified-claims-carry-their-evidence.md",
+      "target": "archive/v1/byissue/decisions/009-quantified-claims-carry-their-evidence.md",
+      "sha256": "9032a2b2fd54352da4a65ada31f3112f2d94cbbed5b7bd596e67748dda4735c9"
+    },
+    {
+      "source": "byissue/decisions/010-negative-statements-must-earn-their-attention-cost.md",
+      "target": "archive/v1/byissue/decisions/010-negative-statements-must-earn-their-attention-cost.md",
+      "sha256": "df180a37e58b29da7cace4ade9651ef850ef59b418da6a4cc5f052c54c68c017"
+    },
+    {
+      "source": "byissue/decisions/2026-10-13-date-prefix-replaces-sequence-number.md",
+      "target": "archive/v1/byissue/decisions/2026-10-13-date-prefix-replaces-sequence-number.md",
+      "sha256": "40b1cf0772d50670c9abe14d6b7f611852fcfab965e14718710504e6628dad66"
+    },
+    {
+      "source": "byissue/decisions/2026-10-22-wont-do-letter-replaces-draft-ambiguous-d.md",
+      "target": "archive/v1/byissue/decisions/2026-10-22-wont-do-letter-replaces-draft-ambiguous-d.md",
+      "sha256": "feb6a8e45920fc21814af64ce774fd8049839afc3eb2650d1c52715f4a5e2c0a"
+    },
+    {
+      "source": "byissue/decisions/2026-11-09-agent-splits-large-tasks-without-asking.md",
+      "target": "archive/v1/byissue/decisions/2026-11-09-agent-splits-large-tasks-without-asking.md",
+      "sha256": "4495fe7504b77154d469ef196d0b6d06e363d4bf1eae16e5f07d322928da508b"
+    },
+    {
+      "source": "byissue/decisions/2026-11-09-sediment-lands-directly-records-say-how-to-trust-them.md",
+      "target": "archive/v1/byissue/decisions/2026-11-09-sediment-lands-directly-records-say-how-to-trust-them.md",
+      "sha256": "eb7a25a14eb23072d2fffd7dfdbab5b2796f24b3ed0974958c1c0ee916000672"
+    },
+    {
+      "source": "byissue/epics/2026-11-09-x-pstack-item-verdicts/candidates.md",
+      "target": "archive/v1/byissue/epics/2026-11-09-x-pstack-item-verdicts/candidates.md",
+      "sha256": "d8cb53837cf17bde768ad006e122677fdb8c99c863c31e15fafe4515d3d212f2"
+    },
+    {
+      "source": "byissue/epics/2026-11-09-x-pstack-item-verdicts/check_quotes.py",
+      "target": "archive/v1/byissue/epics/2026-11-09-x-pstack-item-verdicts/check_quotes.py",
+      "sha256": "f0ea5381af5b0e621720c156ab206bb698d8fead6d37b82acb6aa87ff04e946a"
+    },
+    {
+      "source": "byissue/epics/2026-11-09-x-pstack-item-verdicts/ledger.md",
+      "target": "archive/v1/byissue/epics/2026-11-09-x-pstack-item-verdicts/ledger.md",
+      "sha256": "e7c00df832be881e8b59ecf3c55afed7420d0ed39adb99c145201e70a68771b4"
+    },
+    {
+      "source": "byissue/epics/2026-11-09-x-pstack-item-verdicts/merge_unit.py",
+      "target": "archive/v1/byissue/epics/2026-11-09-x-pstack-item-verdicts/merge_unit.py",
+      "sha256": "b4d6fce1d05d9a2ff3af03365cbe88a8c1256db769e49325dbc567b6be9887cb"
+    },
+    {
+      "source": "byissue/epics/2026-11-09-x-pstack-item-verdicts/spec.md",
+      "target": "archive/v1/byissue/epics/2026-11-09-x-pstack-item-verdicts/spec.md",
+      "sha256": "0a74d89d3ea6f95906a6f87b2c748b2a40e82a476541682020e7599b3b3f7beb"
+    },
+    {
+      "source": "byissue/epics/2026-11-09-x-pstack-item-verdicts/verdicts/U1.md",
+      "target": "archive/v1/byissue/epics/2026-11-09-x-pstack-item-verdicts/verdicts/U1.md",
+      "sha256": "ce7befd8c623f398ab91ef2638776d0b05783b66889f0f0702b0d60d77b463e0"
+    },
+    {
+      "source": "byissue/epics/2026-11-09-x-pstack-item-verdicts/verdicts/U2.md",
+      "target": "archive/v1/byissue/epics/2026-11-09-x-pstack-item-verdicts/verdicts/U2.md",
+      "sha256": "b1c0d57eba84d97a2f022b8dcf5389c2be14ad3dbd6e5428987e9ec05d410a16"
+    },
+    {
+      "source": "byissue/epics/2026-11-09-x-pstack-item-verdicts/verdicts/U3.md",
+      "target": "archive/v1/byissue/epics/2026-11-09-x-pstack-item-verdicts/verdicts/U3.md",
+      "sha256": "a2168bc3f357ac9b41b44847c7bd50e20c15d1b2daa306b602c95df719359c47"
+    },
+    {
+      "source": "byissue/epics/2026-11-09-x-pstack-item-verdicts/verdicts/U4.md",
+      "target": "archive/v1/byissue/epics/2026-11-09-x-pstack-item-verdicts/verdicts/U4.md",
+      "sha256": "0de58021e0aa31f5bab0ba1edd2b26e33f7029cff3980aab3de9a9ad3864fbe6"
+    },
+    {
+      "source": "byissue/epics/2026-11-09-x-pstack-item-verdicts/verdicts/U5.md",
+      "target": "archive/v1/byissue/epics/2026-11-09-x-pstack-item-verdicts/verdicts/U5.md",
+      "sha256": "508b42b522fa7908697f3fabbd2863dba95662237a3d5aab0b92592e23b6c4e2"
+    },
+    {
+      "source": "byissue/epics/2026-11-10-x-pstack-maintenance-side/candidates.md",
+      "target": "archive/v1/byissue/epics/2026-11-10-x-pstack-maintenance-side/candidates.md",
+      "sha256": "e515db29d0f64a695add3faccb60eac8d11d703bbbc95da66daaaaceb1e6365a"
+    },
+    {
+      "source": "byissue/epics/2026-11-10-x-pstack-maintenance-side/ledger.md",
+      "target": "archive/v1/byissue/epics/2026-11-10-x-pstack-maintenance-side/ledger.md",
+      "sha256": "031227a35af7a4c3a38467f6665c62de03162ba46d15bf53fe8147013ece7444"
+    },
+    {
+      "source": "byissue/epics/2026-11-10-x-pstack-maintenance-side/merge_unit.py",
+      "target": "archive/v1/byissue/epics/2026-11-10-x-pstack-maintenance-side/merge_unit.py",
+      "sha256": "9166b175473b72a58d96f92c85ac1974a6744881ab9ae1f16796154317d36695"
+    },
+    {
+      "source": "byissue/epics/2026-11-10-x-pstack-maintenance-side/spec.md",
+      "target": "archive/v1/byissue/epics/2026-11-10-x-pstack-maintenance-side/spec.md",
+      "sha256": "d5fc0d0f7a7140a82669cf4c608b7e3c4d5f1f12379b7fb0ab40dd0dbf5fa923"
+    },
+    {
+      "source": "byissue/epics/2026-11-10-x-pstack-maintenance-side/verdicts/M1.md",
+      "target": "archive/v1/byissue/epics/2026-11-10-x-pstack-maintenance-side/verdicts/M1.md",
+      "sha256": "0ff90d296ab74c653cf6740dbb0500be3ae4cc596edf2384f36c4b3ca72360a2"
+    },
+    {
+      "source": "byissue/epics/2026-11-10-x-pstack-maintenance-side/verdicts/M2.md",
+      "target": "archive/v1/byissue/epics/2026-11-10-x-pstack-maintenance-side/verdicts/M2.md",
+      "sha256": "36f2042c6b03693fee3c42b5f5cb30f3dcdae7c0f334d747b56273d5ebc689f8"
+    },
+    {
+      "source": "byissue/epics/2026-11-10-x-pstack-maintenance-side/verdicts/M3.md",
+      "target": "archive/v1/byissue/epics/2026-11-10-x-pstack-maintenance-side/verdicts/M3.md",
+      "sha256": "441fb0f1304f896a86cfcf63cef8c4368ddfc3a3a5010c1348e887c3a68d7c44"
+    },
+    {
+      "source": "byissue/epics/2026-11-10-x-pstack-maintenance-side/verdicts/M4.md",
+      "target": "archive/v1/byissue/epics/2026-11-10-x-pstack-maintenance-side/verdicts/M4.md",
+      "sha256": "ebfcc2cb01c121b454fdfd9f9947a189f8c85e845fa77aacc9cfadde53df8fad"
+    },
+    {
+      "source": "byissue/epics/2026-11-10-x-pstack-maintenance-side/verdicts/M5.md",
+      "target": "archive/v1/byissue/epics/2026-11-10-x-pstack-maintenance-side/verdicts/M5.md",
+      "sha256": "b2f9596b3d28e3d395c66129531b38cf32e22bf1646b736c602e1c2a4a0464f2"
+    },
+    {
+      "source": "byissue/epics/2026-11-10-x-pstack-maintenance-side/verdicts/M6.md",
+      "target": "archive/v1/byissue/epics/2026-11-10-x-pstack-maintenance-side/verdicts/M6.md",
+      "sha256": "ff48d78fd2b76cfd762613aa5a7cb567cad01b07d753a375261e41fce3860659"
+    },
+    {
+      "source": "byissue/issues/001-x-harvest-contract-at-close.md",
+      "target": "archive/v1/byissue/issues/001-x-harvest-contract-at-close.md",
+      "sha256": "d38eb7ab3a94a80c92984b057aaffb10bcfe10825bc53f42263cd2e1ea3fe668"
+    },
+    {
+      "source": "byissue/issues/002-x-project-spec-slimming-rule.md",
+      "target": "archive/v1/byissue/issues/002-x-project-spec-slimming-rule.md",
+      "sha256": "ccb352199d92378f61b97162c0d54bcae149f021f226c8f61289f603e1590018"
+    },
+    {
+      "source": "byissue/issues/003-x-require-full-name-issue-references.md",
+      "target": "archive/v1/byissue/issues/003-x-require-full-name-issue-references.md",
+      "sha256": "5d277348743dbc8b126166407d0797757e036206fb12a2ab6e2051acdbb0378e"
+    },
+    {
+      "source": "byissue/issues/004-x-posture-routing-regression-tests.md",
+      "target": "archive/v1/byissue/issues/004-x-posture-routing-regression-tests.md",
+      "sha256": "b90cb6f5b445b59731bccf1b84d10b79a997738e47d02f8ca49039be341dbef6"
+    },
+    {
+      "source": "byissue/issues/005-x-posture-stability-across-authorized-actions.md",
+      "target": "archive/v1/byissue/issues/005-x-posture-stability-across-authorized-actions.md",
+      "sha256": "71a3a7980f4edc9551c42a210bba342d6861780d73445c48dd17ed31dab49462"
+    },
+    {
+      "source": "byissue/issues/006-x-ff-checker-self-review-fixes.md",
+      "target": "archive/v1/byissue/issues/006-x-ff-checker-self-review-fixes.md",
+      "sha256": "fe32c2294bf2591b076be8ebe67e1a5762039415786f6a2bc26829d79586f524"
+    },
+    {
+      "source": "byissue/issues/007-x-description-and-posture-table-are-two-trigger-sets.md",
+      "target": "archive/v1/byissue/issues/007-x-description-and-posture-table-are-two-trigger-sets.md",
+      "sha256": "250324d87ceb949fa1e5ce9f07e8a37f14c17f6acda44219cfa6eb4c4267d1d7"
+    },
+    {
+      "source": "byissue/issues/008-x-closing-renames-break-full-name-references.md",
+      "target": "archive/v1/byissue/issues/008-x-closing-renames-break-full-name-references.md",
+      "sha256": "4501b6fc0db6dd5fb8c48f517b3205e5845b52893b0713a856318817b3037f2a"
+    },
+    {
+      "source": "byissue/issues/009-x-ff-tidy-tools-scripts.md",
+      "target": "archive/v1/byissue/issues/009-x-ff-tidy-tools-scripts.md",
+      "sha256": "4449171a51a7520f0e2d7b1cab16d95ae5cba86d5cfe004744e2d09fa654bb76"
+    },
+    {
+      "source": "byissue/issues/010-x-close-before-commit-contract-timing.md",
+      "target": "archive/v1/byissue/issues/010-x-close-before-commit-contract-timing.md",
+      "sha256": "554deb2ed49f3ad76259f34b49ce99ba58c131b4adc2d3a061c9e956dba75263"
+    },
+    {
+      "source": "byissue/issues/011-x-talk-borrowed-grill-nouns-not-verbs.md",
+      "target": "archive/v1/byissue/issues/011-x-talk-borrowed-grill-nouns-not-verbs.md",
+      "sha256": "c4ea76377c713cb37c669de34aea4b83a3fa7969862755dd0acb036a36a98c30"
+    },
+    {
+      "source": "byissue/issues/012-x-ff-host-memory-is-not-a-sediment-destination.md",
+      "target": "archive/v1/byissue/issues/012-x-ff-host-memory-is-not-a-sediment-destination.md",
+      "sha256": "74d2c35931e95d21c710d682fb8b71867d6f81b76bb032ffdd444db6199c3371"
+    },
+    {
+      "source": "byissue/issues/013-x-push-jump-path-close-request.md",
+      "target": "archive/v1/byissue/issues/013-x-push-jump-path-close-request.md",
+      "sha256": "1d7e1885e321b02771843dd3b3ad2f01af77d1e4112331bf7f529bf24fab672e"
+    },
+    {
+      "source": "byissue/issues/014-x-ff-path-is-the-only-status-field.md",
+      "target": "archive/v1/byissue/issues/014-x-ff-path-is-the-only-status-field.md",
+      "sha256": "a4428e81d5ff2205f6c69afd3aa12ade0943440768693e883868d6e83bb11e2f"
+    },
+    {
+      "source": "byissue/issues/015-x-ff-grilling-verbatim-upstream.md",
+      "target": "archive/v1/byissue/issues/015-x-ff-grilling-verbatim-upstream.md",
+      "sha256": "17207209b5b222c388bf88cb50e4822889f5ef483e3669ad8d90d888a94bc257"
+    },
+    {
+      "source": "byissue/issues/016-x-ff-absorb-upstream-grill-family.md",
+      "target": "archive/v1/byissue/issues/016-x-ff-absorb-upstream-grill-family.md",
+      "sha256": "e102f8d6263638ab13d806bf3209aa53d678d1bd0e906ab838b441b536d752f9"
+    },
+    {
+      "source": "byissue/issues/016-x-ff-scope-of-pending-close-items.md",
+      "target": "archive/v1/byissue/issues/016-x-ff-scope-of-pending-close-items.md",
+      "sha256": "2aefd6e02f841eab136a7c3a48d059201b2821685cf6821108618cbd6c7081cb"
+    },
+    {
+      "source": "byissue/issues/017-x-ff-remove-scar-tissue-prohibition.md",
+      "target": "archive/v1/byissue/issues/017-x-ff-remove-scar-tissue-prohibition.md",
+      "sha256": "643fbf359aa86c25a8fd2631f74d8018e7786a269a02fd587c9905fe97185f33"
+    },
+    {
+      "source": "byissue/issues/018-x-ff-sediment-verdict-before-commit.md",
+      "target": "archive/v1/byissue/issues/018-x-ff-sediment-verdict-before-commit.md",
+      "sha256": "816c7741459566905c630bdb9f39dcd96b4adcea05d23a9463252df7334c445c"
+    },
+    {
+      "source": "byissue/issues/2026-10-13-x-ff-date-prefix-replaces-sequence-number.md",
+      "target": "archive/v1/byissue/issues/2026-10-13-x-ff-date-prefix-replaces-sequence-number.md",
+      "sha256": "3952b44b7ac850a000180ef64cee046e881e57b4c7c5838bbd2bb3327ad75a52"
+    },
+    {
+      "source": "byissue/issues/2026-10-19-x-ff-sediment-checks-whole-process.md",
+      "target": "archive/v1/byissue/issues/2026-10-19-x-ff-sediment-checks-whole-process.md",
+      "sha256": "94a4413d6f1348d12a97ab723573d650711d249df6bb2f5ea403c6b96716c752"
+    },
+    {
+      "source": "byissue/issues/2026-10-22-x-ff-dropped-state-letter-wont-do.md",
+      "target": "archive/v1/byissue/issues/2026-10-22-x-ff-dropped-state-letter-wont-do.md",
+      "sha256": "1a35e9a72f8c5fb6b615229f2d4932ef33e61325f5c8617265ce6837b8c5d81c"
+    },
+    {
+      "source": "byissue/issues/2026-10-22-x-ff-review-blind-spot-probes.md",
+      "target": "archive/v1/byissue/issues/2026-10-22-x-ff-review-blind-spot-probes.md",
+      "sha256": "edf149e4b9a02b62770bf29c340c561f414b0b3237090a9836d9fd4b25bf33d2"
+    },
+    {
+      "source": "byissue/issues/2026-10-29-x-ff-sediment-decoupled-from-close-and-shortcut-plugged.md",
+      "target": "archive/v1/byissue/issues/2026-10-29-x-ff-sediment-decoupled-from-close-and-shortcut-plugged.md",
+      "sha256": "9679ada59bdfc409134a57fcd56dc9ee831996aa2e420e301295aca7ff7c1954"
+    },
+    {
+      "source": "byissue/issues/2026-10-29-x-ff-sync-ctx-memories-into-byissue.md",
+      "target": "archive/v1/byissue/issues/2026-10-29-x-ff-sync-ctx-memories-into-byissue.md",
+      "sha256": "b57b7187d9cde99b3ebec8629b11039098f308252c5c38a030e7a185f96d467e"
+    },
+    {
+      "source": "byissue/issues/2026-10-29-x-ponytail-audit.md",
+      "target": "archive/v1/byissue/issues/2026-10-29-x-ponytail-audit.md",
+      "sha256": "8027abb2fcee25a7394180301c07096743a24261f34c62a33abf341cb79a60ef"
+    },
+    {
+      "source": "byissue/notes/001-real-world-usage-stats.md",
+      "target": "archive/v1/byissue/notes/001-real-world-usage-stats.md",
+      "sha256": "fc81aa357301c60f630f7a7e0b0b97610fa52ecb7b533c357775b0ae5e973aa3"
+    },
+    {
+      "source": "byissue/notes/002-edit-tool-corrupts-chinese-oldtext.md",
+      "target": "archive/v1/byissue/notes/002-edit-tool-corrupts-chinese-oldtext.md",
+      "sha256": "e46fc9e9b017d4fadcc55264eb29b59252c2c64188cb430683c4f3614aab7ac0"
+    },
+    {
+      "source": "byissue/notes/003-skill-description-matching-is-text-only.md",
+      "target": "archive/v1/byissue/notes/003-skill-description-matching-is-text-only.md",
+      "sha256": "0ca7f4e33c74905f040ad6daabc8636e88605b5ed593f539276907f3721c87d1"
+    },
+    {
+      "source": "byissue/notes/2026-10-29-uv-spawn-cwd-enoent-in-parallel-subagent.md",
+      "target": "archive/v1/byissue/notes/2026-10-29-uv-spawn-cwd-enoent-in-parallel-subagent.md",
+      "sha256": "99dbb8e8d94878cde8c7fa37889eb4fd269c770de7466b3c59569c6e88c0a600"
+    },
+    {
+      "source": "byissue/notes/2026-11-09-bi-behind-magpie-index-is-rarely-opened.md",
+      "target": "archive/v1/byissue/notes/2026-11-09-bi-behind-magpie-index-is-rarely-opened.md",
+      "sha256": "b0cc1cb4d1bba6b1cc52b96c8eedc3829241408de3b7984a7cbd2997b71ea6f9"
+    },
+    {
+      "source": "byissue/notes/2026-11-09-posture-table-on-deepseek.md",
+      "target": "archive/v1/byissue/notes/2026-11-09-posture-table-on-deepseek.md",
+      "sha256": "ba91a9fefd6bd03991d14577deb4879087497ff58d05011f6df2658045c2d124"
+    },
+    {
+      "source": "byissue/talks/001-what-to-build-next-and-does-documentation-rot.md",
+      "target": "archive/v1/byissue/talks/001-what-to-build-next-and-does-documentation-rot.md",
+      "sha256": "bd41e0e339131e86ce2b05ba2a67bdc8a6c2ba3b854833e614ed585d292916d7"
+    },
+    {
+      "source": "byissue/talks/002-host-memory-vs-byissue-capture.md",
+      "target": "archive/v1/byissue/talks/002-host-memory-vs-byissue-capture.md",
+      "sha256": "3f06d630dff17447c3c0400941118c045d7d0b2f90cafd97080c21f56fc9cfde"
+    },
+    {
+      "source": "byissue/talks/2026-11-09-bi-v2-rejected-what-carries-over.md",
+      "target": "archive/v1/byissue/talks/2026-11-09-bi-v2-rejected-what-carries-over.md",
+      "sha256": "e2afc300e9b84d1e8e0ed2f9d854b059d9b9cc61de3b79c4ea7c4a7390f33fa7"
+    },
+    {
+      "source": "byissue/talks/2026-11-09-large-tasks-ledger-and-reread.md",
+      "target": "archive/v1/byissue/talks/2026-11-09-large-tasks-ledger-and-reread.md",
+      "sha256": "d7999d273e14be144d2cccf8243fad1c53daa25c3c0f38da33b1f2df2a29646b"
+    },
+    {
+      "source": "byissue/talks/2026-11-09-what-to-absorb-from-pstack.md",
+      "target": "archive/v1/byissue/talks/2026-11-09-what-to-absorb-from-pstack.md",
+      "sha256": "b47a80abda5075442eab6f46d72f69d31a0924f7bfc11fe56d5fcd92069d8f74"
+    },
+    {
+      "source": "byissue/spec/index.md",
+      "target": "archive/v1/byissue/spec/index.md",
+      "sha256": "b9e555f0a5023e7cc6875b867d35cec3d7151555949aea814bda791e22c6619a"
+    },
+    {
+      "source": "tools/retro-failure-modes.md",
+      "target": "archive/v1/tools/retro-failure-modes.md",
+      "sha256": "94c1d8c7a0a6bc3c376739d031491e52654176482877a83352abd63d50026cdc"
+    }
+  ]
+}
