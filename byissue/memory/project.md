@@ -22,6 +22,8 @@ ByIssue 是一个单技能仓库，分发 `skills/bi/` 下名为 `bi` 的 Agent 
 - 仓库使用标准库 Python、Markdown 和 shell。技能本体以中文为主。
 - 工作流文档只陈述当前成立的契约。演变原因、证据和取舍放在历史记录中。
 - 否定式规则只在它阻止模型的强默认行为时保留；其他情况直接陈述正确动作。
+- 提示词极简优雅：只引导模型按流程完成 1234，工具选择和操作顺序放权给模型。规则写成原则和底线，每条底线对应它挡住过的真实事故；不写「先 X 再 Y」式操作规程。评测依据见 `memory/evaluation.md`。
+- 每行规则要挣得它的注意力成本：只在它改变模型默认行为、或对应一次真实失败时才保留。模型本来就会做对的事不写——包括肯定式表述（如「bug 先沿日志定位根因」）和重复出现在多份文件的同一契约。
 - 当前 `byissue/` 只使用 `work/`、`memory/` 和按需的 `vision/`。`archive/v1/` 仅用于用户明确要求的历史追溯。
 
 ## 检查与发布
@@ -37,6 +39,7 @@ ByIssue 是一个单技能仓库，分发 `skills/bi/` 下名为 `bi` 的 Agent 
 | checker 的每项检查可以变红 | `tools/check-skill-repository-selftest.py` |
 | 初始化脚本在用户项目创建并保留 `work/`、`memory/` | `tools/check-skill-scripts.py` |
 | 宿主加载的部署副本与源代码一致 | `tools/release-check.sh` |
+| 评测运行器的证据采集与失败处理 | `tools/evaluation/test_runner.py` |
 
 发布顺序是：修改 `skills/bi/`，运行 `bash tools/release-check.sh --no-deploy`，更新 `VERSION` 和 `CHANGELOG.md`，同步宿主实际加载的部署副本，再运行 `bash tools/release-check.sh <部署副本目录>`，最后按用户要求提交或分发。
 

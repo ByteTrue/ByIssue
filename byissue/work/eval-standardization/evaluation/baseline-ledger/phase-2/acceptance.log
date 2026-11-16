@@ -1,0 +1,3 @@
+PASS: recursive coverage, exact cents, stable rerun, sources preserved
+PASS: 10 invalid inputs fail without overwriting output
+PASS: 7 report paths and 3 invalid thresholds

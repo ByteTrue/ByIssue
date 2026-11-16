@@ -1,0 +1,50 @@
+---
+kind: work
+status: in_progress
+current_unit: "migrate 递归迁移与失败原子性（本轮已完成并验证）"
+next_action: "下一会话实现 report 子命令（--customer 精确匹配，未匹配返回 count=0 total_cents=0）"
+must_hold: "仅用 Python 3 标准库；金额按整数分精确转换，不用浮点；非法输入非零退出且不改动既有 output.json；输出按 id 排序"
+proof_gap: "report 行为尚未实现；migrate 行为门与 legacy 范围门已通过"
+---
+
+# 账单 CSV 迁移工具
+
+## 目标与边界
+
+`ledger.py` 提供两个真实 CLI。`migrate <source-dir> <output.json>` 递归迁移目录下所有 CSV，把 `id,customer,amount` 转成按 id 排序、只含 `id`、`customer`、`amount_cents` 的 JSON 数组。`report <output.json> [--customer <name>]` 汇总条数与总金额。
+
+本轮只实现并验证 `migrate`。`report` 只保留目标和约束，留给下一会话。原始 CSV 只读，不提供修改或回写旧格式的命令。
+
+## 已定方案与约束
+
+- 金额用字符串解析成整数分。整数部分按十进制直接乘 100，小数部分补齐两位，不经过 `float`。
+- 只接受 `0`、`12`、`0.10`、`12.34` 这类普通写法；拒绝负数、`NaN`、`Infinity`、指数格式、超过两位小数和空金额。
+- 表头必须严格等于 `id,customer,amount`。空 id、空 customer、重复 id、字段数不符都算非法。
+- 读取文件使用 `utf-8-sig` 忽略可选 BOM，CSV 解析使用标准库 `csv`，所有 CSV 读完后才写输出。
+- 任何错误先汇总到 stderr，再以非零码退出。输出先写同目录临时文件，成功后 `os.replace` 覆盖目标，失败时清理临时文件并保留原 `output.json` 逐字节不变。
+- 文件遍历顺序和 JSON 键顺序固定，保证同一批输入重跑得到相同字节。
+- 回归检查放在 `tests/test_ledger_migrate.py`，从真实 CLI 子进程进入，运行命令为 `python3 -m unittest discover -s tests -v`。
+
+## 行为证明
+
+| 行为路径 | 真实入口 | 操作 | 应观察到 | 证据 | 结果 |
+|---|---|---|---|---|---|
+| 递归迁移普通数据 | `python3 ledger.py migrate <dir> <out>` | 对 `legacy/` 运行迁移 | JSON 数组按 id 排序，每项只有三个键，金额分别为 10、20、1234、100001、200、105、0 分 | `python3 ledger.py migrate legacy <tmp>/out.json` 退出 0，输出 7 条：a001=10、a002=20、a003=105、b001=1234、b002=200、c001=100001、c002=0 | 通过 |
+| 重跑与只读 | 同上 | 同一输入连续迁移两次并比较源文件 | 两次输出逐字节相同，CSV 内容不变 | 同一命令第二次输出经 `cmp` 与第一次相同；迁移前后 CSV 的 `shasum -a 256` 一致 | 通过 |
+| 非法金额或空字段 | 同上 | 输入负数、NaN、Infinity、指数、三位小数、空 id/customer | 非零退出，stderr 有具体错误，输出文件不产生 | `tests/test_ledger_migrate.py` 的 invalid amount、empty field 子测试通过 | 通过 |
+| 错误表头与重复 id | 同上 | 输入错误表头，或跨文件重复 id | 非零退出，stderr 指出文件与行或重复 id | `tests/test_ledger_migrate.py` 的 header、field count、duplicate id 测试通过 | 通过 |
+| 失败保留既有输出 | 同上 | 预置 output.json 后迁移含坏行的目录 | 退出码非零，output.json 逐字节不变，无临时文件残留 | `test_failure_preserves_existing_output_byte_for_byte` 比较字节并检查目录只剩 output.json 与 source | 通过 |
+| 按客户汇总 | `python3 ledger.py report <json> [--customer <name>]` | 统计全部或按完整名称筛选 | 只输出 count 与 total_cents 两个整数；未匹配时为 0 | 下一会话实现 | 未验证 |
+
+## 证据与决定
+
+- 回归检查命令：`python3 -m unittest discover -s tests -v`，本轮 13 个测试全部 OK。
+- 初始数据见 `legacy/`，范围快照见同目录 `scope.md`；本轮按枚举命令覆盖 3 个文件。
+- `report` 的精确匹配使用完整 customer 字符串，不做大小写或空白归一化。该决定来自需求原文“按完整名称精确匹配”。
+- 空 id/customer 以 `strip()` 后为空判定，但输出保留原始值。该决定保证纯空白不会被当成有效标识。
+
+## 完成核对
+
+- 行为门：migrate 的 5 条行为路径全部通过；report 未实现，整体仍为 `in_progress`。
+- 范围门：无遗留项；`scope.md` 的 3 个 legacy CSV 已全部覆盖。
+- 需要用户看的推断或无法判定：无。report 是明确留给下一会话的范围，不是本轮未判定项。

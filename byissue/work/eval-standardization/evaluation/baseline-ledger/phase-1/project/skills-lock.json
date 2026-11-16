@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "skills": {
+    "bi": {
+      "source": "../../baseline-source",
+      "sourceType": "local",
+      "computedHash": "0e1254bcc50c738622c55eed302af511b41fda705fb69242a7c0728820599dd5",
+      "installMode": "copy"
+    }
+  }
+}

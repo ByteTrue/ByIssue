@@ -1,0 +1,61 @@
+---
+kind: work
+status: complete
+current_unit: "report 汇总：全部、--customer 精确匹配、--min-cents 阈值及参数校验（本轮已完成并验证）"
+next_action: "无；新的目标或新增范围另建 work"
+must_hold: "仅用 Python 3 标准库；金额按整数分精确转换，不用浮点；非法输入非零退出且不改动既有 output.json；输出按 id 排序；report 只读，不修改 ledger 文件"
+proof_gap: "无"
+---
+
+# 账单 CSV 迁移工具
+
+## 目标与边界
+
+`ledger.py` 提供两个真实 CLI。`migrate <source-dir> <output.json>` 递归迁移目录下所有 CSV，把 `id,customer,amount` 转成按 id 排序、只含 `id`、`customer`、`amount_cents` 的 JSON 数组。`report <output.json> [--customer <name>] [--min-cents <n>]` 汇总条数与总金额，只输出 `count=<n>` 与 `total_cents=<n>` 两行。
+
+上一轮已实现并验证 `migrate`。本轮实现并验证 `report`，包括默认阈值 0、与 `--customer` 组合使用、负数和非整数参数报错。原始 CSV 和 ledger JSON 都只读，不提供修改或回写旧格式的命令。
+
+## 已定方案与约束
+
+- 金额用字符串解析成整数分。整数部分按十进制直接乘 100，小数部分补齐两位，不经过 `float`。
+- 只接受 `0`、`12`、`0.10`、`12.34` 这类普通写法；拒绝负数、`NaN`、`Infinity`、指数格式、超过两位小数和空金额。
+- 表头必须严格等于 `id,customer,amount`。空 id、空 customer、重复 id、字段数不符都算非法。
+- 读取文件使用 `utf-8-sig` 忽略可选 BOM，CSV 解析使用标准库 `csv`，所有 CSV 读完后才写输出。
+- 任何错误先汇总到 stderr，再以非零码退出。输出先写同目录临时文件，成功后 `os.replace` 覆盖目标，失败时清理临时文件并保留原 `output.json` 逐字节不变。
+- 文件遍历顺序和 JSON 键顺序固定，保证同一批输入重跑得到相同字节。
+- `report` 只读 ledger JSON。`--customer` 使用完整字符串精确匹配，不做大小写或空白归一化。
+- `--min-cents` 默认 0，只接受十进制数字串；阈值判断为 `amount_cents >= min_cents`，因此等于阈值会纳入统计。它可以与 `--customer` 同时使用。
+- 负数、带符号、小数、空值和其他非数字的 `--min-cents` 由 argparse 报错并以非零码退出。
+- `report` 的 ledger 文件不存在、不是合法 JSON、不是对象数组或缺少合法字段时，向 stderr 报错并以非零码退出。
+- 回归检查放在 `tests/test_ledger_migrate.py`，从真实 CLI 子进程进入，运行命令为 `python3 -m unittest discover -s tests -v`。
+
+## 行为证明
+
+| 行为路径 | 真实入口 | 操作 | 应观察到 | 证据 | 结果 |
+|---|---|---|---|---|---|
+| 递归迁移普通数据 | `python3 ledger.py migrate <dir> <out>` | 对 `legacy/` 运行迁移 | JSON 数组按 id 排序，每项只有三个键，金额分别为 10、20、1234、100001、200、105、0 分 | `python3 ledger.py migrate legacy <tmp>/out.json` 退出 0，输出 7 条：a001=10、a002=20、a003=105、b001=1234、b002=200、c001=100001、c002=0 | 通过 |
+| 重跑与只读 | 同上 | 同一输入连续迁移两次并比较源文件 | 两次输出逐字节相同，CSV 内容不变 | 同一命令第二次输出经 `cmp` 与第一次相同；迁移前后 CSV 的 `shasum -a 256` 一致 | 通过 |
+| 非法金额或空字段 | 同上 | 输入负数、NaN、Infinity、指数、三位小数、空 id/customer | 非零退出，stderr 有具体错误，输出文件不产生 | `tests/test_ledger_migrate.py` 的 invalid amount、empty field 子测试通过 | 通过 |
+| 错误表头与重复 id | 同上 | 输入错误表头，或跨文件重复 id | 非零退出，stderr 指出文件与行或重复 id | `tests/test_ledger_migrate.py` 的 header、field count、duplicate id 测试通过 | 通过 |
+| 失败保留既有输出 | 同上 | 预置 output.json 后迁移含坏行的目录 | 退出码非零，output.json 逐字节不变，无临时文件残留 | `test_failure_preserves_existing_output_byte_for_byte` 比较字节并检查目录只剩 output.json 与 source | 通过 |
+| 汇总全部记录 | `python3 ledger.py report <json>` | 对 `legacy/` 迁移结果运行 report | 输出 `count=7` 与 `total_cents=101570` 两行，且只有这两个整数 | 本轮运行同一 CLI，退出 0，stdout 为 `count=7` 与 `total_cents=101570` | 通过 |
+| 按客户精确匹配 | `python3 ledger.py report <json> --customer <name>` | 分别统计 Alice、Bob、张三和不存在的客户 | Alice 为 3/135，Bob 为 2/1434，张三 为 2/100001，不存在时为 0/0 | 本轮运行同一 CLI，四组退出码均为 0，stdout 与预期一致；Alice 的三条包含 a003=105 | 通过 |
+| 阈值与组合筛选 | 同上加 `--min-cents` | 用 0、1000、1234、1235、101466，以及 Bob+1000 统计 | 0 为 7/101570，1000 为 2/101235，1234 为 2/101235，1235 为 1/100001，101466 为 0/0，Bob+1000 为 1/1234 | 本轮运行同一 CLI，六组退出码均为 0，stdout 与预期一致 | 通过 |
+| 阈值参数校验 | 同上 | 传入 -1、1.5、abc、空值、+1、空格加 1、1e3 | 非零退出，stderr 说明 min-cents 必须是非负整数 | 本轮运行同一 CLI，七组退出码均为 2，stderr 末尾均为 `argument --min-cents: min-cents must be a non-negative integer` | 通过 |
+| 非法 ledger 输入 | 同上 | 文件不存在、内容不是 JSON、根不是数组、行缺字段或类型错误 | 非零退出，stderr 指出文件与原因，不修改该文件 | 本轮实测不存在文件退出 1 并给出 `ledger file does not exist`；坏 JSON 退出 1 并给出行列位置；该坏文件 `shasum -a 256` 前后一致；其余形态由 `ReportTest` 子测试覆盖 | 通过 |
+
+## 证据与决定
+
+- 回归检查命令：`python3 -m unittest discover -s tests -v`，本轮 19 个测试全部 OK。新增 report 检查在实现前先跑过，因 `invalid choice: 'report'` 全部失败；实现后转为通过。
+- 真实 CLI 证据：用 `mktemp -d "${TMPDIR:-/tmp}/ledger-proof.XXXXXX"` 建临时目录，运行 `python3 ledger.py migrate legacy <tmp>/out.json` 退出 0。迁移前后 `legacy/` 下 CSV 的 `shasum -a 256` 一致；多组 report 运行前后 `out.json` 的 `shasum -a 256` 也一致。
+- 初始数据见 `legacy/`，范围快照见同目录 `scope.md`；本轮重新按枚举命令核对，仍为 3 个文件。
+- `report` 的精确匹配使用完整 customer 字符串，不做大小写或空白归一化。该决定来自需求原文“按完整名称精确匹配”。
+- `report` 输出采用 `count=<n>` 与 `total_cents=<n>` 两行，只包含这两个整数；筛选后没有记录时两行都为 0。
+- 空 id/customer 以 `strip()` 后为空判定，但输出保留原始值。该决定保证纯空白不会被当成有效标识。
+- 本轮手算总计先漏了 a003=105，真实 CLI 输出纠正为 101570 分、Alice 3 条 135 分；表中已改为实测值。
+
+## 完成核对
+
+- 行为门：migrate 的 5 条行为路径与 report 的 5 条行为路径全部通过。
+- 范围门：无遗留项；`scope.md` 的 3 个 legacy CSV 已全部覆盖。
+- 需要用户看的推断或无法判定：无。

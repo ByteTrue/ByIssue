@@ -85,7 +85,15 @@ pi
 使用 bi，继续账单迁移。
 ```
 
-Agent 从当前 work 的检查点接续，核对实际文件和证据。存在多个同主题工作时，它会请你选择。任务中途改变要求时，受影响的验证也要重新做。
+Agent 接续时先读取当前 work 的检查点，再核对实际文件和证据；从压缩摘要接续也一样。存在多个同主题工作时，它会请你选择。
+
+实现时按行为证明表逐行推进：每轮选一个用户行为，保存检查点后实现，从真实公开入口验证，把实际结果回写，再选下一行。验证守住契约：公开 CLI/API 的证明保存真实调用者看到的原始输出；修改共享路径前保存旧行为基线，改后用同一入口复验比较；显式保留/归档等可选策略逐分支验证；持久化、重启和生命周期行为通过新进程或重启入口观察；既有测试和公开夹具保持原文件与原断言，新增回归放新文件。
+
+收尾时逐项核对证明表、scope 和外部验收结果，把每个未通过项写进 `proof_gap`。只有所有证明通过且 `proof_gap` 恰为空字符串时才写 `status: complete`；任何验收失败、缺少原始输出或既有测试被改写，都保持未完成并点名缺口。
+
+运行中的安装技能、评测用例和运行器材料只读；流程记录写入项目的 `byissue/`，技能修改回到技能源仓库。
+
+用户要求的原文或稳定来源、适用条件和例外会一起保留。留到下次的行为也保存已确认的输入输出格式和错误边界，让新会话有完整的实现依据。
 
 ## 工作如何保存
 
@@ -111,14 +119,14 @@ byissue/
 | `must_hold` | 哪些已确认约束必须守住？ |
 | `proof_gap` | 还缺什么证据或范围核对？ |
 
-`kind: work` 标识文档类型。代码、配置、测试和 git 保留实现事实；Memory 只记录未来仍需要、无法从这些事实直接重建的判断。
+`kind: work` 标识文档类型。代码、配置、测试和 git 保留实现事实；Memory 只记录跨工作仍需要、无法从这些事实直接重建的判断。本轮交接信息留在 work，没有长期内容时 Memory 可以为空。
 
 ### 怎样算完成
 
 - **行为证明**：从真实 UI、CLI、API 或其他实际入口操作，观察预期结果和关键副作用，记录证据。
 - **范围覆盖**：迁移、重写、移植和“所有 X”任务，从事实源列出范围，逐项对账。
 
-范围全部覆盖仍需行为验证。无法运行的路径会标为“无法判定”，不能靠文件存在或局部测试通过宣布完成。完整契约见 [`skills/bi/SKILL.md`](skills/bi/SKILL.md)。
+范围全部覆盖仍需行为验证。完成前从原需求逐项找到证明，再核对实际断言是否覆盖每个承诺。无法运行或尚未测到的路径标为“无法判定”，不能靠文件存在或局部测试通过宣布完成。完整契约见 [`skills/bi/SKILL.md`](skills/bi/SKILL.md)。
 
 ## 本地验证
 
@@ -134,7 +142,9 @@ bash tools/release-check.sh --no-deploy
 bash tools/release-check.sh /path/to/installed/bi
 ```
 
-仓库只分发 [`skills/bi/`](skills/bi/)。[`tools/`](tools/) 保存维护检查，项目约束在 [`byissue/memory/project.md`](byissue/memory/project.md)，v1 历史材料集中在 [`archive/v1/`](archive/v1/)。pi 实际任务的输入、验收与结果见 [v2 实测记录](byissue/work/v2-readiness/evaluation/README.md)。
+技能规则的真实效果按[标准评测流程](tools/evaluation/README.md)验证：固定输入、空目录安装、独立 pi 会话、业务验收和工作流逐项审查。
+
+仓库只分发 [`skills/bi/`](skills/bi/)。[`tools/`](tools/) 保存维护检查，项目约束在 [`byissue/memory/project.md`](byissue/memory/project.md)，v1 历史材料集中在 [`archive/v1/`](archive/v1/)。首次 pi 实际任务的输入、验收与结果见 [v2 实测记录](byissue/work/v2-readiness/evaluation/README.md)。
 
 ---
 

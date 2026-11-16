@@ -19,6 +19,7 @@ step() {
 step "checker" python3 tools/check-skill-repository.py
 step "checker self-test" python3 tools/check-skill-repository-selftest.py
 step "packaged scripts" python3 tools/check-skill-scripts.py
+step "evaluation runner" python3 -m unittest discover -s tools/evaluation -p test_runner.py
 
 target="${1:-${BI_DEPLOYED:-}}"
 if [ "$target" = "--no-deploy" ]; then

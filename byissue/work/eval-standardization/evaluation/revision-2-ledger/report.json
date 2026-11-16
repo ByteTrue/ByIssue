@@ -1,0 +1,158 @@
+{
+  "source": "<repository>",
+  "case": "<repository>/tools/evaluation/cases/ledger",
+  "model": "bytetrueapi/deepseek/deepseek-flash",
+  "thinking": "medium",
+  "skill_sha256": {
+    "NOTICE.md": "c0c8c9bce963917b02bf703bf9e476d4a40427fc4e7650070c8eb2c8cf56a0d5",
+    "SKILL.md": "ce65ae8ae152ee547aa85c3e9df86e71532aa098382cd3d13e0923be03e80554",
+    "agents/openai.yaml": "21eb9602bcb98ec42d75c1b09d68c10acee0da01ea5f1b49aee70da097fa2d25",
+    "references/change.md": "25930c69131f472da52638b78a0f88ce9aba4a8cc12e797ada0635c65475d58f",
+    "references/clarify.md": "eefac9b4f8a25c4d68e49cf70367e945cd3eb8d813985590ea0ba2f86fd838bf",
+    "references/domain-modeling.md": "869ff13a03bb936dc0b0fed44fa1ba0198f2db54c64b52a13d69113a63055217",
+    "references/economy.md": "b8db59675bb4852396ff741af5612ea2818fa143ac6bc1c777453c74bfa1401e",
+    "references/grilling.md": "60e8be1b0635a82221dfd6601cf3bc91fda50ea290c0ad07cee98b11ebd5c26d",
+    "references/memory-direction.md": "d03d06f770f2f60a5e2ff4a634b968bb3f2670a8bd786c21860078f20b8142d0",
+    "references/onboard.md": "a645253d4a117d4bf7ee35e09c3cacbd928d7327d66c74d65d893cdedeb6bd9b",
+    "references/prove.md": "9c0eb7171aebb5176b27a8d8ef92c199587187bf2e9697fc41c997b7ab9d31c6",
+    "references/quality.md": "b331d3d0d7fb349ca082554492d0df16526a0e3dbbb28b87d77b59699627bb3a",
+    "references/ui-spec.md": "1a111fc4d0db201814f2a3eb9d56f3df864462c29d885dfec948985558493c9b",
+    "references/understand-review.md": "4c12133c566173849f4cce3bbe33a38d5521ebffdaf492596a13c8ccba50959c",
+    "references/writing.md": "7106cf72113e322beaee44e2b445c41475164f4aecaac54032e974a273a7775b",
+    "scripts/init_byissue.py": "60af368fbe4b9f6b0e71e72e966f96e4eda42f21162bfae82614864c4e6d9bb5",
+    "templates/memory.md": "9a9e1ec3c2ccd6b5ee84358c99d3f10ad807ee245a71aca71368a5ca7a48fc0c",
+    "templates/scope.md": "42c3cb2f6413532dd492d264f88c39cdac4b64ee1b92a98ec0773e38b8125fef",
+    "templates/vision.md": "871b901d12080acfdcc87b187d37667e88c0a805196f9512ff2b2d6bfdd5ac72",
+    "templates/work.md": "54ad4c7b07338a553ea42d1c7f4cb0cc70b29deb32beec7ace046466454df4d4"
+  },
+  "case_sha256": {
+    "acceptance.py": "28358a26ae7c8d0102c551352749f9990d93a790631c82a290df8dc3a4ee76f0",
+    "phase-1.txt": "3a59f687fd7b2db314e88c51b9a2a1dccee2c358ccd0a8c8ad8f01db37f092e9",
+    "phase-2.txt": "382ea8b3f29b788b34b2b39a984516721dda6d5cd75dc27c0de980b0b4b990e1",
+    "project/legacy/01.csv": "a10a72b36e0e6c8e76e5f11e1488ac2af59b71a2f52d89fe5be8537cb954a8bf",
+    "project/legacy/02.csv": "22c2c68ddfcb22e391c77d1771d403fcc35b819c4ebc761b0eb7706f848285cc",
+    "project/legacy/nested/03.csv": "ef8cdf810294a0a76dc6c69118b02fa6a7be1e3227650ad6c360b0722fc9b355",
+    "workflow-rubric.md": "7ba4ec15bcb47c260e588e08d8201fc97e3a877c8bfdffe07a595b7bf53c9cd0"
+  },
+  "phases": [
+    {
+      "phase": 1,
+      "command": [
+        "pi",
+        "--model",
+        "bytetrueapi/deepseek/deepseek-flash",
+        "--thinking",
+        "medium",
+        "--mode",
+        "json",
+        "--print",
+        "--approve",
+        "--no-extensions",
+        "--no-mcp",
+        "--no-context-files",
+        "--no-prompt-templates",
+        "--no-skills",
+        "--skill",
+        "<run-root>/project/.agents/skills/bi",
+        "--session-dir",
+        "<run-root>/phase-1/sessions",
+        "--append-system-prompt",
+        "在当前项目内工作。实验临时文件用 TMPDIR 下的独立临时目录；不读取项目外的评测材料。",
+        "请使用 bi 完成这个两阶段的账单迁移工具，使用 Python 3 标准库。\n\n完整目标是 ledger.py 的两个真实 CLI：\n1. python3 ledger.py migrate <source-dir> <output.json>\n   递归迁移 source-dir 下所有 CSV（包括子目录），表头固定为 id,customer,amount。\n   JSON 顶层是数组，按 id 排序，每行只含 id、customer、amount_cents。\n   amount 是非负十进制金额，接受 0、12、0.10、12.34 等普通写法，最多两位小数；不接受负数、NaN、Infinity、指数格式或多于两位小数。转换必须精确，不用浮点金额。\n   id 与 customer 非空；重复 id、错误表头或任一非法行都要以非零码退出，错误写 stderr，并保持原有 output.json 逐字节不变。\n   重跑同一批输入得到相同结果，原始 CSV 不变。\n2. python3 ledger.py report <output.json> [--customer <name>]\n   输出 JSON 对象，只有 count 和 total_cents 两个整数。未指定 customer 时统计全部；指定时按完整名称精确匹配；没有匹配时两项均为 0。\n\n这轮只完成、测试 migrate，然后停下；report 留给下一次会话。先在这个项目接入 ByIssue，按你实际采用的方法保存继续工作需要的内容。请为代码留下可运行回归检查。原始数据已在 legacy/。不要提交或推送，不要安装依赖。\n"
+      ],
+      "business": "通过",
+      "returncode": 0,
+      "seconds": 133.45,
+      "assistant_messages": 14,
+      "tool_calls": {
+        "read": 2,
+        "bash": 11,
+        "write": 4,
+        "edit": 2
+      },
+      "usage": {
+        "input": 42943,
+        "output": 23902,
+        "cacheRead": 248704,
+        "cacheWrite": 0,
+        "reasoning": 14225,
+        "totalTokens": 315549
+      },
+      "sessions": [
+        "01a1d5b5-20db-7035-8d4d-23c2ac021889"
+      ],
+      "models": [
+        "bytetrueapi/deepseek/deepseek-flash"
+      ],
+      "errors": [],
+      "sources_preserved": true,
+      "acceptance": {
+        "returncode": 0,
+        "seconds": 0.26
+      }
+    },
+    {
+      "phase": 2,
+      "command": [
+        "pi",
+        "--model",
+        "bytetrueapi/deepseek/deepseek-flash",
+        "--thinking",
+        "medium",
+        "--mode",
+        "json",
+        "--print",
+        "--approve",
+        "--no-extensions",
+        "--no-mcp",
+        "--no-context-files",
+        "--no-prompt-templates",
+        "--no-skills",
+        "--skill",
+        "<run-root>/project/.agents/skills/bi",
+        "--session-dir",
+        "<run-root>/phase-2/sessions",
+        "--append-system-prompt",
+        "在当前项目内工作。实验临时文件用 TMPDIR 下的独立临时目录；不读取项目外的评测材料。",
+        "请使用 bi 继续这个项目里的账单迁移工具，完成剩余目标并验证。\n\n这次增加一个要求：report 支持 --min-cents <非负整数>，只统计 amount_cents 大于等于阈值的记录，可与 --customer 一起使用。默认阈值是 0；负数和非整数参数应当报错并非零退出。\n\n之前确认的接口和数据保护要求继续有效。请从项目里找出当前工作，做完后给出真实运行证据和未验证项。不要提交或推送，不要安装依赖。\n"
+      ],
+      "business": "未通过",
+      "returncode": 0,
+      "seconds": 144.71,
+      "assistant_messages": 23,
+      "tool_calls": {
+        "read": 4,
+        "bash": 18,
+        "edit": 5
+      },
+      "usage": {
+        "input": 70945,
+        "output": 24661,
+        "cacheRead": 528768,
+        "cacheWrite": 0,
+        "reasoning": 10675,
+        "totalTokens": 624374
+      },
+      "sessions": [
+        "01a1d5b7-2b69-7245-aad7-d19d0b368424"
+      ],
+      "models": [
+        "bytetrueapi/deepseek/deepseek-flash"
+      ],
+      "errors": [],
+      "sources_preserved": true,
+      "acceptance": {
+        "returncode": 1,
+        "seconds": 0.32
+      }
+    }
+  ],
+  "execution": "failed",
+  "workflow": "无法判定；待 review.md 审查",
+  "pi_version": "1.5.2",
+  "install": {
+    "returncode": 0,
+    "seconds": 0.65
+  },
+  "error": "RuntimeError: phase 2: independent acceptance or source preservation failed"
+}

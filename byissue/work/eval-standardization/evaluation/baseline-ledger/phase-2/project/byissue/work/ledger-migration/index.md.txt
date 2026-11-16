@@ -1,0 +1,69 @@
+---
+kind: work
+status: complete
+current_unit: "report：全部或按精确客户统计，并用 --min-cents 过滤金额"
+next_action: "无；本 work 已完成，等待用户确认"
+must_hold: "只使用 Python 3 标准库；不修改 legacy/ 原始 CSV；不提交或推送；金额不使用浮点；migrate 失败时 output.json 逐字节不变；--min-cents 只接受非负整数"
+proof_gap: "无"
+---
+
+# 账单迁移工具
+
+## 目标与边界
+
+`ledger.py` 已完成两个阶段。
+
+- `python3 ledger.py migrate <source-dir> <output.json>` 递归迁移目录下所有 CSV，生成按 id 排序的 JSON 数组。
+- `python3 ledger.py report <output.json> [--customer <name>] [--min-cents <n>]` 读取迁移结果，向 stdout 输出一个 JSON 对象，键为 `count` 和 `total_cents`。
+
+原始数据位于 `legacy/`，保持只读。不安装依赖，不提交或推送。
+
+## 已定方案与约束
+
+- CSV 表头必须恰好是 `id,customer,amount`，顺序和拼写都不能变。
+- `id` 与 `customer` 非空。重复 id 按错误处理，包括跨文件重复。
+- `amount` 只接受非负十进制写法，最多两位小数。接受 `0`、`12`、`0.10`、`12.34`；拒绝负数、`NaN`、`Infinity`、指数写法、超过两位小数和空值。
+- 金额按字符串拆分整数与小数部分换算成整数分，全程不用 `float`。
+- 任何 migrate 错误都以非零码退出，错误写 stderr，`output.json` 保持原有字节不变。
+- 迁移先完成全部读取、校验和排序，再原子替换输出文件；任何输入错误都发生在写文件之前。
+- CSV 发现使用递归匹配 `*.csv`，并按路径排序保证稳定。JSON 使用固定键顺序 `id`、`customer`、`amount_cents`，重跑结果逐字节一致。
+- report 未指定 customer 时统计全部；指定时按完整名称精确匹配，区分大小写。没有匹配时 `count` 与 `total_cents` 均为整数 0。
+- `--min-cents` 默认 0，只统计 `amount_cents >= 阈值` 的记录，可与 `--customer` 同时使用。
+- `--min-cents` 只接受由数字组成的非负整数。负数、小数、指数、正号、空白和空串都写 stderr 并以退出码 2 结束。
+- report 不写任何文件。输入 JSON 缺失、不是数组、记录缺字段或金额不是非负整数时，写 stderr 并以退出码 1 结束。
+
+## 行为证明
+
+| 行为路径 | 真实入口 | 操作 | 应观察到 | 证据 | 结果 |
+|---|---|---|---|---|---|
+| 递归迁移 legacy 数据 | `python3 ledger.py migrate legacy out.json` | 迁移包含子目录的 `legacy/` | 输出 7 条记录，id 升序，包含 `legacy/nested/03.csv` 的 a003 与 c002 | `python3 -m unittest discover -s tests -v` 中 `test_migrates_legacy_tree` 通过 | 通过 |
+| 金额精确换算 | 同上 CLI | 输入 0、12、0.10、12.34 等合法金额 | `amount_cents` 分别为 0、1200、10、1234，不出现浮点误差 | `test_migrates_legacy_tree`、`test_accepts_valid_amount_forms` 通过 | 通过 |
+| 非法金额被拒绝 | 同上 CLI | 输入负数、NaN、Infinity、指数、三位小数 | 非零退出，stderr 有错误，已有输出逐字节不变 | `test_rejects_invalid_amounts_without_touching_output` 覆盖 16 种非法写法并通过 | 通过 |
+| 非法结构被拒绝 | 同上 CLI | 错误表头、空 id、空 customer、缺列、重复 id | 非零退出，stderr 有错误，已有输出逐字节不变 | `test_rejects_invalid_structure_without_touching_output` 覆盖 12 种非法结构并通过 | 通过 |
+| 跨文件重复 id | 同上 CLI | 两个子目录 CSV 使用同一 id | 非零退出并指出重复 id | `test_rejects_duplicate_id_across_files` 通过 | 通过 |
+| 重跑稳定且不改原文件 | 同上 CLI | 对同一输入连续迁移两次，并比较迁移前后 CSV 哈希 | 两次输出逐字节相同，CSV 哈希不变 | `test_rerun_is_byte_identical_and_sources_unchanged` 通过 | 通过 |
+| report 全部统计 | `python3 ledger.py report out.json` | 迁移 `legacy/` 后统计全部记录 | 输出 `{"count": 7, "total_cents": 101570}` | `test_reports_all_and_by_exact_customer` 通过；本轮真实 CLI 输出相同 | 通过 |
+| report 按客户精确统计 | 同上 CLI | `--customer Alice`、`--customer Ali`、`--customer alice`、`--customer 张三` | Alice 得到 3 条 135 分；Ali 和 alice 都得到 0 条 0 分；张三得到 2 条 100001 分 | `test_reports_all_and_by_exact_customer` 通过，测试包含 Unicode 客户；本轮真实 CLI 输出相同 | 通过 |
+| report 无匹配返回零 | 同上 CLI | 指定不存在的客户，或阈值高于所有金额 | `count` 与 `total_cents` 都是整数 0 | 同上测试与 `--min-cents 200000` 的真实 CLI 运行通过 | 通过 |
+| --min-cents 边界 | 同上 CLI | `--min-cents 200`、`--min-cents 201` | 200 包含金额正好 200 的记录，得到 3 条 101435 分；201 得到 2 条 101235 分 | `test_min_cents_filters_and_combines_with_customer` 通过；本轮真实 CLI 输出相同 | 通过 |
+| --min-cents 与客户组合 | 同上 CLI | `--customer Bob --min-cents 200`、`--customer Bob --min-cents 1000` | 分别得到 2 条 1434 分、1 条 1234 分 | `test_min_cents_filters_and_combines_with_customer` 通过；本轮真实 CLI 输出相同 | 通过 |
+| --min-cents 默认值 | 同上 CLI | 不传 `--min-cents` | 阈值为 0，包含金额为 0 的 c002，总数为 7 条 | `test_reports_all_and_by_exact_customer` 通过；故意把过滤改成 `>` 的副本使该测试失败 | 通过 |
+| 非法 --min-cents 被拒绝 | 同上 CLI | `-1`、`-0`、`1.5`、`1.0`、`abc`、`1e3`、`+1`、带前后空白和空串 | 退出码 2，stderr 有错误，stdout 为空，输入 JSON 哈希不变 | `test_rejects_invalid_min_cents` 通过；本轮对每种取值真实运行并看到 exit=2 | 通过 |
+| report 坏输入被拒绝 | 同上 CLI | JSON 缺失、非法 JSON、非数组、记录缺字段、金额为浮点/布尔/负数、非 UTF-8 字节、目录路径 | 退出码 1，stderr 有错误，stdout 为空，不创建或改动输入 | `test_report_rejects_bad_input` 通过；本轮真实运行缺失文件、`{}`、非 UTF-8 和目录路径都得到 exit=1 | 通过 |
+
+## 证据与决定
+
+- 接入 ByIssue 时运行 `python3 .agents/skills/bi/scripts/init_byissue.py --project .`，新建 `byissue/work/` 与 `byissue/memory/`。
+- `legacy/` 实际包含 `01.csv`、`02.csv`、`nested/03.csv`，覆盖表见 `scope.md`。
+- 回归检查使用标准库 `unittest`，通过 subprocess 调用真实 CLI，不绕过入口。运行命令：`python3 -m unittest discover -s tests -v`；本轮 13 个测试全部通过。
+- 本轮真实 CLI 证据：`python3 ledger.py migrate legacy <tmp>/out.json` 后，默认 report 输出 `{"count": 7, "total_cents": 101570}`；`--customer Alice` 输出 `{"count": 3, "total_cents": 135}`；`--min-cents 200` 输出 `{"count": 3, "total_cents": 101435}`；`--customer Bob --min-cents 200` 输出 `{"count": 2, "total_cents": 1434}`；`--customer 张三 --min-cents 100001` 输出 `{"count": 1, "total_cents": 100001}`。
+- 非 UTF-8 输入和目录路径都让 report 以 exit=1 退出并写 stderr，没有生成 traceback。
+- 迁移前后三个 `legacy/*.csv` 的 SHA-256 完全相同，report 前后迁移 JSON 的 SHA-256 也相同。
+- 故意做坏的副本把 `--min-cents` 直接交给 `int()`，并把过滤条件从 `>=` 改成 `>`。同一套测试出现 7 个失败，覆盖负数、正号、空白、默认阈值和边界值，说明这些检查确实挡住了对应错误。
+- report 的 stdout 形状选为单行 JSON 对象，便于脚本继续处理；键顺序固定为 `count`、`total_cents`。
+
+## 完成核对
+
+- 行为门：migrate 六条行为通过；report 八条行为通过。
+- 范围门：`scope.md` 三个 CSV 均已覆盖，依据是 `test_migrates_legacy_tree` 的完整期望输出与迁移前后哈希比较。本 work 的范围没有新增 CSV，`scope.md` 在 2026-11-14 重新枚举后仍是同样三项。
+- 需要用户看的推断或无法判定：无。

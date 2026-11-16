@@ -1,0 +1,46 @@
+== checker
+Skill repository check passed.
+
+== checker self-test
+ok   clean copy passes
+ok   archived references stay outside current checks
+ok   version without changelog section
+ok   version not semver
+ok   second skill in package
+ok   entry file missing
+ok   link to missing file
+ok   packaged file nobody references
+ok   skill names a repo-only file
+ok   new tool file is repo-only without editing the checker
+ok   template carries a skill-internal path
+ok   work template loses a checkpoint field
+ok   anchored link to missing file
+ok   current doc names a deleted tool
+ok   current doc links a missing file
+ok   inline command names a deleted tool
+ok   fenced command names a deleted tool
+ok   current work links a missing file
+ok   historical records left in active workspace
+ok   changelog newest section is not VERSION
+ok   changelog repeats a version
+ok   license edited but packaged NOTICE not
+ok   packaged NOTICE loses upstream attribution
+ok   project memory deleted
+22/22 planted defects caught
+
+== packaged scripts
+ok   fresh init creates work/ and memory/
+ok   rerun keeps existing work
+ok   rerun preserves optional vision
+all init script cases pass
+
+== evaluation runner
+........
+----------------------------------------------------------------------
+Ran 8 tests in 1.286s
+
+OK
+
+== deployed copy matches skills/bi/ (<run-root>/project/.agents/skills/bi)
+
+release check passed

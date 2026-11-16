@@ -1,0 +1,58 @@
+---
+kind: work
+status: in_progress
+current_unit: "report：未指定 customer 时统计全部，指定时按完整名称精确匹配"
+next_action: "下一会话实现 python3 ledger.py report <output.json> [--customer <name>]，复用 migrate 产出的 JSON，再跑完整回归检查"
+must_hold: "只使用 Python 3 标准库；不修改 legacy/ 原始 CSV；不提交或推送；金额不使用浮点；失败时 output.json 逐字节不变"
+proof_gap: "report 的 CLI 尚未实现，行为证明表中的三条 report 行为仍为未验证"
+---
+
+# 账单迁移工具
+
+## 目标与边界
+
+分两阶段完成 `ledger.py`。
+
+- 第一阶段（本轮）：实现 `python3 ledger.py migrate <source-dir> <output.json>`。递归迁移目录下所有 CSV，生成按 id 排序的 JSON 数组。
+- 第二阶段（下一会话）：实现 `python3 ledger.py report <output.json> [--customer <name>]`，输出 `count` 与 `total_cents`。本轮不实现 report。
+
+原始数据位于 `legacy/`，保持只读。不安装依赖，不提交或推送。
+
+## 已定方案与约束
+
+- CSV 表头必须恰好是 `id,customer,amount`，顺序和拼写都不能变。
+- `id` 与 `customer` 非空。重复 id 按错误处理，包括跨文件重复。
+- `amount` 只接受非负十进制写法，最多两位小数。接受 `0`、`12`、`0.10`、`12.34`；拒绝负数、`NaN`、`Infinity`、指数写法、超过两位小数和空值。
+- 金额按字符串拆分整数与小数部分换算成整数分，全程不用 `float`。
+- 任何错误都以非零码退出，错误写 stderr，`output.json` 保持原有字节不变。
+- 迁移先完成全部读取、校验和排序，再原子替换输出文件；任何输入错误都发生在写文件之前。
+- CSV 发现使用递归匹配 `*.csv`，并按路径排序保证稳定。JSON 使用固定键顺序 `id`、`customer`、`amount_cents`，重跑结果逐字节一致。
+- report 的统计规则已确认：未指定 customer 时统计全部；指定时按完整名称精确匹配；没有匹配时 `count` 与 `total_cents` 均为整数 0。
+
+## 行为证明
+
+| 行为路径 | 真实入口 | 操作 | 应观察到 | 证据 | 结果 |
+|---|---|---|---|---|---|
+| 递归迁移 legacy 数据 | `python3 ledger.py migrate legacy out.json` | 迁移包含子目录的 `legacy/` | 输出 7 条记录，id 升序，包含 `legacy/nested/03.csv` 的 a003 与 c002 | `python3 -m unittest discover -s tests -v` 中 `test_migrates_legacy_tree` 通过 | 通过 |
+| 金额精确换算 | 同上 CLI | 输入 0、12、0.10、12.34 等合法金额 | `amount_cents` 分别为 0、1200、10、1234，不出现浮点误差 | `test_migrates_legacy_tree`、`test_accepts_valid_amount_forms` 通过 | 通过 |
+| 非法金额被拒绝 | 同上 CLI | 输入负数、NaN、Infinity、指数、三位小数 | 非零退出，stderr 有错误，已有输出逐字节不变 | `test_rejects_invalid_amounts_without_touching_output` 覆盖 16 种非法写法并通过 | 通过 |
+| 非法结构被拒绝 | 同上 CLI | 错误表头、空 id、空 customer、缺列、重复 id | 非零退出，stderr 有错误，已有输出逐字节不变 | `test_rejects_invalid_structure_without_touching_output` 覆盖 12 种非法结构并通过 | 通过 |
+| 跨文件重复 id | 同上 CLI | 两个子目录 CSV 使用同一 id | 非零退出并指出重复 id | `test_rejects_duplicate_id_across_files` 通过 | 通过 |
+| 重跑稳定且不改原文件 | 同上 CLI | 对同一输入连续迁移两次，并比较迁移前后 CSV 哈希 | 两次输出逐字节相同，CSV 哈希不变 | `test_rerun_is_byte_identical_and_sources_unchanged` 通过 | 通过 |
+| report 全部统计 | 待实现 | — | 下一会话实现后验证 | — | 未验证 |
+| report 按客户精确统计 | 待实现 | — | 下一会话实现后验证 | — | 未验证 |
+| report 无匹配返回零 | 待实现 | — | 下一会话实现后验证 | — | 未验证 |
+
+## 证据与决定
+
+- 本轮接入 ByIssue 时运行 `python3 .agents/skills/bi/scripts/init_byissue.py --project .`，新建 `byissue/work/` 与 `byissue/memory/`。
+- `legacy/` 实际包含 `01.csv`、`02.csv`、`nested/03.csv`，覆盖表见 `scope.md`。
+- 回归检查使用标准库 `unittest`，通过 subprocess 调用真实 CLI，不绕过入口。运行命令：`python3 -m unittest discover -s tests -v`；本轮 9 个测试全部通过。
+- 迁移先读完全部输入再原子替换输出。非法输入、重复 id 和坏表头都发生在写文件之前，因此已有输出保持原字节。
+- 本轮未实现 report，`ledger.py` 当前只有 migrate 子命令。
+
+## 完成核对
+
+- 行为门：migrate 的六条行为通过；report 三条行为未验证，因为本轮不实现 report。
+- 范围门：`scope.md` 三个 CSV 均已覆盖，依据是 `test_migrates_legacy_tree` 的完整期望输出与迁移前后哈希比较。
+- 需要用户看的推断或无法判定：report 未实现，本轮无法验证其统计结果；下一会话从 `next_action` 继续。

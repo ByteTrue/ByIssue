@@ -1,0 +1,19 @@
+# 范围覆盖
+
+## 事实源
+
+- 来源：`legacy/` 下所有 CSV，递归包含子目录。
+- 枚举命令：`find legacy -type f -name '*.csv' | LC_ALL=C sort`
+- 最近生成：本轮接入时（2026-11-14）。
+
+## 覆盖表
+
+| 来源项 | 所属行为单元 | 覆盖状态 | 覆盖依据 |
+|---|---|---|---|
+| `legacy/01.csv` | 递归迁移 legacy 数据 | 已覆盖 | `test_migrates_legacy_tree` 的期望输出包含 a001、a002、b001，并核对迁移前后哈希 |
+| `legacy/02.csv` | 递归迁移 legacy 数据 | 已覆盖 | `test_migrates_legacy_tree` 的期望输出包含 c001、b002，并核对迁移前后哈希 |
+| `legacy/nested/03.csv` | 递归迁移 legacy 数据 | 已覆盖 | `test_migrates_legacy_tree` 的期望输出包含 a003、c002，证明递归发现子目录，并核对迁移前后哈希 |
+
+覆盖状态只使用：`未处理`、`已覆盖`、`明确不做`、`不适用`。
+
+`scope.md` 是可从事实源重生成的快照。事实源或范围变化后重新生成；重生成出现的新项回到 `未处理`。

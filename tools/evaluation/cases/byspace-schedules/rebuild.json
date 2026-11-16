@@ -1,0 +1,23 @@
+{
+  "repository": "byspace",
+  "commit": "708ec9f2508978a71b80f2cae3ecf3a7d66e8eca",
+  "branch": "eval/rebuild-schedules",
+  "remove_files": [
+    "internal/cadence/cadence.go",
+    "internal/schedule/cron.go",
+    "internal/schedule/schedule.go",
+    "internal/server/schedule_runner.go",
+    "web/src/core/screens/schedules-screen.tsx",
+    "web/src/core/screens/schedules-screen-state.ts",
+    "web/src/core/hooks/use-schedules.ts",
+    "web/src/core/hooks/use-schedule-mutations.ts"
+  ],
+  "remove_implementation_dirs": [
+    "web/src/core/schedules",
+    "web/src/core/components/schedules"
+  ],
+  "remove_functions": {
+    "internal/cli/commands_extra.go": ["runHeartbeatCmd", "resolveScheduleProvider"],
+    "internal/server/ws_agent.go": ["handleScheduleMessage", "parseScheduleUpdate", "decodeOptional", "scheduledRunOutput"]
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "pi_version": "1.5.2",
+  "model": "bytetrueapi/deepseek/deepseek-flash",
+  "thinking": "medium",
+  "runs": [
+    {
+      "run": "baseline-ledger",
+      "seconds": 272.63,
+      "tool_calls": 61,
+      "input": 115649,
+      "cache_read": 1007104,
+      "output": 46146,
+      "business": [
+        "通过",
+        "通过"
+      ]
+    },
+    {
+      "run": "baseline-memory",
+      "seconds": 30.87,
+      "tool_calls": 14,
+      "input": 17963,
+      "cache_read": 52480,
+      "output": 3861,
+      "business": [
+        "通过"
+      ]
+    },
+    {
+      "run": "candidate-ledger",
+      "seconds": 222.03,
+      "tool_calls": 49,
+      "input": 106763,
+      "cache_read": 659456,
+      "output": 36859,
+      "business": [
+        "通过",
+        "通过"
+      ]
+    },
+    {
+      "run": "candidate-memory",
+      "seconds": 32.1,
+      "tool_calls": 12,
+      "input": 19673,
+      "cache_read": 39680,
+      "output": 4654,
+      "business": [
+        "通过"
+      ]
+    },
+    {
+      "run": "final-memory",
+      "seconds": 28.62,
+      "tool_calls": 12,
+      "input": 16555,
+      "cache_read": 51456,
+      "output": 3256,
+      "business": [
+        "通过"
+      ]
+    },
+    {
+      "run": "revision-2-ledger",
+      "seconds": 278.16,
+      "tool_calls": 46,
+      "input": 113888,
+      "cache_read": 777472,
+      "output": 48563,
+      "business": [
+        "通过",
+        "未通过"
+      ]
+    },
+    {
+      "run": "revision-3-ledger",
+      "seconds": 283.02,
+      "tool_calls": 51,
+      "input": 124529,
+      "cache_read": 775424,
+      "output": 51646,
+      "business": [
+        "通过",
+        "通过"
+      ]
+    },
+    {
+      "run": "revision-3-memory",
+      "seconds": 26.98,
+      "tool_calls": 13,
+      "input": 16997,
+      "cache_read": 47872,
+      "output": 3477,
+      "business": [
+        "通过"
+      ]
+    }
+  ]
+}

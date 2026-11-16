@@ -1,0 +1,76 @@
+---
+kind: work
+status: complete
+current_unit: "report 全部统计、客户精确匹配、--min-cents 阈值与参数校验已完成并从真实 CLI 验证"
+next_action: "无；本 work 已完成。新增范围或新目标另建 work"
+must_hold: "report 只读输入 JSON；金额不用浮点；--min-cents 只接受非负整数且默认 0，负数和非整数报错并非零退出，可与 --customer 同时使用；legacy/ 未改动；不装依赖，未提交或推送"
+proof_gap: "无；行为门全部通过，范围门三个 legacy CSV 均已覆盖"
+---
+
+# 账单迁移工具 ledger.py
+
+## 目标与边界
+
+用户要一个只用 Python 3 标准库的命令行工具，分两次会话完成：
+
+1. `ledger.py migrate <source-dir> <output.json>`：递归读取 source-dir 下所有 CSV，输出按 id 排序的 JSON 数组，每行只含 `id`、`customer`、`amount_cents`。
+2. `ledger.py report <output.json> [--customer <name>] [--min-cents <n>]`：输出只含 `count` 和 `total_cents` 的 JSON 对象。不指定 customer 时统计全部；指定时按完整名称精确匹配；没有匹配时两项都为 0。`--min-cents` 只统计 `amount_cents` 大于等于阈值的记录，默认 0，可与 `--customer` 同时使用；负数和非整数参数报错并非零退出。
+
+migrate 已在此前会话完成：实现、回归检查、在 `legacy/` 上真实运行。本轮实现 report。原始数据 `legacy/` 只读，不因本轮改动。
+
+## 已定方案与约束
+
+- 表头必须逐字等于 `id,customer,amount`，否则整批失败。
+- 金额只接受非负十进制、最多两位小数（如 `0`、`12`、`0.10`、`12.34`；也接受 `0.1` 与 `00.10`）。负数、`NaN`、`Infinity`、指数写法、超过两位小数、前后空白一律非法。用十进制字符串切分转整数分，不经过 float。
+- `id` 和 `customer` 去空白后为空即非法；非空值原样保留，不做改名或裁剪。
+- 重复 id、错误表头、任一非法行都以退出码 1 失败，错误写 stderr。
+- 先完整解析并校验，全部通过后再原子写入输出文件（同目录临时文件 + `os.replace`），因此失败时已有 output.json 逐字节不变，也不创建新文件。
+- 同一批输入重跑得到相同字节输出；CSV 只读，不被改动。
+- 没有 CSV 的目录视为合法，输出 `[]`。输出父目录不存在时自动创建。
+- 文件编码按 UTF-8（兼容 BOM）读取，CSV 按标准库 `csv` 解析，CRLF 和带引号逗号不影响结果。
+- id 排序为字典序（`"10" < "2" < "a" < "b"`）。
+- report 读取 migrate 产出的 JSON 数组，只读输入。默认阈值 0，过滤条件为 `amount_cents >= min_cents`，边界值包含在内。
+- `--min-cents` 只接受由 ASCII 数字组成的非负整数，默认 0；负数、小数、空串和其他非整数写法由参数解析直接拒绝，退出码 2，错误写 stderr。
+- report 的客户过滤使用完整名称精确匹配，不做大小写折叠或去空白。输出对象只含 `count` 和 `total_cents`。
+
+## 行为证明
+
+| 行为路径 | 真实入口 | 操作 | 应观察到 | 证据 | 结果 |
+|---|---|---|---|---|---|
+| 递归迁移成功 | `python3 ledger.py migrate` | 对 `legacy/` 运行，输出到临时 JSON | 数组 7 条，id 依次为 a001,a002,a003,b001,b002,c001,c002；含 nested/03.csv | `test_legacy_tree_migrates_recursively_in_id_order`；真实运行输出 7 条且顺序一致 | 通过 |
+| 金额精确转换 | 同上 | 输入 0、12、0.10、12.34、0.1、00.10、超大两位小数 | amount_cents 为 0、1200、10、1234、10、10、99999999999999999999 | `test_valid_amounts_convert_exactly` | 通过 |
+| 非法金额拒绝 | 同上 | 分别输入 -1、-0.01、NaN、Infinity、-Infinity、1e2、1.234、1.、.5、+1、带空白、abc、空 | 非零退出，stderr 含 `invalid amount` | `test_invalid_amounts_are_rejected`（13 个子用例） | 通过 |
+| 错误表头拒绝 | 同上 | 表头改为 id,name,amount；空文件 | 非零退出，stderr 含 `invalid header` | `test_wrong_header_is_rejected`、`test_missing_header_is_rejected` | 通过 |
+| 空 id / 空 customer 拒绝 | 同上 | 字段为空或只有空白 | 非零退出，stderr 含 `must not be empty` | `test_empty_id_or_customer_is_rejected` | 通过 |
+| 重复 id 拒绝 | 同上 | 两个文件含同一 id | 非零退出，stderr 含 `duplicate id` | `test_duplicate_id_across_files_is_rejected` | 通过 |
+| 失败保持输出不变 | 同上 | 已有 output.json 时跑含非法行的输入 | 退出非零，output.json 与运行前逐字节相同，且不残留临时文件 | `test_failure_keeps_existing_output_byte_for_byte`、`test_failure_does_not_create_output_when_absent` | 通过 |
+| 重跑确定且源数据不变 | 同上 | 连续跑两次并比较 | 两次输出字节相同；`legacy/` 文件 SHA-256 不变 | `test_rerun_is_byte_identical_and_inputs_are_untouched`；真实运行 cmp 相同 | 通过 |
+| 空目录 | 同上 | 对只有非 CSV 文件的目录运行 | 退出 0，输出 `[]` | `test_empty_source_produces_empty_array` | 通过 |
+| report 默认统计全部 | `python3 ledger.py report` | 不带过滤运行在 migrate 输出上 | stdout 是 JSON 对象，恰好含 count、total_cents 两个整数，与手算一致 | 真实运行输出 `{"count": 7, "total_cents": 101570}`，与 `--min-cents 0` 相同；`test_default_counts_every_record` | 通过 |
+| report 客户精确匹配与无匹配 | 同上 | `--customer Alice`；`--customer Nobody`；`--customer Ali`；`--customer alice` | 匹配时只统计该客户的行，无匹配时两项为 0 | 真实运行 Alice 得到 `{"count": 3, "total_cents": 135}`，Nobody 得到 `{"count": 0, "total_cents": 0}`；`test_customer_exact_match_and_no_match` 还覆盖部分名称和小写不匹配 | 通过 |
+| report 阈值过滤含边界 | 同上 | `--min-cents 20` 和 `--min-cents 21` | 20 分的记录被计入第一个阈值，不被计入第二个 | 真实运行 20 得到 `{"count": 5, "total_cents": 101560}`，21 得到 `{"count": 4, "total_cents": 101540}`；`test_min_cents_is_inclusive_and_defaults_to_zero` | 通过 |
+| report 客户与阈值组合 | 同上 | `--customer Alice --min-cents 20`；`--customer Bob --min-cents 21` | 只统计同时满足两个条件的记录 | 真实运行 Alice + 20 得到 `{"count": 2, "total_cents": 125}`；`test_customer_and_min_cents_combine` 还覆盖组合后无匹配为 0 | 通过 |
+| report 非法阈值拒绝 | 同上 | `--min-cents -1`、`-0`、`abc`、`1.5`、`3.0`、`+1`、` 5`、空串 | 非零退出，stderr 含报错，stdout 为空 | 真实运行 8 个值全部退出码 2，stderr 含 `invalid non-negative integer`，stdout 为空；`test_invalid_min_cents_is_rejected` | 通过 |
+| report 只读输入 | 同上 | 成功和失败运行前后比较输入 SHA-256 | 输入文件逐字节不变 | 真实运行前后 SHA-256 均为 `66cfd448e6941388520cf3e191e49092d9d49a92f20214fb93f7d0f0d4d422e9`；`test_report_is_read_only` | 通过 |
+| report 拒绝损坏输入 | 同上 | 输入非 JSON、非数组、amount_cents 为字符串 | 非零退出，stderr 含 `ledger.py: error:`，stdout 为空 | `test_report_rejects_malformed_ledger` | 通过 |
+
+行为门核对：migrate 与 report 各行都从真实 CLI 入口经子进程运行，观察覆盖成功结果、失败退出码与输入文件副作用。report 的默认值、边界、组合、参数拒绝和只读保护均有本轮真实运行或可重跑检查。
+
+## 证据与决定
+
+- 回归检查位于 `tests/test_ledger.py`，共 23 个用例，从真实 CLI 以子进程驱动。重跑命令：`python3 -m unittest discover -s tests -v`。本轮结果：`Ran 23 tests ... OK`。
+- 本轮真实入口在 `legacy/` 上先 migrate 到 `$TMPDIR/ledger-report.*/ledger.json`，再对同一文件运行 report。7 条记录、总额 101570 分；Alice 3 条 135 分；阈值 20 与 21 的差异证明 20 分记录计入下界；组合过滤得到 2 条 125 分。
+- 非法 `--min-cents` 逐个真实运行，`-1`、`-0`、`abc`、`1.5`、`3.0`、`+1`、` 5`、空串全部退出码 2，stderr 报 `invalid non-negative integer`，stdout 为空。
+- 检查有效性用临时副本故意做坏，三组变异都让对应用例失败：
+  - 阈值 `>=` 改成 `>`：report 4 个用例失败，覆盖边界和默认值。
+  - 去掉严格整数校验、直接 `int(text)`：非法阈值用例 8 个子用例失败，因为 `+1`、带空格等会被接受。
+  - 去掉 customer 过滤条件：2 个用例失败。
+- report 读取 JSON 后先校验数组、记录对象、customer 字符串和 amount_cents 整数，再统计。输入文件只读，不写临时文件。
+- 实现只在 `ledger.py` 和 `tests/test_ledger.py`；`legacy/` 未改动。
+- 范围覆盖见 `scope.md`，本轮重跑 `find legacy -type f -name '*.csv' | sort` 仍为三个文件，范围未变。
+
+## 完成核对
+
+- 行为门：migrate 9 条、report 7 条全部通过，未验证项为 0。
+- 范围门：`scope.md` 三个 legacy CSV 全部「已覆盖」，枚举结果与覆盖表一致。
+- 需要用户看的推断或无法判定：report 拒绝重复 id、额外字段或手工改写的更复杂 JSON 规则不在用户明确要求内，本次只校验统计所需字段；用户未逐条确认这一取舍。其余要求均有真实运行或可重跑检查。

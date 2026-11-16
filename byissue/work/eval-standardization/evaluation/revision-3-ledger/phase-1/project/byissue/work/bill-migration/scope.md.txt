@@ -1,0 +1,32 @@
+# 范围覆盖
+
+## 事实源
+
+- 来源：项目根 `legacy/` 下所有 CSV。
+- 枚举命令或拆分规则：
+
+```bash
+find legacy -type f -name '*.csv' | LC_ALL=C sort
+```
+
+每个数据行（不含表头）按 `文件:id` 作为一项。
+- 最近生成：2025-11-14，3 个文件、7 行数据。
+
+## 覆盖表
+
+| 来源项 | 所属行为单元 | 覆盖状态 | 覆盖依据 |
+|---|---|---|---|
+| `legacy/01.csv`（3 行） | 正常迁移 | 已覆盖 | sha256 `a10a72b3…`；输出中 a001/a002/b001 三行由 `test_migrates_legacy_tree` 精确核对 |
+| `legacy/02.csv`（2 行） | 正常迁移 | 已覆盖 | sha256 `22c2c68d…`；输出中 c001/b002 两行由 `test_migrates_legacy_tree` 精确核对 |
+| `legacy/nested/03.csv`（2 行） | 递归子目录 | 已覆盖 | sha256 `ef8cdf81…`；输出中 a003/c002 两行由 `test_migrates_legacy_tree` 精确核对 |
+| `legacy/01.csv:a001` | 正常迁移 | 已覆盖 | 输出含 `{"id":"a001","customer":"Alice","amount_cents":10}`（`test_migrates_legacy_tree`） |
+| `legacy/01.csv:a002` | 正常迁移 | 已覆盖 | 输出含 `{"id":"a002","customer":"Alice","amount_cents":20}`（`test_migrates_legacy_tree`） |
+| `legacy/01.csv:b001` | 正常迁移 | 已覆盖 | 输出含 `{"id":"b001","customer":"Bob","amount_cents":1234}`（`test_migrates_legacy_tree`） |
+| `legacy/02.csv:b002` | 正常迁移 | 已覆盖 | 输出含 `{"id":"b002","customer":"Bob","amount_cents":200}`（`test_migrates_legacy_tree`） |
+| `legacy/02.csv:c001` | 正常迁移 | 已覆盖 | 输出含 `{"id":"c001","customer":"张三","amount_cents":100001}`（`test_migrates_legacy_tree`） |
+| `legacy/nested/03.csv:a003` | 递归子目录 | 已覆盖 | 输出含 `{"id":"a003","customer":"Alice","amount_cents":105}`（`test_migrates_legacy_tree`） |
+| `legacy/nested/03.csv:c002` | 递归子目录 | 已覆盖 | 输出含 `{"id":"c002","customer":"张三","amount_cents":0}`（`test_migrates_legacy_tree`） |
+
+覆盖状态只使用：`未处理`、`已覆盖`、`明确不做`、`不适用`。
+
+`scope.md` 是可从事实源重生成的快照。事实源或范围变化后重新生成；重生成出现的新项回到 `未处理`。

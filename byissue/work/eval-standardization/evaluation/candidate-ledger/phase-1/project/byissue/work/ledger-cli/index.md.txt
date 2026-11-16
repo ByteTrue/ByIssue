@@ -1,0 +1,68 @@
+---
+kind: work
+status: in_progress
+current_unit: "migrate 已完成并通过本轮回归；report 尚未开始"
+next_action: "下一次会话实现 python3 ledger.py report <output.json> [--customer <name>]，并按真实入口补齐行为证明"
+must_hold: "本轮只交付 migrate，report 留给下一次会话；不改动 legacy/；任何失败都不覆盖已有 output.json；金额不用浮点；不装依赖，不提交或推送"
+proof_gap: "report 的三个行为路径尚未实现，行为表保持未验证；migrate 行为门和范围门已通过"
+---
+
+# 账单迁移工具 ledger.py
+
+## 目标与边界
+
+用户要一个只用 Python 3 标准库的命令行工具，分两次会话完成：
+
+1. `ledger.py migrate <source-dir> <output.json>`：递归读取 source-dir 下所有 CSV，输出按 id 排序的 JSON 数组，每行只含 `id`、`customer`、`amount_cents`。
+2. `ledger.py report <output.json> [--customer <name>]`：输出只含 `count` 和 `total_cents` 的 JSON 对象。不指定 customer 时统计全部；指定时按完整名称精确匹配；没有匹配时两项都为 0。
+
+本轮已完成 migrate：实现、回归检查、在 `legacy/` 上真实运行。report 未实现、未测试，是下一次会话的唯一入口。原始数据 `legacy/` 只读，未改动。
+
+## 已定方案与约束
+
+- 表头必须逐字等于 `id,customer,amount`，否则整批失败。
+- 金额只接受非负十进制、最多两位小数（如 `0`、`12`、`0.10`、`12.34`；也接受 `0.1` 与 `00.10`）。负数、`NaN`、`Infinity`、指数写法、超过两位小数、前后空白一律非法。用十进制字符串切分转整数分，不经过 float。
+- `id` 和 `customer` 去空白后为空即非法；非空值原样保留，不做改名或裁剪。
+- 重复 id、错误表头、任一非法行都以退出码 1 失败，错误写 stderr。
+- 先完整解析并校验，全部通过后再原子写入输出文件（同目录临时文件 + `os.replace`），因此失败时已有 output.json 逐字节不变，也不创建新文件。
+- 同一批输入重跑得到相同字节输出；CSV 只读，不被改动。
+- 没有 CSV 的目录视为合法，输出 `[]`。输出父目录不存在时自动创建。
+- 文件编码按 UTF-8（兼容 BOM）读取，CSV 按标准库 `csv` 解析，CRLF 和带引号逗号不影响结果。
+- id 排序为字典序（`"10" < "2" < "a" < "b"`）。
+- report 下一次会话再定实现，规则已写在「目标与边界」。
+
+## 行为证明
+
+| 行为路径 | 真实入口 | 操作 | 应观察到 | 证据 | 结果 |
+|---|---|---|---|---|---|
+| 递归迁移成功 | `python3 ledger.py migrate` | 对 `legacy/` 运行，输出到临时 JSON | 数组 7 条，id 依次为 a001,a002,a003,b001,b002,c001,c002；含 nested/03.csv | `test_legacy_tree_migrates_recursively_in_id_order`；真实运行输出 7 条且顺序一致 | 通过 |
+| 金额精确转换 | 同上 | 输入 0、12、0.10、12.34、0.1、00.10、超大两位小数 | amount_cents 为 0、1200、10、1234、10、10、99999999999999999999 | `test_valid_amounts_convert_exactly` | 通过 |
+| 非法金额拒绝 | 同上 | 分别输入 -1、-0.01、NaN、Infinity、-Infinity、1e2、1.234、1.、.5、+1、带空白、abc、空 | 非零退出，stderr 含 `invalid amount` | `test_invalid_amounts_are_rejected`（13 个子用例） | 通过 |
+| 错误表头拒绝 | 同上 | 表头改为 id,name,amount；空文件 | 非零退出，stderr 含 `invalid header` | `test_wrong_header_is_rejected`、`test_missing_header_is_rejected` | 通过 |
+| 空 id / 空 customer 拒绝 | 同上 | 字段为空或只有空白 | 非零退出，stderr 含 `must not be empty` | `test_empty_id_or_customer_is_rejected` | 通过 |
+| 重复 id 拒绝 | 同上 | 两个文件含同一 id | 非零退出，stderr 含 `duplicate id` | `test_duplicate_id_across_files_is_rejected` | 通过 |
+| 失败保持输出不变 | 同上 | 已有 output.json 时跑含非法行的输入 | 退出非零，output.json 与运行前逐字节相同，且不残留临时文件 | `test_failure_keeps_existing_output_byte_for_byte`、`test_failure_does_not_create_output_when_absent` | 通过 |
+| 重跑确定且源数据不变 | 同上 | 连续跑两次并比较 | 两次输出字节相同；`legacy/` 文件 SHA-256 不变 | `test_rerun_is_byte_identical_and_inputs_are_untouched`；真实运行 cmp 相同 | 通过 |
+| 空目录 | 同上 | 对只有非 CSV 文件的目录运行 | 退出 0，输出 `[]` | `test_empty_source_produces_empty_array` | 通过 |
+| report 全部统计 | `python3 ledger.py report` | 下一次会话 | 只含 count、total_cents 两个整数 | 未实现 | 未验证 |
+| report 精确匹配与无匹配 | 同上 | 下一次会话 | 匹配时统计对应行，无匹配时两项为 0 | 未实现 | 未验证 |
+
+行为门核对：migrate 各行都从真实 CLI 入口经子进程运行，观察覆盖成功结果、失败退出码与输出文件副作用。report 行本轮不可运行，保持未验证。
+
+## 证据与决定
+
+- 回归检查位于 `tests/test_ledger.py`，共 16 个用例，从真实 CLI 以子进程驱动。重跑命令：`python3 -m unittest discover -s tests -v`。本轮结果：`Ran 16 tests ... OK`。
+- 检查有效性用故意做坏的副本验证，每个变异都让对应用例失败：
+  - 金额改用 `float`：`test_valid_amounts_convert_exactly` 失败。
+  - 放宽金额正则接受三位小数：`test_invalid_amounts_are_rejected` 失败。
+  - 去掉重复 id 检查：两个用例失败。
+  - 改为先写输出再校验：两个输出保护用例失败。
+- 真实入口在 `legacy/` 上的输出已人工核对：7 条，id 升序，金额分分别为 10、20、105、1234、200、100001、0。
+- 实现只在 `ledger.py` 和 `tests/test_ledger.py`；`legacy/` 未改动。
+- 范围覆盖见 `scope.md`，来源为 `legacy/` 下实际 CSV 文件。
+
+## 完成核对
+
+- 行为门：migrate 全部通过；report 三个行为路径未实现，整体 work 保持 `in_progress`。
+- 范围门：`scope.md` 三个 legacy CSV 全部「已覆盖」，且覆盖来自本轮真实迁移运行与回归检查。
+- 需要用户看的推断或无法判定：report 完全未实现，尚未验证。id 排序选择字典序、金额允许前导零和 `0.1` 这类写法是我的实现取舍，用户未逐条确认；如与预期不同，下一次会话一并调整。

@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "skills": {
+    "bi": {
+      "source": "../../../../../../../../../..<repository>",
+      "sourceType": "local",
+      "computedHash": "4ec30390e23666dd7da8fa6663e0ccc420528c0306ebe62b2180176b565b203f",
+      "installMode": "copy"
+    }
+  }
+}

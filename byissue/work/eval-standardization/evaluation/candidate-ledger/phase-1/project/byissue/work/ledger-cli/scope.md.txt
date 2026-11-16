@@ -1,0 +1,19 @@
+# 范围覆盖
+
+## 事实源
+
+- 来源：`legacy/` 下用户提供的原始 CSV（含子目录）
+- 枚举命令：`find legacy -type f -name '*.csv' | sort`
+- 最近生成：本轮收工前重新生成，结果与开工时一致
+
+## 覆盖表
+
+| 来源项 | 所属行为单元 | 覆盖状态 | 覆盖依据 |
+|---|---|---|---|
+| legacy/01.csv | 递归迁移成功 | 已覆盖 | 真实运行 `python3 ledger.py migrate legacy <tmp>/out.json`，a001/a002/b001 全部出现；回归 `test_legacy_tree_migrates_recursively_in_id_order` |
+| legacy/02.csv | 递归迁移成功 | 已覆盖 | 同上，c001/b002 出现，金额 100001/200 分正确 |
+| legacy/nested/03.csv | 递归迁移成功（子目录） | 已覆盖 | 同上，a003/c002 出现，证明递归进入 nested/ |
+
+覆盖状态只使用：`未处理`、`已覆盖`、`明确不做`、`不适用`。
+
+`scope.md` 是可从事实源重生成的快照。事实源或范围变化后重新生成；重生成出现的新项回到 `未处理`。

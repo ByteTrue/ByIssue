@@ -1,0 +1,2 @@
+PASS: recursive coverage, exact cents, stable rerun, sources preserved
+PASS: 10 invalid inputs fail without overwriting output

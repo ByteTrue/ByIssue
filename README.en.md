@@ -85,7 +85,15 @@ In a new session:
 Use bi to continue the invoice migration.
 ```
 
-The agent resumes from the work checkpoint and checks it against actual files and evidence. If several work entries match, it asks you to choose. Changed requirements also require affected behavior to be verified again.
+When continuing, the agent first reads the current work checkpoint, then checks actual files and evidence; continuation from a compaction summary works the same way. If several work entries match, it asks you to choose.
+
+Implementation proceeds one row of the behavior proof table at a time: select one user behavior, save the checkpoint, implement, verify from the real public entry point, write the actual result back, then select the next row. Verification holds the contract: public CLI/API proof preserves the raw output seen by the real caller; a shared-path change captures a baseline of the old behavior first and re-verifies through the same entry point afterwards; explicit retain/archive policy branches are each verified; persistence, restart, and lifecycle behavior is observed through a new process or restart entry point; existing tests and public fixtures keep their original files and assertions, with new regressions in new files.
+
+Before closing, the agent reconciles the proof table, scope, and external acceptance results item by item and names every failure in `proof_gap`. Only a fully passing proof with `proof_gap` exactly empty may use `status: complete`; any failed acceptance, missing raw output, or rewritten existing test keeps the work incomplete with the gaps named.
+
+Installed skills, evaluation cases, and runner materials are read-only during a run. Process records go in the project's `byissue/`; skill changes go back to the skill source repository.
+
+The user's original requirements or stable sources are retained with their conditions and exceptions. Deferred behavior also keeps its confirmed input/output formats and error boundaries so the next session has a complete contract to implement.
 
 ## Project files
 
@@ -111,14 +119,14 @@ Each work entry keeps five checkpoint fields at the top of `index.md`:
 | `must_hold` | Which confirmed constraints must remain true? |
 | `proof_gap` | What evidence or scope accounting is still missing? |
 
-`kind: work` identifies the document type. Code, configuration, tests, and git remain the source of implementation facts. Memory holds future-useful decisions that cannot be reconstructed directly from those sources.
+`kind: work` identifies the document type. Code, configuration, tests, and git remain the source of implementation facts. Memory holds decisions useful across tasks that cannot be reconstructed directly from those sources. Current handoff details stay in work; Memory can remain empty when nothing qualifies.
 
 ### What counts as complete?
 
 - **Behavior proof:** exercise the real UI, CLI, API, or other actual entry point; observe the expected result and relevant side effects; record evidence.
 - **Scope coverage:** for migrations, rewrites, ports, and “all X” tasks, enumerate the source of truth and account for every item.
 
-Full scope coverage still requires behavior verification. A path that cannot be exercised stays inconclusive. File existence or passing adjacent tests cannot establish completion. See [`skills/bi/SKILL.md`](skills/bi/SKILL.md) for the full contract.
+Full scope coverage still requires behavior verification. Before completion, each requirement must map to proof, and actual assertions must cover every promise in that proof. Unexercised paths stay inconclusive. File existence or passing adjacent tests cannot establish completion. See [`skills/bi/SKILL.md`](skills/bi/SKILL.md) for the full contract.
 
 ## Local checks
 
@@ -134,7 +142,9 @@ This checks the skill package, references, version records, templates, and initi
 bash tools/release-check.sh /path/to/installed/bi
 ```
 
-Only [`skills/bi/`](skills/bi/) is distributed. [`tools/`](tools/) contains maintainer checks, [`byissue/memory/project.md`](byissue/memory/project.md) holds project constraints, and [`archive/v1/`](archive/v1/) contains v1 history. Inputs, acceptance checks, and results for the pi task are in the [v2 evaluation record](byissue/work/v2-readiness/evaluation/README.md).
+Use the [evaluation procedure](tools/evaluation/README.md) to check real skill behavior with fixed inputs, a fresh installation, independent pi sessions, business acceptance, and item-by-item workflow review.
+
+Only [`skills/bi/`](skills/bi/) is distributed. [`tools/`](tools/) contains maintainer checks, [`byissue/memory/project.md`](byissue/memory/project.md) holds project constraints, and [`archive/v1/`](archive/v1/) contains v1 history. Inputs, acceptance checks, and results for the first pi task are in the [v2 evaluation record](byissue/work/v2-readiness/evaluation/README.md).
 
 ---
 
