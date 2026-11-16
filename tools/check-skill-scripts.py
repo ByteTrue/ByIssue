@@ -144,6 +144,14 @@ def main() -> int:
         code, output = run_check(checked)
         case("check reports a missing behavior proof table", code != 0 and "proof table" in output, output)
 
+        # Formatters pad table cells with spaces; the header is still the same table.
+        # Real-world regression: byspace v1-migration burned ~6 calls compacting its
+        # header by hand before the checker accepted a formatter-padded table.
+        padded = VALID.replace("| 行为路径 | 真实入口 |", "| 行为路径            | 真实入口 |")
+        write_work(checked, "valid", padded)
+        code, output = run_check(checked)
+        case("check accepts a formatter-padded proof table header", code == 0, output)
+
         # One bad entry must not hide the others, and the summary counts both.
         write_work(checked, "valid", VALID)
         write_work(checked, "broken", VALID.replace("status: complete", "status: done"))

@@ -8,6 +8,8 @@
 - 中途曾尝试「本地 commit 是工作的一部分，按已验证行为单元提交」，候选三十一实测无效：任务边界只禁推送、模型自己的 `must_hold` 也未写「不提交」，但它全程 0 次提交（12 条 git 命令均为 status/log/diff 只读），且当初促使加规则的现象（用 20 行 bash 手工重建基线副本）本轮 0 次出现，业务仍 12/12 通过。按「规则要能改变模型默认行为或对应真实失败才保留」，该规则两端都不满足，故撤回。评审见 `ByIssue-evaluation/runs/schedules-candidate-31-01/review.md`。
 - 评测运行器改为相对删减种子提交采集 `changes.diff`，并新增 `report.git_log` 记录种子之后的提交历史。此前 `git diff HEAD` 在模型提交后会产出空证据；`git_log` 为空本身也是可审查的工作流证据。
 - 部署核对目标更正为项目级安装（`npx skills add` 装入 `<project>/.agents/skills/bi`）。此前用 rsync 写入宿主全局技能目录，副本会被宿主的技能索引同步清除，`release-check.sh <全局目录>` 因此校验的是一个非宿主管理的路径。
+- `check_work.py` 的证明表表头改为按单元格解析，容忍格式化工具加的列宽空格。来自 byspace v1 迁移实战会话：字面子串匹配把合法的 padded 表头判为「缺证明表」，模型花约 6 次调用手工压缩表头绕过校验。回归夹具先在旧脚本上跑红再修复。
+- 仓库 checker 的路径扫描跳过隐藏目录：`.agents/skills/bi` 自举软链接会让技能文档被当作仓库文档二次扫描，误报按需创建的 `byissue/vision/` 缺失。
 
 ## 2.1.0
 

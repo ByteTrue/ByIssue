@@ -83,7 +83,11 @@ def check(index: Path) -> list[str]:
             for verdict in unresolved_verdicts(lines):
                 problems.append(f"status is complete but a proof row is still {verdict[:20]!r}")
                 break
-    if "| 行为路径 |" not in text:
+    if not any(
+        line.strip().startswith("|")
+        and [c.strip() for c in line.strip().strip("|").split("|")][:1] == ["行为路径"]
+        for line in lines
+    ):
         problems.append("no behavior proof table (expected a `| 行为路径 |` header row)")
     return problems
 

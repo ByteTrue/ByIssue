@@ -158,6 +158,11 @@ def check_repo_paths(report):
         rel = source.relative_to(ROOT)
         if ".git" in rel.parts or rel.parts[0] in {"skills", "archive"} or rel.as_posix() in HISTORY_FILES:
             continue
+        # Hidden dirs are host wiring, not repo docs: .agents/skills/bi is a symlink
+        # to skills/bi for self-hosting, and scanning it again as a repo document
+        # would demand byissue/vision/ exist in a repo that creates it on demand.
+        if any(part.startswith(".") for part in rel.parts[:-1]):
+            continue
         lines = source.read_text(encoding="utf-8").splitlines()
         for number, line in numbered_unfenced(lines):
             for raw in REPO_LINK_RE.findall(line):
