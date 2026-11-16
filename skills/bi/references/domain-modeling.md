@@ -24,8 +24,8 @@ When the user states how something works, check whether the code agrees. If you 
 
 Create files lazily, following the current work map:
 
-- **A term that resolved** goes to the relevant `byissue/memory/{topic}.md` when it will affect future decisions. The work entry keeps the local wording and evidence.
-- **A durable user decision** goes to the relevant Memory topic when it is long-lived, hard to reverse or surprising without context. The current work keeps the decision needed for this change.
+- **A term that resolved** goes to the relevant `byissue/memory/{topic}.md` when it will affect future decisions, together with the chosen word and the near-synonyms to avoid. The work entry keeps the local wording and evidence.
+- **A durable user decision** goes to the relevant Memory topic when it is hard to reverse, surprising without context, and the result of a real trade-off. The current work keeps the decision needed for this change.
 - **An external observation or rerunnable proof** goes to Memory when future work should be able to find and rerun it. Code, tests and configuration remain the implementation truth.
 
 Memory stores the conclusion, scope, basis and revisit condition. It does not become a copy of the code or a second behavior specification.

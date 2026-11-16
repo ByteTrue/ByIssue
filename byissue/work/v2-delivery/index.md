@@ -11,7 +11,7 @@ proof_gap: ""
 
 用户已授权持续执行优化、评测、再优化，直到有证据支持成熟、有效、可交付。上一轮[大型重建评审](../large-repo-compaction/review.md)是本轮的失败依据，原始记录保留。
 
-交付已完成。方法论、最终结论、规则演变与局限的汇总留档见[最终评测报告](final-evaluation-report.md)；本 index 保留逐轮迭代记录。v2 设计阶段的一手研究稿（真实失败取证、外部材料适用边界、被否方案）归档为[设计方向研究稿](research-direction.md)与[证据矩阵](research-evidence-matrix.md)。
+交付已完成。方法论、最终结论、规则演变与局限的汇总留档见[最终评测报告](final-evaluation-report.md)；本 index 保留逐轮迭代记录。v2 设计阶段的一手研究稿（真实失败取证、外部材料适用边界、被否方案）归档为[设计方向研究稿](research-direction.md)与[证据矩阵](research-evidence-matrix.md)。v2 相对 v1（main）的逐文件血缘取证见[血缘审计](provenance-audit.md)：工作流核心为重写，7 份原则材料带 v1 血缘（grilling/writing 逐字未动）。7 份原则材料的留/改/换评判见[原则材料评判台账](principles-review.md)（已完成并实施于 2.1.2：3 留 4 微改，domain-modeling 准入收紧为 AND）。
 
 ## 目标与边界
 

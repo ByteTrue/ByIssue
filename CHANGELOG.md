@@ -1,3 +1,13 @@
+## 2.1.2
+
+对 7 份非核心原则材料完成外部范式评判（pstack、Matt、Superpowers、gstack、bmad、spec-kit、wnld），结论与证据台账在 `byissue/work/v2-delivery/principles-review.md`：writing/economy/onboard 判留，其余四份微补，共约 6 行，不重写、不新增文件、不删除。
+
+- `grilling.md` 补回上游短语 `with a fresh context window`（Matt 全仓硬规则，PR #1341 批量修订；防宿主 fork 父会话使事实查证向访谈推荐锚定）。NOTICE 的 verbatim 镜像声明随之恢复为真。
+- `quality.md` 两处：可量化目标给出数值阈值或可判定判据；选中质量目标时点名可能牺牲的另一项特征或指标，取舍由用户确认。九项特征表保留为扫描词汇，不是验收清单。
+- `ui-spec.md` 两处：关键状态枚举补「超长内容与溢出」；比较候选时布局、信息层级或主动作结构必须不同，只差颜色和文案的不是候选。
+- `domain-modeling.md` 恢复吸收上游时丢失的两条纪律：长期决定的 Memory 准入收紧回三条件 AND（难逆转、无上下文会惊讶、真实权衡）；已解决术语连同选定词与要避免的近义词一起落 Memory，防跨会话同义词漂移。
+- 评判中撤回过给 writing.md 补「现在时/单一真相源/去泄露」的建议：这些规则已在 `memory-direction.md` 存在，再补会制造第二份权威归属。
+
 ## 2.1.1
 
 - 按 opencode 原始会话与 v2 设计研究稿复盘，补回五处被精简磨掉的早期设计：小改不建 work 但仍要在对话里明确「改后应看到什么」并真实验证；接续发现检查点与现实不符时先修正或停下澄清；外部副作用前完成检查点回写与完成门核对，破坏性操作需授权（不再只限 push）；用户改变预期或边界时受影响旧证明回到 `无法判定`、原证据只作历史；Vision 在当前工作明确受其约束时也可读取。研究稿原文归档到 `byissue/work/v2-delivery/research-direction.md` 与 `research-evidence-matrix.md`。
