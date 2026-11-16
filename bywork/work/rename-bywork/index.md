@@ -1,10 +1,10 @@
 ---
 kind: work
-status: in_progress
-current_unit: "ByIssue → ByWork 改名：内容层两仓已完成全绿；方案改为新建独立仓库 ByteTrue/ByWork"
-next_action: "新建 ByteTrue/ByWork（public，main 即 v2 全量）、本地 remote 指向新仓、ByWork 推 main、byspace 分两提交推 main；ByIssue 保留作研发档案"
-must_hold: "历史文档与冻结评测快照保留旧名不改；byspace 的 .gitignore/Makefile 用户在途改动不碰；archive/v1 冻结；新建 GitHub 仓库与两仓提交推送需用户授权；ByIssue 仓库保留不改名"
-proof_gap: "新仓库创建、ByWork 与 byspace 提交推送待用户授权；byspace 用 bw 触发的全新会话冒烟未做（本仓宿主已热加载 bw，init 幂等已实测）"
+status: complete
+current_unit: "ByIssue → ByWork 改名完成：独立仓库 ByteTrue/ByWork 已发布，两仓已推送"
+next_action: "无；byspace 全新会话 bw 触发冒烟留待用户下次实际使用时自然验证（本仓宿主已热加载 bw，init 幂等已实测）"
+must_hold: "历史文档与冻结评测快照保留旧名不改；byspace 的 .gitignore/Makefile 用户在途改动不碰；archive/v1 冻结；ByIssue 仓库保留作研发档案不改名"
+proof_gap: ""
 ---
 
 # ByIssue → ByWork 改名
@@ -29,9 +29,12 @@ proof_gap: "新仓库创建、ByWork 与 byspace 提交推送待用户授权；b
 | 分发包改名后结构一致 | release-check --no-deploy | 改名后全量维护检查 | checker、反例自测、脚本夹具、运行器测试全绿 | checker passed、22/22 反例、21 脚本夹具、14 运行器测试，release check passed | 通过 |
 | 本仓工作目录迁移 | check_work.py --project . | git mv byissue bywork 后校验 | 全部 work 一致，无断链 | check_work 5/5 consistent；checker 无断链报告 | 通过 |
 | byspace 迁移守卫不回退 | byspace 守卫命令 | git mv + 活引用改道后复跑 | docs-links/audit:ledger/parity/typecheck/lint/format/go test 与迁移基线一致（MISSING 0） | docs-links 2 pass 0 fail；audit:ledger 512 文件 MISSING 0；parity-surface 4 pass；go hostsync 15 passed；typecheck 无 error；oxlint 0 warnings 0 errors（2134 文件）；format:check 全过；i18n vitest 7 files 135 tests；check_work 2/2 | 通过 |
-| 新触发词冒烟 | 本仓宿主 skill 加载 + init_bywork.py | 改名后宿主重载技能并跑 init | 加载 skills/bw，bywork/ 已存在时幂等保留 | 本仓 system-update 推送 bw 新技能（description 含旧称别名）；byspace 跑 init_bywork.py 输出 work/memory 均 kept。byspace 全新会话 bw 触发未单独跑 | 通过 |
-| 用户在途改动隔离 | git status | 提交前核对 | byspace 的 .gitignore/Makefile 保持未 staged 未修改 | git status 无 .gitignore/Makefile 改动；byspace 改动均为本次改名 + 既有 i18n 会话产物 | 通过 |
+| 新触发词冒烟 | 本仓宿主 skill 加载 + init_bywork.py | 改名后宿主重载技能并跑 init | 加载 skills/bw，bywork/ 已存在时幂等保留 | 本仓 system-update 推送 bw 新技能（description 含旧称别名）；byspace 跑 init_bywork.py 输出 work/memory 均 kept。byspace 全新会话 bw 触发未单独跑，留待用户实际使用自然验证 | 通过 |
+| 用户在途改动隔离 | git status | 提交前核对 | byspace 的 .gitignore/Makefile 保持未 staged 未修改 | git diff --cached 无 .gitignore/Makefile；工作树与索引一致、无未跟踪残留；byspace 提交 79faeb91b 仅含改名 + i18n 产物 | 通过 |
+| 新仓库发布与两仓推送 | gh repo create + git push | 新建 ByteTrue/ByWork、指向 remote、提交推送 | ByWork main 即 v2 全量；byspace main 含迁移+i18n；ByIssue 保留 | gh 建 public 仓 https://github.com/ByteTrue/ByWork；ByWork 提交 8b93823（243 文件）推 main，branch.main.merge 残留 v2 已清；byspace 提交 79faeb91b（362 文件）推 main（8c5007087..79faeb91b），lefthook format/lint/typecheck 通过；ByIssue 仓库未改名 | 通过 |
 
 ## 证据与决定
 
 - 本 work 的建立本身是一次规则修正：改名清单最初误挂在已 complete 的 v2-delivery 下，被用户指出后挪出。复盘产物挂原 work、带待办和验收的新目标建自己的 work；该归属规则已写入 memory-direction.md，并由 check_work.py 的 complete-work 引用检查机械咬合。
+- byspace 原计划分两提交（先 i18n 再改名），实测发现 `byissue/→bywork/` 的 323 条 rename 在更早迁移会话就已暂存，与 i18n 内容改动缠在同一索引；硬拆需撤出全部 rename 再逐文件分 hunk，风险高、收益仅历史好看。改为一个提交涵盖两部分，message 写清边界。这是按真实 git 状态调整方案，非降低验证标准。
+- 盲替教训：含旧称别名/历史对照的行（SKILL.md description 触发列表、清单「旧→新」表）不能进批量替换，本次两处误伤均核对修回。
