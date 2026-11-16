@@ -63,7 +63,7 @@ def main():
     parser.add_argument('--timeout', type=int, default=14400, help='Whole-task limit in seconds')
     args = parser.parse_args()
     root, source, case, config = (p.expanduser().resolve() for p in (args.run, args.source, args.case, args.config))
-    project, skill = root / 'project', source / 'skills/bi'
+    project, skill = root / 'project', source / 'skills/bw'
     if args.no_skill and source != ROOT:
         parser.error('--no-skill installs nothing; --source is meaningless with it')
     if any(root.is_relative_to(p) or p.is_relative_to(root) for p in (ROOT, source, case)):
@@ -86,7 +86,7 @@ def main():
     report = {'execution': 'in_progress', 'model': args.model, 'thinking': args.thinking,
               'model_limits': {k: model.get(k) for k in ('contextWindow', 'maxTokens')},
               'settings': settings, 'compact_at': args.compact_at, 'seed_commit': seed['seed_commit'],
-              'arm': 'no-skill-control' if args.no_skill else 'bi-skill',
+              'arm': 'no-skill-control' if args.no_skill else 'bw-skill',
               'skill_sha256': {} if args.no_skill else hashes(skill),
               'case_sha256': hashes(case), 'business': '无法判定'}
     save(root / 'report.json', report)
@@ -104,9 +104,9 @@ def main():
             installed = None
             report['install'] = {'skipped': 'no-skill control arm installs nothing'}
         else:
-            install = ['npx', '--yes', 'skills', 'add', str(source), '--skill', 'bi', '-a', 'pi', '--copy', '-y']
+            install = ['npx', '--yes', 'skills', 'add', str(source), '--skill', 'bw', '-a', 'pi', '--copy', '-y']
             report['install'] = command(install, project, env, root / 'install.log', 180)
-            installed = project / '.agents/skills/bi'
+            installed = project / '.agents/skills/bw'
             if report['install']['returncode'] or hashes(installed) != report['skill_sha256']:
                 raise RuntimeError('skill installation failed or differs from source')
             skill_args = ['--skill', str(installed)]
@@ -127,9 +127,9 @@ def main():
         protected = [p for p in original if p.endswith('_test.go') or '.test.' in p or '.spec.' in p]
         report['changed_original_tests'] = [p for p in protected if not (project / p).is_file() or hashlib.sha256((project / p).read_bytes()).hexdigest() != original[p]]
         if args.no_skill:
-            stray = project / '.agents/skills/bi'
+            stray = project / '.agents/skills/bw'
             if stray.exists():
-                raise RuntimeError('no-skill control arm found an installed bi skill; the control is contaminated')
+                raise RuntimeError('no-skill control arm found an installed bw skill; the control is contaminated')
         elif hashes(installed) != report['skill_sha256']:
             raise RuntimeError('skill changed during execution')
         if hashes(case) != report['case_sha256']:

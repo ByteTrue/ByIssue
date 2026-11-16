@@ -41,7 +41,7 @@ def copy_dependencies(donor, project):
 def prepare(corpus, output, case):
     corpus, output = corpus.resolve(), output.resolve()
     if any(output.is_relative_to(p) or p.is_relative_to(output) for p in (corpus, ROOT)):
-        raise ValueError("output must be separate from the corpus and ByIssue")
+        raise ValueError("output must be separate from the corpus and ByWork")
     manifest = json.loads((corpus / "manifest.json").read_text())
     recipe = json.loads((case / "rebuild.json").read_text())
     if manifest["commit"] != recipe["commit"] or inventory(corpus / "source") != manifest["files_sha256"]:
@@ -49,8 +49,8 @@ def prepare(corpus, output, case):
     output.mkdir(parents=True, exist_ok=False)
     project = output / "project"
     shutil.copytree(corpus / "source", project)
-    removed_history = inventory(project / "byissue")
-    shutil.rmtree(project / "byissue")
+    removed_history = inventory(project / "bywork")
+    shutil.rmtree(project / "bywork")
     paths = [Path(p) for p in recipe["remove_files"]]
     for folder in recipe["remove_implementation_dirs"]:
         paths += [p.relative_to(project) for p in (project / folder).iterdir()
@@ -67,7 +67,7 @@ def prepare(corpus, output, case):
         removed_lines += count
         subprocess.run(["gofmt", "-w", str(path)], check=True)
     for args in (["init", "-b", recipe["branch"]], ["add", "."],
-                 ["-c", "user.name=ByIssue Evaluation", "-c", "user.email=evaluation@localhost",
+                 ["-c", "user.name=ByWork Evaluation", "-c", "user.email=evaluation@localhost",
                   "-c", "core.hooksPath=/dev/null", "commit", "-m", "test: seed schedule rebuild benchmark"]):
         subprocess.run(["git", *args], cwd=project, check=True, capture_output=True)
     seed = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=project, text=True).strip()

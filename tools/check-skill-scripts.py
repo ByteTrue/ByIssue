@@ -8,8 +8,8 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SCRIPT = ROOT / "skills/bi/scripts/init_byissue.py"
-CHECKER = ROOT / "skills/bi/scripts/check_work.py"
+SCRIPT = ROOT / "skills/bw/scripts/init_bywork.py"
+CHECKER = ROOT / "skills/bw/scripts/check_work.py"
 
 VALID = """---
 kind: work
@@ -47,7 +47,7 @@ def run_check(project: Path) -> tuple[int, str]:
 
 
 def write_work(root: Path, slug: str, text: str) -> Path:
-    index = root / "byissue" / "work" / slug / "index.md"
+    index = root / "bywork" / "work" / slug / "index.md"
     index.parent.mkdir(parents=True, exist_ok=True)
     index.write_text(text, encoding="utf-8")
     return index
@@ -75,17 +75,17 @@ def main() -> int:
         checked.mkdir()
 
         code, output = run_init(project)
-        created = all((project / "byissue" / name).is_dir() for name in ("work", "memory"))
+        created = all((project / "bywork" / name).is_dir() for name in ("work", "memory"))
         case("fresh init creates work/ and memory/", code == 0 and created and "created" in output, output)
 
-        marker = project / "byissue/work/example/index.md"
+        marker = project / "bywork/work/example/index.md"
         marker.parent.mkdir(parents=True)
         marker.write_text("# existing work\n", encoding="utf-8")
         code, output = run_init(project)
         case("rerun keeps existing work",
              code == 0 and marker.read_text(encoding="utf-8") == "# existing work\n" and "kept" in output, output)
 
-        vision = project / "byissue/vision/index.md"
+        vision = project / "bywork/vision/index.md"
         vision.parent.mkdir(parents=True, exist_ok=True)
         vision.write_text("# user vision\n", encoding="utf-8")
         code, output = run_init(project)
@@ -94,7 +94,7 @@ def main() -> int:
 
         # A workspace with no work entry is not a failure.
         code, output = run_check(checked)
-        case("check passes when there is no byissue/work yet", code == 0, output)
+        case("check passes when there is no bywork/work yet", code == 0, output)
 
         write_work(checked, "valid", VALID)
         code, output = run_check(checked)
@@ -151,6 +151,27 @@ def main() -> int:
         write_work(checked, "valid", padded)
         code, output = run_check(checked)
         case("check accepts a formatter-padded proof table header", code == 0, output)
+
+        # A complete work is sealed: anything added later must be reachable from
+        # index.md. Real-world regression: a new rename task plan was dropped into
+        # the complete v2-delivery dir without a link, silently reopening it.
+        write_work(checked, "valid", VALID)
+        stray = checked / "bywork/work/valid/new-task.md"
+        stray.write_text("# 新任务计划\n", encoding="utf-8")
+        code, output = run_check(checked)
+        case("check rejects an unlinked file in a complete work", code != 0 and "new-task.md" in output, output)
+
+        stray.unlink()
+        evidence_dir = checked / "bywork/work/valid/evidence"
+        evidence_dir.mkdir()
+        (evidence_dir / "run.log").write_text("ok\n", encoding="utf-8")
+        write_work(checked, "valid", VALID + "\n证据见同目录 `evidence/`。\n")
+        code, output = run_check(checked)
+        case("check accepts a mentioned evidence directory in a complete work", code == 0, output)
+
+        import shutil
+        shutil.rmtree(evidence_dir)
+        write_work(checked, "valid", VALID)
 
         # One bad entry must not hide the others, and the summary counts both.
         write_work(checked, "valid", VALID)

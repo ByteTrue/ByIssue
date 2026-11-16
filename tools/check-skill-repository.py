@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""发布前检查 ByIssue 单技能仓库的结构和可达路径。
+"""发布前检查 ByWork 单技能仓库的结构和可达路径。
 
 检查版本记录、技能包布局、许可证、技能内路径、当前文档里的仓库路径、
 工作区隔离和 work 模板的检查点字段。工作流语义由人工审查和真实使用验证，
@@ -13,19 +13,19 @@ from pathlib import Path
 from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parent.parent
-SKILL = ROOT / "skills/bi"
+SKILL = ROOT / "skills/bw"
 
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$")
 LINK_RE = re.compile(r"\[[^\]]*\]\(<?([^)#>]+)>?(?:#[^)]*)?\)")
 PATH_RE = re.compile(r"`((?:references|templates|scripts|agents)/[\w./-]+\.(?:md|py|yaml))`")
-REPO_ONLY_NAMES = ["WHY BYISSUE.md", "CHANGELOG.md"] + sorted(
+REPO_ONLY_NAMES = ["WHY BYWORK.md", "CHANGELOG.md"] + sorted(
     {p.name for p in (ROOT / "tools").rglob("*") if p.is_file() and "__pycache__" not in p.parts}
 )
 REPO_ONLY_RE = re.compile("|".join([r"\bVERSION\b"] + [re.escape(name) for name in REPO_ONLY_NAMES]))
 
 # These files are loaded by the host or are the package's main entry. Everything else
 # must be reachable from one of them or from a Markdown link in the package.
-ENTRY_FILES = {"SKILL.md", "NOTICE.md", "agents/openai.yaml", "scripts/init_byissue.py"}
+ENTRY_FILES = {"SKILL.md", "NOTICE.md", "agents/openai.yaml", "scripts/init_bywork.py"}
 WORK_FIELDS = {"kind", "status", "current_unit", "next_action", "must_hold", "proof_gap"}
 
 
@@ -75,9 +75,9 @@ def check_license_travels(report):
         return report("LICENSE", "file is missing")
     text = notice.read_text(encoding="utf-8") if notice.is_file() else ""
     if license_file.read_text(encoding="utf-8").strip() not in text:
-        report("skills/bi/NOTICE.md", "must contain the repository LICENSE verbatim")
+        report("skills/bw/NOTICE.md", "must contain the repository LICENSE verbatim")
     if "mattpocock/skills" not in text or "Copyright (c) 2026 Matt Pocock" not in text:
-        report("skills/bi/NOTICE.md", "must keep the upstream attribution and copyright line")
+        report("skills/bw/NOTICE.md", "must keep the upstream attribution and copyright line")
 
 
 def check_skill_layout(report):
@@ -85,11 +85,11 @@ def check_skill_layout(report):
     if not skills.is_dir():
         return report("skills", "directory is missing")
     found = sorted(path.name for path in skills.iterdir() if path.is_dir())
-    if found != ["bi"]:
-        report("skills", f"must contain exactly the bi skill, found {found!r}")
+    if found != ["bw"]:
+        report("skills", f"must contain exactly the bw skill, found {found!r}")
     for entry in sorted(ENTRY_FILES):
         if not (SKILL / entry).is_file():
-            report(f"skills/bi/{entry}", "required entry file is missing")
+            report(f"skills/bw/{entry}", "required entry file is missing")
 
 
 def check_skill_links(report):
@@ -102,7 +102,7 @@ def check_skill_links(report):
         if leak:
             report(
                 source.relative_to(ROOT).as_posix(),
-                f"references repo-only file not distributed with skills/bi/: {leak.group(0)}",
+                f"references repo-only file not distributed with skills/bw/: {leak.group(0)}",
             )
         targets = [target.strip() for target in LINK_RE.findall(text)] + PATH_RE.findall(text)
         for target in targets:
@@ -126,18 +126,18 @@ def check_skill_links(report):
 def check_work_template(report):
     path = SKILL / "templates/work.md"
     if not path.is_file():
-        return report("skills/bi/templates/work.md", "work template is missing")
+        return report("skills/bw/templates/work.md", "work template is missing")
     lines = path.read_text(encoding="utf-8").splitlines()
     if not lines or lines[0].strip() != "---":
-        return report("skills/bi/templates/work.md", "frontmatter is missing")
+        return report("skills/bw/templates/work.md", "frontmatter is missing")
     try:
         end = lines.index("---", 1)
     except ValueError:
-        return report("skills/bi/templates/work.md", "frontmatter is not closed")
+        return report("skills/bw/templates/work.md", "frontmatter is not closed")
     fields = {line.split(":", 1)[0].strip() for line in lines[1:end] if ":" in line}
     if fields != WORK_FIELDS:
         report(
-            "skills/bi/templates/work.md",
+            "skills/bw/templates/work.md",
             f"frontmatter fields must be {sorted(WORK_FIELDS)!r}, found {sorted(fields)!r}",
         )
 
@@ -146,7 +146,7 @@ def check_work_template(report):
 # paths that no longer exist and therefore stay outside this check.
 HISTORY_FILES = {"CHANGELOG.md"}
 REPO_LINK_RE = re.compile(r"\[[^\]]*\]\((<[^>]+>|(?:[^()\s]|\([^()\s]*\))+)\)")
-REPO_PREFIX = r"(?:tools|skills/bi|byissue/(?:work|memory|vision)|archive)/"
+REPO_PREFIX = r"(?:tools|skills/bw|bywork/(?:work|memory|vision)|archive)/"
 COMMAND = r"(?:bash|sh|python3|npx)(?:\s+-\S+)*\s+"
 REPO_PATH_RE = re.compile(rf"`(?:{COMMAND})?(?:\./)?({REPO_PREFIX}[^`\s]*[\w/])")
 INLINE_COMMAND_RE = re.compile(rf"{COMMAND}(?:\./)?({REPO_PREFIX}[^\s`]*[\w/])")
@@ -158,9 +158,9 @@ def check_repo_paths(report):
         rel = source.relative_to(ROOT)
         if ".git" in rel.parts or rel.parts[0] in {"skills", "archive"} or rel.as_posix() in HISTORY_FILES:
             continue
-        # Hidden dirs are host wiring, not repo docs: .agents/skills/bi is a symlink
-        # to skills/bi for self-hosting, and scanning it again as a repo document
-        # would demand byissue/vision/ exist in a repo that creates it on demand.
+        # Hidden dirs are host wiring, not repo docs: .agents/skills/bw is a symlink
+        # to skills/bw for self-hosting, and scanning it again as a repo document
+        # would demand bywork/vision/ exist in a repo that creates it on demand.
         if any(part.startswith(".") for part in rel.parts[:-1]):
             continue
         lines = source.read_text(encoding="utf-8").splitlines()
@@ -182,16 +182,16 @@ def check_repo_paths(report):
 
 
 def check_workspace_layout(report):
-    workspace = ROOT / "byissue"
+    workspace = ROOT / "bywork"
     for name in ("work", "memory"):
         if not (workspace / name).is_dir():
-            report(f"byissue/{name}", "directory is missing")
+            report(f"bywork/{name}", "directory is missing")
     if workspace.is_dir():
         for entry in sorted(workspace.iterdir()):
             if entry.name not in {"work", "memory", "vision"} or not entry.is_dir():
                 report(entry.relative_to(ROOT).as_posix(), "unexpected workspace entry; historical records belong in archive/")
     if not (workspace / "memory/project.md").is_file():
-        report("byissue/memory/project.md", "file is missing")
+        report("bywork/memory/project.md", "file is missing")
 
 
 def main() -> int:

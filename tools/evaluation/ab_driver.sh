@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# A/B pass-rate protocol: no-skill control vs bi candidate-29, interleaved order.
+# A/B pass-rate protocol: no-skill control vs bw (then bi) candidate-29, interleaved order.
 # deepseek-flash, thinking max, 400k native compaction, 4h cap per run.
 set -uo pipefail
 cd "$(dirname "$0")/../.."

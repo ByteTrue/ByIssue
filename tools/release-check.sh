@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Run every mechanical release check, then confirm the copy the host loads matches skills/bi/.
+# Run every mechanical release check, then confirm the copy the host loads matches skills/bw/.
 #
 # Usage: bash tools/release-check.sh <deployed-skill-dir> | --no-deploy
 #   The deployed copy is the directory the host actually loads (an `npx skills` install puts it in
-#   ~/.agents/skills/bi; an index install such as magpie puts it elsewhere). It comes from the
+#   ~/.agents/skills/bw; an index install such as magpie puts it elsewhere). It comes from the
 #   argument, else $BI_DEPLOYED. The target must be the directory the host actually loads.
 #   --no-deploy skips only the deployed-copy comparison: use it right after editing, before syncing.
 # Exits 1 at the end if any step failed; every step runs so one report shows all failures.
@@ -31,7 +31,7 @@ elif [ ! -d "$target" ]; then
   echo "== deployed copy: $target does not exist"
   failed+=("deployed copy")
 else
-  step "deployed copy matches skills/bi/ ($target)" diff -rq skills/bi "$target"
+  step "deployed copy matches skills/bw/ ($target)" diff -rq skills/bw "$target"
 fi
 
 if [ ${#failed[@]} -gt 0 ]; then

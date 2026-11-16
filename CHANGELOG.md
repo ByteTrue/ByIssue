@@ -1,3 +1,19 @@
+## 3.0.0
+
+ByIssue 即本技能旧称。本次更名 ByIssue → ByWork：`by` 取自维护者 ByteTrue，工作流的最小单元在 v2 已从 issue 变为 work，旧名的两个词源都不再成立。只有 byspace 一个消费者，现在是迁移成本最低点；评测证明的是方法论，路径字面量改名不使其失效。
+
+- 技能 ID `bi` → `bw`，分发包目录 `skills/bi/` → `skills/bw/`；description 触发列表保留 `bi`、`ByIssue` 作旧称别名，肌肉记忆仍可触发。
+- 用户项目工作目录 `byissue/` → `bywork/`（work/memory/vision 结构不变）；初始化脚本 `scripts/init_byissue.py` → `scripts/init_bywork.py`。
+- ByWork 以独立仓库 ByteTrue/ByWork 发布，main 即当前 v2 全量；ByIssue 仓库原地保留作研发档案（v1+v2 历史与评测证据），不改名。本仓自举软链接 `.agents/skills/bw → ../../skills/bw`。
+- 维护侧 checker、评测运行器与用例文本、README/AGENTS/NOTICE/WHY BYWORK 同步改道；CHANGELOG 旧节、已完成 work 与台账中的历史名称作为事实记录保留。
+
+迁移步骤（现有用户项目）：`git mv byissue bywork`，把活引用中的 `byissue/` 改道为 `bywork/`；技能重装为 `bw`（`npx skills add <repo> --skill bw`）。冻结的历史评测快照按当时契约读，不与新技能互通，属预期。
+
+## 2.2.0
+
+- `check_work.py` 新增 complete work 封存检查：已完成 work 目录下的每个文件必须被 index 链接或反引号提及（提及目录覆盖其内容）。来自真实误用：改名任务的计划清单被挂进已 complete 的交付 work，完成态被悄悄污染。回归夹具先在旧脚本上跑红再修复；本仓三个历史 work 的证据目录与日志随之补齐 index 提及。
+- `memory-direction.md` 在记录归属决策点补正面规则：复盘与审计产物挂在被复盘的 work 下并从其 index 链接；带待办和验收的新目标建自己的 work，已完成的 work 保持封存。
+
 ## 2.1.2
 
 对 7 份非核心原则材料完成外部范式评判（pstack、Matt、Superpowers、gstack、bmad、spec-kit、wnld），结论与证据台账在 `byissue/work/v2-delivery/principles-review.md`：writing/economy/onboard 判留，其余四份微补，共约 6 行，不重写、不新增文件、不删除。

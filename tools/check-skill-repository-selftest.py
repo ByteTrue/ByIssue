@@ -60,38 +60,38 @@ def duplicate_current_version(root: Path):
 CASES = [
     ("version without changelog section", write("VERSION", "9.9.9\n"), "missing version section 9.9.9"),
     ("version not semver", write("VERSION", "1.x\n"), "not valid semver"),
-    ("second skill in package", write("skills/extra/SKILL.md", "# extra\n"), "must contain exactly the bi skill"),
-    ("entry file missing", delete("skills/bi/agents/openai.yaml"), "required entry file is missing"),
+    ("second skill in package", write("skills/extra/SKILL.md", "# extra\n"), "must contain exactly the bw skill"),
+    ("entry file missing", delete("skills/bw/agents/openai.yaml"), "required entry file is missing"),
     (
         "link to missing file",
-        append("skills/bi/references/clarify.md", "[x](references/nope.md)"),
+        append("skills/bw/references/clarify.md", "[x](references/nope.md)"),
         "points at missing path: references/nope.md",
     ),
-    ("packaged file nobody references", write("skills/bi/references/orphan.md", "# orphan\n"), "packaged but nothing references it"),
-    ("skill names a repo-only file", append("skills/bi/references/clarify.md", "见 `VERSION`"), "repo-only file not distributed"),
+    ("packaged file nobody references", write("skills/bw/references/orphan.md", "# orphan\n"), "packaged but nothing references it"),
+    ("skill names a repo-only file", append("skills/bw/references/clarify.md", "见 `VERSION`"), "repo-only file not distributed"),
     (
         "new tool file is repo-only without editing the checker",
-        both(write("tools/brand-new-tool.md", "# new\n"), append("skills/bi/references/clarify.md", "见 `brand-new-tool.md`")),
-        "repo-only file not distributed with skills/bi/: brand-new-tool.md",
+        both(write("tools/brand-new-tool.md", "# new\n"), append("skills/bw/references/clarify.md", "见 `brand-new-tool.md`")),
+        "repo-only file not distributed with skills/bw/: brand-new-tool.md",
     ),
     (
         "template carries a skill-internal path",
-        append("skills/bi/templates/work.md", "[x](../references/clarify.md)"),
+        append("skills/bw/templates/work.md", "[x](../references/clarify.md)"),
         "template contains skill-internal path",
     ),
     (
         "work template loses a checkpoint field",
-        edit("skills/bi/templates/work.md", "status: in_progress", "state: in_progress"),
+        edit("skills/bw/templates/work.md", "status: in_progress", "state: in_progress"),
         "frontmatter fields must be",
     ),
     (
         "anchored link to missing file",
-        append("skills/bi/references/clarify.md", "[x](references/nope.md#part)"),
+        append("skills/bw/references/clarify.md", "[x](references/nope.md#part)"),
         "points at missing path: references/nope.md",
     ),
     (
         "current doc names a deleted tool",
-        append("byissue/memory/project.md", "见 `tools/check-deleted.py`"),
+        append("bywork/memory/project.md", "见 `tools/check-deleted.py`"),
         "names missing path: tools/check-deleted.py",
     ),
     (
@@ -101,7 +101,7 @@ CASES = [
     ),
     (
         "inline command names a deleted tool",
-        append("byissue/memory/project.md", "运行 python3 tools/deleted.py"),
+        append("bywork/memory/project.md", "运行 python3 tools/deleted.py"),
         "command names missing path: tools/deleted.py",
     ),
     (
@@ -111,19 +111,19 @@ CASES = [
     ),
     (
         "current work links a missing file",
-        write("byissue/work/example/index.md", "[proof](missing.md)\n"),
+        write("bywork/work/example/index.md", "[proof](missing.md)\n"),
         "link points at missing path: missing.md",
     ),
     (
         "historical records left in active workspace",
-        write("byissue/issues/legacy.md", "# historical issue\n"),
+        write("bywork/issues/legacy.md", "# historical issue\n"),
         "unexpected workspace entry; historical records belong in archive/",
     ),
     ("changelog newest section is not VERSION", lambda root: (root / "CHANGELOG.md").write_text("## 0.0.0\n\nold\n\n" + (root / "CHANGELOG.md").read_text(encoding="utf-8"), encoding="utf-8"), "newest section is 0.0.0"),
     ("changelog repeats a version", duplicate_current_version, "has more than one section"),
     ("license edited but packaged NOTICE not", edit("LICENSE", "2026 ByteTrue", "2027 ByteTrue"), "must contain the repository LICENSE verbatim"),
-    ("packaged NOTICE loses upstream attribution", edit("skills/bi/NOTICE.md", "Copyright (c) 2026 Matt Pocock", "Copyright (c) 2026"), "must keep the upstream attribution"),
-    ("project memory deleted", delete("byissue/memory/project.md"), "byissue/memory/project.md: file is missing"),
+    ("packaged NOTICE loses upstream attribution", edit("skills/bw/NOTICE.md", "Copyright (c) 2026 Matt Pocock", "Copyright (c) 2026"), "must keep the upstream attribution"),
+    ("project memory deleted", delete("bywork/memory/project.md"), "bywork/memory/project.md: file is missing"),
 ]
 
 

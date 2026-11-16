@@ -106,7 +106,7 @@ def trace(raw, destination, run_root):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--source", type=Path, default=ROOT, help="Local repository or frozen source containing skills/bi")
+    parser.add_argument("--source", type=Path, default=ROOT, help="Local repository or frozen source containing skills/bw")
     parser.add_argument("--case", type=Path, default=HERE / "cases/ledger")
     parser.add_argument("--output", type=Path, required=True, help="New run directory outside the repository")
     parser.add_argument("--model", required=True, help="Exact provider/model, not a fuzzy model pattern")
@@ -115,13 +115,13 @@ def main():
     parser.add_argument("--timeout", type=int, default=1200, help="Timeout per pi phase in seconds")
     args = parser.parse_args()
     source, case, output = args.source.resolve(), args.case.resolve(), args.output.resolve()
-    skill = source / "skills/bi"
+    skill = source / "skills/bw"
     try:
         prompts = sorted(case.glob("phase-*.txt"), key=lambda p: int(p.stem.split("-")[-1]))
     except ValueError:
         parser.error("phase prompt names must use integer numbers")
     if not (skill / "SKILL.md").is_file() or not all((case / p).exists() for p in ("acceptance.py", "workflow-rubric.md", "project")):
-        parser.error("source needs skills/bi; case needs acceptance.py, workflow-rubric.md and project/")
+        parser.error("source needs skills/bw; case needs acceptance.py, workflow-rubric.md and project/")
     if not prompts or [p.name for p in prompts] != [f"phase-{i}.txt" for i in range(1, len(prompts) + 1)]:
         parser.error("case needs consecutive phase-1.txt, phase-2.txt, ...")
     if args.timeout <= 0 or "/" not in args.model:
@@ -147,9 +147,9 @@ def main():
                 (output / "agent" / name).symlink_to(config)
         report["pi_version"] = subprocess.check_output(["pi", "--version"], env=env, text=True, timeout=30).strip()
         project = output / "project"
-        install = ["npx", "--yes", "skills", "add", str(source), "--skill", "bi", "-a", "pi", "--copy", "-y"]
+        install = ["npx", "--yes", "skills", "add", str(source), "--skill", "bw", "-a", "pi", "--copy", "-y"]
         report["install"] = command(install, project, env, output / "install.log", 180)
-        installed = project / ".agents/skills/bi"
+        installed = project / ".agents/skills/bw"
         if report["install"]["returncode"] or hashes(installed) != report["skill_sha256"]:
             raise RuntimeError("skill installation failed or differs from source")
         shutil.copytree(case / "project", project, dirs_exist_ok=True)

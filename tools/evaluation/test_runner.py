@@ -124,7 +124,7 @@ class EvidenceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             project = Path(tmp)
             oracle = run.HERE / "cases/ledger/acceptance.py"
-            known = run.ROOT / "byissue/work/v2-readiness/evaluation/ledger-result.py"
+            known = run.ROOT / "bywork/work/v2-readiness/evaluation/ledger-result.py"
             shutil.copy2(known, project / "ledger.py")
             command = [sys.executable, str(oracle), str(project), "2"]
             good = subprocess.run(command, capture_output=True, text=True)
@@ -136,7 +136,7 @@ class EvidenceTests(unittest.TestCase):
     def test_oracle_rejects_real_cross_session_format_regression(self):
         with tempfile.TemporaryDirectory() as tmp:
             project = Path(tmp)
-            bad = run.ROOT / "byissue/work/eval-standardization/evaluation/revision-2-ledger/phase-2/project/ledger.py"
+            bad = run.ROOT / "bywork/work/eval-standardization/evaluation/revision-2-ledger/phase-2/project/ledger.py"
             shutil.copy2(bad, project / "ledger.py")
             oracle = run.HERE / "cases/ledger/acceptance.py"
             result = subprocess.run([sys.executable, str(oracle), str(project), "2"],
@@ -172,8 +172,8 @@ class RebuildTests(unittest.TestCase):
             root = Path(tmp)
             repo, case = root / 'repo', root / 'case'
             repo.mkdir(); case.mkdir()
-            (repo / 'byissue/issues').mkdir(parents=True)
-            (repo / 'byissue/issues/old.md').write_text('v1')
+            (repo / 'bywork/issues').mkdir(parents=True)
+            (repo / 'bywork/issues/old.md').write_text('v1')
             (repo / 'feature.py').write_text('answer')
             (repo / 'feature_test.py').write_text('assert behavior')
             for args in (['init'], ['add', '.'], ['-c', 'user.name=Test', '-c', 'user.email=test@localhost', '-c', 'core.hooksPath=/dev/null', 'commit', '-m', 'original']):
@@ -185,7 +185,7 @@ class RebuildTests(unittest.TestCase):
             output = root / 'run'
             result = prepare(corpus, output, case)
             project = output / 'project'
-            self.assertFalse((project / 'byissue').exists())
+            self.assertFalse((project / 'bywork').exists())
             self.assertFalse((project / 'feature.py').exists())
             self.assertTrue((project / 'feature_test.py').exists())
             self.assertEqual(result['removed_v1_files'], 1)

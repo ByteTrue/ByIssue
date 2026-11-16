@@ -1,8 +1,8 @@
 <div align="center">
 
-# ByIssue v2
+# ByWork v2
 
-![ByIssue](asset/ByIssueCover-v2.png)
+![ByWork](asset/ByWorkCover-v2.png)
 
 **让 Agent 接着做对的事，用真实结果证明完成。**
 
@@ -12,9 +12,9 @@
 
 </div>
 
-ByIssue 是一个名为 **`bi`** 的 Agent Skill，用于 AI 辅助软件开发。它把目标、约束、下一步和验证证据留在项目中，帮助 Agent 在长任务、上下文压缩和新会话之后继续工作。
+ByWork 是一个名为 **`bw`** 的 Agent Skill，用于 AI 辅助软件开发。它把目标、约束、下一步和验证证据留在项目中，帮助 Agent 在长任务、上下文压缩和新会话之后继续工作。
 
-你说要做什么，`bi` 根据任务选择澄清、改变、理解与审查，或记忆与方向。小改直接验证；跨会话、多条行为路径和需要完整范围核对的任务建立工作检查点。
+你说要做什么，`bw` 根据任务选择澄清、改变、理解与审查，或记忆与方向。小改直接验证；跨会话、多条行为路径和需要完整范围核对的任务建立工作检查点。
 
 ## 快速开始
 
@@ -22,10 +22,10 @@ ByIssue 是一个名为 **`bi`** 的 Agent Skill，用于 AI 辅助软件开发�
 
 ### 1. 从 v2 分支安装
 
-在要使用 ByIssue 的项目目录运行：
+在要使用 ByWork 的项目目录运行：
 
 ```bash
-npx skills add https://github.com/ByteTrue/ByIssue/tree/v2 --skill bi
+npx skills add https://github.com/ByteTrue/ByWork/tree/v2 --skill bw
 ```
 
 按提示选择编码助手。默认安装到当前项目；加 `-g` 可全局安装。更新 v2 或从其他版本切到 v2 时，重新运行同一条命令。
@@ -38,29 +38,29 @@ npx skills add https://github.com/ByteTrue/ByIssue/tree/v2 --skill bi
 在助手中输入：
 
 ```text
-使用 bi，在这个项目接入 ByIssue。
+使用 bw，在这个项目接入 ByWork。
 ```
 
-Agent 会建立 `byissue/work/` 和 `byissue/memory/`，已有内容保留。随后直接告诉它目标：
+Agent 会建立 `bywork/work/` 和 `bywork/memory/`，已有内容保留。随后直接告诉它目标：
 
 ```text
-使用 bi，把所有旧 CSV 的金额迁移为整数分，保留原始数据，并验证实际导入入口。
+使用 bw，把所有旧 CSV 的金额迁移为整数分，保留原始数据，并验证实际导入入口。
 ```
 
 ### 在 pi 中使用
 
 ```bash
-npx skills add https://github.com/ByteTrue/ByIssue/tree/v2 --skill bi -a pi -y
+npx skills add https://github.com/ByteTrue/ByWork/tree/v2 --skill bw -a pi -y
 pi
 ```
 
 在 pi 会话中输入：
 
 ```text
-/skill:bi 在这个项目接入 ByIssue，然后帮我理清这次改动。
+/skill:bw 在这个项目接入 ByWork，然后帮我理清这次改动。
 ```
 
-其他助手按各自的技能调用方式使用 `bi`。
+其他助手按各自的技能调用方式使用 `bw`。
 
 ## 怎么用
 
@@ -71,7 +71,7 @@ pi
 | 理解与审查 | “这条支付链路怎么工作？”“评审这个 diff。” | 有范围、有出处的解释或审查结果 |
 | 记忆与方向 | “记住金额始终用整数分。”“整理下一阶段的方向。” | 按主题保存 Memory，按需整理 Vision |
 
-这些请求前加上“使用 bi”即可。遇到只有你能决定的产品边界或取舍，Agent 会提问；能从项目和运行中查明的事实由它自己核对。
+这些请求前加上“使用 bw”即可。遇到只有你能决定的产品边界或取舍，Agent 会提问；能从项目和运行中查明的事实由它自己核对。
 
 ### 中途停下，再继续
 
@@ -82,7 +82,7 @@ pi
 下一次会话：
 
 ```text
-使用 bi，继续账单迁移。
+使用 bw，继续账单迁移。
 ```
 
 Agent 接续时先读取当前 work 的检查点，再核对实际文件和证据；从压缩摘要接续也一样。存在多个同主题工作时，它会请你选择。
@@ -91,14 +91,14 @@ Agent 接续时先读取当前 work 的检查点，再核对实际文件和证�
 
 收尾时逐项核对证明表、scope 和外部验收结果，把每个未通过项写进 `proof_gap`。只有所有证明通过且 `proof_gap` 恰为空字符串时才写 `status: complete`；任何验收失败、缺少原始输出或既有测试被改写，都保持未完成并点名缺口。
 
-运行中的安装技能、评测用例和运行器材料只读；流程记录写入项目的 `byissue/`，技能修改回到技能源仓库。
+运行中的安装技能、评测用例和运行器材料只读；流程记录写入项目的 `bywork/`，技能修改回到技能源仓库。
 
 用户要求的原文或稳定来源、适用条件和例外会一起保留。留到下次的行为也保存已确认的输入输出格式和错误边界，让新会话有完整的实现依据。
 
 ## 工作如何保存
 
 ```text
-byissue/
+bywork/
 ├── work/
 │   └── {slug}/
 │       ├── index.md       # 本次目标、检查点和行为证明
@@ -126,7 +126,7 @@ byissue/
 - **行为证明**：从真实 UI、CLI、API 或其他实际入口操作，观察预期结果和关键副作用，记录证据。
 - **范围覆盖**：迁移、重写、移植和“所有 X”任务，从事实源列出范围，逐项对账。
 
-范围全部覆盖仍需行为验证。完成前从原需求逐项找到证明，再核对实际断言是否覆盖每个承诺。无法运行或尚未测到的路径标为“无法判定”，不能靠文件存在或局部测试通过宣布完成。完整契约见 [`skills/bi/SKILL.md`](skills/bi/SKILL.md)。
+范围全部覆盖仍需行为验证。完成前从原需求逐项找到证明，再核对实际断言是否覆盖每个承诺。无法运行或尚未测到的路径标为“无法判定”，不能靠文件存在或局部测试通过宣布完成。完整契约见 [`skills/bw/SKILL.md`](skills/bw/SKILL.md)。
 
 ## 本地验证
 
@@ -139,13 +139,13 @@ bash tools/release-check.sh --no-deploy
 这会检查技能包、引用路径、版本记录、模板和初始化脚本。传入助手实际加载的技能目录，还会逐文件比较安装副本：
 
 ```bash
-bash tools/release-check.sh /path/to/installed/bi
+bash tools/release-check.sh /path/to/installed/bw
 ```
 
 技能规则的真实效果按[标准评测流程](tools/evaluation/README.md)验证：固定输入、空目录安装、独立 pi 会话、业务验收和工作流逐项审查。
 
-仓库只分发 [`skills/bi/`](skills/bi/)。[`tools/`](tools/) 保存维护检查，项目约束在 [`byissue/memory/project.md`](byissue/memory/project.md)，v1 历史材料集中在 [`archive/v1/`](archive/v1/)。首次 pi 实际任务的输入、验收与结果见 [v2 实测记录](byissue/work/v2-readiness/evaluation/README.md)。
+仓库只分发 [`skills/bw/`](skills/bw/)。[`tools/`](tools/) 保存维护检查，项目约束在 [`bywork/memory/project.md`](bywork/memory/project.md)，v1 历史材料集中在 [`archive/v1/`](archive/v1/)。首次 pi 实际任务的输入、验收与结果见 [v2 实测记录](bywork/work/v2-readiness/evaluation/README.md)。
 
 ---
 
-基于 [CodeStable](https://github.com/liuzhengdongfortest)，由 [ByteTrue](https://github.com/ByteTrue) 维护。了解[为什么做 ByIssue](WHY%20BYISSUE.md)。
+基于 [CodeStable](https://github.com/liuzhengdongfortest)，由 [ByteTrue](https://github.com/ByteTrue) 维护。了解[为什么做 ByWork](WHY%20BYWORK.md)。
