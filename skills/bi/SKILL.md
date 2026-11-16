@@ -53,7 +53,7 @@ proof_gap: "行为门或范围门还缺什么"
 
 `status` 只能取 `in_progress`、`blocked`、`complete`。`proof_gap` 只在没有任何缺口时为空字符串。
 
-用户说“继续”或会话从压缩摘要接续时：先读取匹配的 work 检查点（不确定是哪个就看 `byissue/work/` 下的 `status` 和主题；多个候选让用户选），核对它与代码、git 和已有证据，再继续。摘要和记忆不能替代这次读取；接续后的动作要与检查点一致。
+用户说“继续”或会话从压缩摘要接续时：先读取匹配的 work 检查点（不确定是哪个就看 `byissue/work/` 下的 `status` 和主题；多个候选让用户选），核对它与代码、git 和已有证据；不一致就先修正检查点或停下澄清，再继续。摘要和记忆不能替代这次读取；接续后的动作要与检查点一致。
 
 ## 改变的核心流程
 
@@ -62,18 +62,18 @@ proof_gap: "行为门或范围门还缺什么"
 1. **保存要求。** 把用户要求原文、条件和例外落盘到 work，再写行为证明表：每行一个用户行为，注明真实入口、操作、应观察到什么。
 2. **逐行实现。** 每轮只选一行：先把这行写入检查点，再实现，再从真实入口验证，然后把实际结果回写这一行，才选下一行。不要批量实现后集中补写。
 3. **验证守住契约。** 从真实公开入口验证，保留调用者看到的原始输出。改动共享路径前先保存旧行为的基线，改后用同一入口复验比较。持久化、重启和生命周期行为用新进程或重启入口观察，每个显式分支（保留/归档、开/关、存在/缺失）都在该入口下单独验证——分支与生命周期相交时逐组合观察。
-4. **诚实收尾。** 完成前逐项核对证明表、scope 和外部验收结果，把每个未通过项写进 `proof_gap`。全部通过且 `proof_gap` 为空才能写 `complete`；任何失败都保持 `in_progress`/`blocked`。
+4. **诚实收尾。** 完成前逐项核对证明表、scope 和外部验收结果，把每个未通过项写进 `proof_gap`，并运行 `scripts/check_work.py` 核对检查点文件本身。全部通过且 `proof_gap` 为空才能写 `complete`；任何失败都保持 `in_progress`/`blocked`。
 
 ## 底线
 
 这些规则每一条都挡住过真实事故，不可协商：
 
-- **完成声明必须与证据一致。** 外部验收失败、原始输出解析失败、任何未验证项存在时，不能写 `complete`，缺口逐项写进 `proof_gap`；`proof_gap` 非空时状态只能是 `in_progress` 或 `blocked`，`complete` 要求 `proof_gap` 恰为空。`status` 合法值只有这三个，`done`、`completed` 等变体非法。局部测试全绿不能覆盖独立验收失败。
+- **完成声明必须与证据一致。** 外部验收失败、原始输出解析失败、任何未验证项存在时，不能写 `complete`，缺口逐项写进 `proof_gap`。收尾前运行 `scripts/check_work.py`，它拒绝非法状态值和「complete 却带缺口」；局部测试全绿不能覆盖独立验收失败。
 - **既有测试和公开验收夹具是只读证据。** 新增回归放新文件；为适应实现而改写既有测试，不能进入 `complete`。
 - **公开接口的响应形状是契约。** CLI/API/RPC 的输出外层、字段、错误和默认格式以用户要求、公开文档和既有调用方为准，不从新实现或邻近命令推断。契约要求响应对象时，默认入口必须返回该对象。
 - **证据要能挡住错误。** 期望值来自需求、规格或手算，不从被测代码的输出倒推；没有真实入口的原始结果时，结论只能是 `无法判定`。
 - **安装输入只读。** 项目内的 `.agents/skills/bi/`、评测用例和运行器材料是输入；流程记录只写项目的 `byissue/`，技能修改回到技能源仓库。
-- **外部副作用先收尾。** 用户授权 commit、push 或发布时，先完成检查点回写和完成门核对再执行。
+- **外部副作用先收尾，push 及以后必须授权。** 对项目外产生副作用前，先完成检查点回写和完成门核对。未经用户明确要求，不 push、不开 PR、不合并、不打 tag、不发布，也不做破坏性操作；用户授权后在同一动作链中执行。
 
 ## 共同规则
 
@@ -85,7 +85,7 @@ proof_gap: "行为门或范围门还缺什么"
 
 长期内容进入 `memory/{topic}.md`，一个主题一份，不设全局索引。写入前按 [memory-direction](references/memory-direction.md#memory) 判断跨工作用途与不可重建性；当前工作的接续信息留在 work。开始工作时按主题检索命中的 Memory；新决定或新证据与旧记录冲突时，先更新记录再继续。
 
-Vision 只在用户整理长期方向时使用，描述目标世界与候选方向，不承担当前实现状态。
+Vision 在用户整理长期方向、或当前工作明确受其约束时使用，描述目标世界与候选方向，不承担当前实现状态。
 
 ## 汇报
 
@@ -99,4 +99,4 @@ Vision 只在用户整理长期方向时使用，描述目标世界与候选方�
 - 写作：[writing](references/writing.md)
 - 项目接入：[onboard](references/onboard.md)
 
-模板位于：[`templates/work.md`](templates/work.md)、[`templates/scope.md`](templates/scope.md)、[`templates/memory.md`](templates/memory.md)、[`templates/vision.md`](templates/vision.md)。初始化脚本位于 [`scripts/init_byissue.py`](scripts/init_byissue.py)。许可证和上游归属见 [NOTICE.md](NOTICE.md)。
+模板位于：[`templates/work.md`](templates/work.md)、[`templates/scope.md`](templates/scope.md)、[`templates/memory.md`](templates/memory.md)、[`templates/vision.md`](templates/vision.md)。脚本位于 [`scripts/init_byissue.py`](scripts/init_byissue.py)（初始化工作区）与 [`scripts/check_work.py`](scripts/check_work.py)（校验检查点文件）。许可证和上游归属见 [NOTICE.md](NOTICE.md)。

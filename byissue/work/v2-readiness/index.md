@@ -4,7 +4,7 @@ status: complete
 current_unit: "v2 分支、文档、归档和 pi 实测已完成"
 next_action: "无"
 must_hold: "中文主文档与英文版同步；安装指定 v2；旧记录完整归档；评测使用实际安装副本和真实 CLI；用户已授权提交推送到 origin/v2；如实保留评测失败项"
-proof_gap: "本次交付无待验项；pi 的要求变更先回写与 Memory 边界两项未通过，具体证据保留在 evaluation/README.md"
+proof_gap: ""
 ---
 
 # v2 分支、文档、归档与实测

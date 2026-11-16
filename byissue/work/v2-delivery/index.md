@@ -11,7 +11,7 @@ proof_gap: ""
 
 用户已授权持续执行优化、评测、再优化，直到有证据支持成熟、有效、可交付。上一轮[大型重建评审](../large-repo-compaction/review.md)是本轮的失败依据，原始记录保留。
 
-交付已完成。方法论、最终结论、规则演变与局限的汇总留档见[最终评测报告](final-evaluation-report.md)；本 index 保留逐轮迭代记录。
+交付已完成。方法论、最终结论、规则演变与局限的汇总留档见[最终评测报告](final-evaluation-report.md)；本 index 保留逐轮迭代记录。v2 设计阶段的一手研究稿（真实失败取证、外部材料适用边界、被否方案）归档为[设计方向研究稿](research-direction.md)与[证据矩阵](research-evidence-matrix.md)。
 
 ## 目标与边界
 

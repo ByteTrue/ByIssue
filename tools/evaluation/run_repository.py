@@ -154,8 +154,11 @@ def main():
                 report['evidence_error'] = str(exc)
                 report['execution'] = 'failed'
         with (root / 'changes.diff').open('w') as out:
-            subprocess.run(['git', 'diff', 'HEAD'], cwd=project, stdout=out, check=False)
+            subprocess.run(['git', 'diff', seed['seed_commit']], cwd=project, stdout=out, check=False)
         report['git_status'] = subprocess.check_output(['git', 'status', '--short'], cwd=project, text=True)
+        # The skill lets the model commit per verified unit; keep the seed-relative history as review evidence.
+        report['git_log'] = subprocess.check_output(
+            ['git', 'log', '--oneline', f"{seed['seed_commit']}..HEAD"], cwd=project, text=True).splitlines()
         save(root / 'report.json', report)
     print(json.dumps({k: report.get(k) for k in ('execution', 'business', 'error', 'compaction')}, ensure_ascii=False, indent=2))
     return 0 if report['execution'] == 'complete' and report['business'] == '通过' else 1

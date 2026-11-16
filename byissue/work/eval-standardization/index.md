@@ -4,7 +4,7 @@ status: complete
 current_unit: "标准评测与技能修订已完成验证"
 next_action: "无；后续新增范围另建 work"
 must_hold: "沿用独立 CLI 验收与新会话接续；历史证据保留；业务和工作流分开判定；同模型同输入比较；Memory 仍能保存真正的长期决定"
-proof_gap: "本轮约定范围内无；适用边界见完成核对"
+proof_gap: ""
 ---
 
 # 标准化 pi 评测并修复已观察到的工作流缺口

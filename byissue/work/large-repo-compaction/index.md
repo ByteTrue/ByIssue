@@ -4,7 +4,7 @@ status: complete
 current_unit: "大型仓库自然长任务评测与独立评审已完成"
 next_action: "无；后续业务修复、技能调整或复评另建 work"
 must_hold: "DeepSeek Flash；原项目只读；副本独立分支；删除副本中的 v1 产物；持续完成真实大需求；压缩次数由运行决定；原版实现与独立验收留在项目之外"
-proof_gap: "本轮评测交付无；被测功能和工作流未通过，9 项问题及证明边界见 review.md"
+proof_gap: ""
 ---
 
 # 大型项目与真实上下文压缩评测

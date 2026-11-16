@@ -38,16 +38,29 @@ ByIssue 是一个单技能仓库，分发 `skills/bi/` 下名为 `bi` 的 Agent 
 | work 模板保留唯一检查点字段 | `tools/check-skill-repository.py` |
 | checker 的每项检查可以变红 | `tools/check-skill-repository-selftest.py` |
 | 初始化脚本在用户项目创建并保留 `work/`、`memory/` | `tools/check-skill-scripts.py` |
-| 宿主加载的部署副本与源代码一致 | `tools/release-check.sh` |
+| work 校验脚本拒绝非法状态值与「complete 却带缺口」 | `tools/check-skill-scripts.py` |
+| 项目级安装副本与源代码一致 | `tools/release-check.sh` |
 | 评测运行器的证据采集与失败处理 | `tools/evaluation/test_runner.py` |
 
-发布顺序是：修改 `skills/bi/`，运行 `bash tools/release-check.sh --no-deploy`，更新 `VERSION` 和 `CHANGELOG.md`，同步宿主实际加载的部署副本，再运行 `bash tools/release-check.sh <部署副本目录>`，最后按用户要求提交或分发。
+发布顺序是：修改 `skills/bi/`，运行 `bash tools/release-check.sh --no-deploy`，更新 `VERSION` 和 `CHANGELOG.md`，用 `npx skills add` 同步用户项目的 `.agents/skills/bi/`，再运行 `bash tools/release-check.sh <项目级安装目录>`，最后按用户要求提交或分发。不要安装到全局技能目录：宿主索引会把不受它管理的副本清掉。
 
 `tools/release-check.sh` 不猜部署目录。没有给出目录或 `BI_DEPLOYED` 时，发布检查会失败；编辑后的本地检查使用 `--no-deploy`。
 
 ## 当前边界
 
 ByIssue 保存项目中的当前工作和长期判断，不替宿主记录会话，也不把模型编排、工作树管理或多代理调度加入技能契约。语义是否适合某个具体项目，要通过真实项目中的行动、行为证明和用户反馈校准。
+
+接入只运行初始化脚本，不要求用户为 bi 修改 `AGENTS.md`。即使用户项目的 `AGENTS.md` 没有提到 bi，手动调用技能也必须完整生效；全部工作流规则都在技能包内。
+
+## 被否方案
+
+原始设计依据见 `byissue/work/v2-delivery/research-direction.md` 与 `research-evidence-matrix.md`。以下方案已经否决，重提时先读理由：
+
+- 压缩后第一项工具调用必须是 `read` 的硬门：七轮提示堆叠（固定口令、入口硬门、持久化 cue）仍被模型忽略，且未拦截过真实事故。恢复门改为结果判据：动作与检查点一致、状态诚实、缺口不丢。
+- 按已验证行为单元自动 commit：候选三十一实测模型全程 0 提交，促使加规则的手工重建基线现象也未复现，业务仍全绿，未证明质量收益。本地 commit 不禁止也不要求；push 及以后必须授权。
+- write-notes-like-deepseek 的四级生命周期目录、六分类和归档封存：只借「备选方案、最强否决理由、代价与风险」的内容模型，不引入重生命周期。
+- 全局技能目录部署：宿主索引会清除不受它管理的副本。只用项目级安装。
+- 外部公开评测集作为主验收：它测模型能力，测不到检查点、诚实 `proof_gap` 和跨压缩接续等工作流纪律；只作「技能不损害原始编码能力」的旁证。
 
 ## 依据与重访
 
